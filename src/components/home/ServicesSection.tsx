@@ -33,8 +33,10 @@ const ServicesSection = () => {
     <section className="py-24 bg-card relative" id="servicos">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-slide-up">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">Serviços</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 transition-all duration-500 hover:scale-105 hover:text-foreground cursor-default">
+            Serviços
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto transition-all duration-500 hover:scale-105 hover:text-foreground hover:drop-shadow-lg cursor-default">
             Soluções completas para transformar sua empresa
           </p>
         </div>
@@ -49,8 +51,10 @@ const ServicesSection = () => {
               <div className="w-12 h-12 bg-foreground text-background rounded-lg flex items-center justify-center mb-4">
                 <service.icon size={24} />
               </div>
-              <h3 className="text-lg font-semibold mb-2">{service.title}</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
+              <h3 className="text-lg font-semibold mb-2 transition-all duration-300 hover:scale-105 hover:text-foreground">
+                {service.title}
+              </h3>
+              <p className="text-muted-foreground text-sm leading-relaxed transition-all duration-300 hover:text-foreground hover:drop-shadow-md">
                 {service.description}
               </p>
             </Card>

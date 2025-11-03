@@ -10,10 +10,10 @@ const Navbar = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm text-foreground border-b border-border shadow-lg transition-all duration-300">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md text-foreground border-b border-border shadow-lg transition-all duration-300">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold tracking-tight hover:text-muted-foreground transition-colors">
+          <Link to="/" className="text-2xl font-bold tracking-tight hover:text-primary transition-all duration-300 hover:scale-105">
             Elev Business
           </Link>
 
@@ -21,7 +21,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-8">
             <a
               href="#servicos"
-              className={`hover:text-muted-foreground transition-all duration-300 ${
+              className={`hover:text-foreground transition-all duration-300 hover:scale-110 text-muted-foreground ${
                 location.pathname === "/" ? "" : "hidden"
               }`}
             >
@@ -29,21 +29,21 @@ const Navbar = () => {
             </a>
             <a
               href="#sobre"
-              className={`hover:text-muted-foreground transition-all duration-300 ${
+              className={`hover:text-foreground transition-all duration-300 hover:scale-110 text-muted-foreground ${
                 location.pathname === "/" ? "" : "hidden"
               }`}
             >
               Sobre Nós
             </a>
             <Link
-              to="/lead"
-              className="hover:text-muted-foreground transition-all duration-300"
+              to="/contact"
+              className="hover:text-foreground transition-all duration-300 hover:scale-110 text-muted-foreground"
             >
               Contato
             </Link>
             <Link
               to="/login"
-              className="px-4 py-2 border border-foreground rounded hover:bg-foreground hover:text-background transition-all duration-300"
+              className="px-4 py-2 border border-foreground rounded hover:bg-foreground hover:text-background transition-all duration-300 hover:scale-105"
             >
               Área Administrativa
             </Link>
@@ -80,8 +80,8 @@ const Navbar = () => {
               Sobre Nós
             </a>
             <Link
-              to="/lead"
-              className="hover:text-muted-foreground transition-colors"
+              to="/contact"
+              className="hover:text-foreground transition-all duration-300 text-muted-foreground"
               onClick={() => setIsMenuOpen(false)}
             >
               Contato
