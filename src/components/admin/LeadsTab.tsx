@@ -216,24 +216,26 @@ const LeadsTab = () => {
       {/* Gráfico de Evolução */}
       <Card className="p-6 bg-card border-border hover-glow">
         <h3 className="text-xl font-semibold mb-4">Evolução de Leads</h3>
-        <ChartContainer config={chartConfig} className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 28%)" />
-              <XAxis dataKey="mes" stroke="hsl(0 0% 60%)" />
-              <YAxis stroke="hsl(0 0% 60%)" />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Line 
-                type="monotone" 
-                dataKey="leads" 
-                stroke="hsl(0 0% 85%)" 
-                strokeWidth={2} 
-                dot={{ fill: "hsl(0 0% 85%)" }}
-                animationDuration={800}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </ChartContainer>
+        <div className="w-full h-[300px]">
+          <ChartContainer config={chartConfig} className="w-full h-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 28%)" />
+                <XAxis dataKey="mes" stroke="hsl(0 0% 60%)" />
+                <YAxis stroke="hsl(0 0% 60%)" />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Line 
+                  type="monotone" 
+                  dataKey="leads" 
+                  stroke="hsl(0 0% 85%)" 
+                  strokeWidth={2} 
+                  dot={{ fill: "hsl(0 0% 85%)" }}
+                  animationDuration={800}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </ChartContainer>
+        </div>
       </Card>
     </div>
   );

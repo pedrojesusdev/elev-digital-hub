@@ -77,32 +77,36 @@ const ReportsTab = () => {
       <div className="grid md:grid-cols-2 gap-6">
         <Card className="p-6 bg-card border-border hover-glow">
           <h3 className="text-lg font-semibold mb-4">Clientes</h3>
-          <ChartContainer config={{ clientes: chartConfig.clientes }} className="h-[250px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 28%)" />
-                <XAxis dataKey="mes" stroke="hsl(0 0% 60%)" />
-                <YAxis stroke="hsl(0 0% 60%)" />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Line type="monotone" dataKey="clientes" stroke="hsl(0 0% 85%)" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
-          </ChartContainer>
+          <div className="w-full h-[250px]">
+            <ChartContainer config={{ clientes: chartConfig.clientes }} className="w-full h-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={data} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 28%)" />
+                  <XAxis dataKey="mes" stroke="hsl(0 0% 60%)" />
+                  <YAxis stroke="hsl(0 0% 60%)" />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Line type="monotone" dataKey="clientes" stroke="hsl(0 0% 85%)" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </div>
         </Card>
         
         <Card className="p-6 bg-card border-border hover-glow">
           <h3 className="text-lg font-semibold mb-4">Faturamento</h3>
-          <ChartContainer config={{ faturamento: chartConfig.faturamento }} className="h-[250px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 28%)" />
-                <XAxis dataKey="mes" stroke="hsl(0 0% 60%)" />
-                <YAxis stroke="hsl(0 0% 60%)" />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="faturamento" fill="hsl(0 0% 40%)" />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartContainer>
+          <div className="w-full h-[250px]">
+            <ChartContainer config={{ faturamento: chartConfig.faturamento }} className="w-full h-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={data} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 28%)" />
+                  <XAxis dataKey="mes" stroke="hsl(0 0% 60%)" />
+                  <YAxis stroke="hsl(0 0% 60%)" />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar dataKey="faturamento" fill="hsl(0 0% 40%)" />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </div>
         </Card>
       </div>
 

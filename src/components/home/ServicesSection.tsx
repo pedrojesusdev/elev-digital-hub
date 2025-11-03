@@ -32,11 +32,11 @@ const ServicesSection = () => {
   return (
     <section className="py-24 bg-card relative" id="servicos">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16 animate-slide-up">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 transition-all duration-500 hover:scale-105 hover:text-foreground cursor-default">
+        <div className="text-center mb-16 animate-slide-up transition-all duration-500 hover:scale-105 cursor-pointer group">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 group-hover:text-foreground transition-colors">
             Serviços
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto transition-all duration-500 hover:scale-105 hover:text-foreground hover:drop-shadow-lg cursor-default">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto group-hover:text-foreground group-hover:drop-shadow-lg transition-all">
             Soluções completas para transformar sua empresa
           </p>
         </div>
@@ -45,16 +45,16 @@ const ServicesSection = () => {
           {services.map((service, index) => (
             <Card
               key={index}
-              className="p-6 hover:shadow-xl hover-scale hover-glow transition-all bg-secondary border border-border animate-slide-up"
+              className="p-6 hover:shadow-xl hover-scale hover-glow transition-all bg-secondary border border-border animate-slide-up cursor-pointer group"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className="w-12 h-12 bg-foreground text-background rounded-lg flex items-center justify-center mb-4">
+              <div className="w-12 h-12 bg-foreground text-background rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <service.icon size={24} />
               </div>
-              <h3 className="text-lg font-semibold mb-2 transition-all duration-300 hover:scale-105 hover:text-foreground">
+              <h3 className="text-lg font-semibold mb-2 group-hover:text-foreground transition-colors">
                 {service.title}
               </h3>
-              <p className="text-muted-foreground text-sm leading-relaxed transition-all duration-300 hover:text-foreground hover:drop-shadow-md">
+              <p className="text-muted-foreground text-sm leading-relaxed group-hover:text-foreground group-hover:drop-shadow-md transition-all">
                 {service.description}
               </p>
             </Card>
