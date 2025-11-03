@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import heroBg from "@/assets/hero-tech-bg.jpg";
 
@@ -23,7 +22,7 @@ const HeroSection = () => {
             Soluções administrativas, marketing digital e automações inteligentes
             para o seu negócio
           </p>
-          <Link to="/lead">
+          <a href="/contact#contato">
             <Button
               size="lg"
               className="bg-white text-black hover:bg-white/90 text-lg px-8"
@@ -31,7 +30,7 @@ const HeroSection = () => {
               Fale conosco
               <ArrowRight className="ml-2" size={20} />
             </Button>
-          </Link>
+          </a>
         </div>
       </div>
     </section>

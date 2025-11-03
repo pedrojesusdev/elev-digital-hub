@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Lead from "./pages/Lead";
 import Contact from "./pages/Contact";
 import AdminDashboard from "./pages/AdminDashboard";
+import LeadDetail from "./pages/LeadDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,8 @@ const App = () => (
           <Route path="/lead" element={<Lead />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/lead/:id" element={<LeadDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -8,7 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Pencil, Trash2, Plus, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface Lead {
   id: number;
@@ -16,6 +18,7 @@ interface Lead {
   nota: "Quente" | "Médio" | "Frio";
   faturamento: string;
   alcance: string;
+  relatorio: string;
 }
 
 const chartConfig = {
@@ -26,11 +29,12 @@ const chartConfig = {
 };
 
 const LeadsTab = () => {
+  const navigate = useNavigate();
   const [leads, setLeads] = useState<Lead[]>([
-    { id: 1, empresa: "Tech Solutions", nota: "Quente", faturamento: "R$ 500k", alcance: "10k seguidores" },
-    { id: 2, empresa: "Digital Marketing Co", nota: "Médio", faturamento: "R$ 250k", alcance: "5k seguidores" },
-    { id: 3, empresa: "E-commerce Plus", nota: "Frio", faturamento: "R$ 100k", alcance: "2k seguidores" },
-    { id: 4, empresa: "Startup Innovation", nota: "Quente", faturamento: "R$ 750k", alcance: "15k seguidores" },
+    { id: 1, empresa: "Tech Solutions", nota: "Quente", faturamento: "R$ 500k", alcance: "10k seguidores", relatorio: "Lead com alto potencial de conversão." },
+    { id: 2, empresa: "Digital Marketing Co", nota: "Médio", faturamento: "R$ 250k", alcance: "5k seguidores", relatorio: "Aguardando retorno do cliente." },
+    { id: 3, empresa: "E-commerce Plus", nota: "Frio", faturamento: "R$ 100k", alcance: "2k seguidores", relatorio: "Lead em fase inicial de prospecção." },
+    { id: 4, empresa: "Startup Innovation", nota: "Quente", faturamento: "R$ 750k", alcance: "15k seguidores", relatorio: "Negociação avançada, proposta enviada." },
   ]);
 
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -39,6 +43,7 @@ const LeadsTab = () => {
     nota: "Médio" as "Quente" | "Médio" | "Frio",
     faturamento: "",
     alcance: "",
+    relatorio: "",
   });
 
   const chartData = [
@@ -61,12 +66,12 @@ const LeadsTab = () => {
       const newLead = { ...formData, id: Date.now() };
       setLeads([...leads, newLead]);
     }
-    setFormData({ empresa: "", nota: "Médio", faturamento: "", alcance: "" });
+    setFormData({ empresa: "", nota: "Médio", faturamento: "", alcance: "", relatorio: "" });
   };
 
   const handleEdit = (lead: Lead) => {
     setEditingId(lead.id);
-    setFormData({ empresa: lead.empresa, nota: lead.nota, faturamento: lead.faturamento, alcance: lead.alcance });
+    setFormData({ empresa: lead.empresa, nota: lead.nota, faturamento: lead.faturamento, alcance: lead.alcance, relatorio: lead.relatorio });
   };
 
   const handleDelete = (id: number) => {
@@ -132,6 +137,18 @@ const LeadsTab = () => {
               />
             </div>
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="relatorio">Relatório do Lead</Label>
+            <Textarea
+              id="relatorio"
+              value={formData.relatorio}
+              onChange={(e) => setFormData({ ...formData, relatorio: e.target.value })}
+              placeholder="Observações e anotações sobre este lead..."
+              rows={4}
+              className="bg-input border-border resize-none"
+            />
+          </div>
           
           <div className="flex gap-2">
             <Button type="submit" className="bg-foreground text-background hover:bg-muted-foreground">
@@ -144,7 +161,7 @@ const LeadsTab = () => {
                 variant="outline" 
                 onClick={() => {
                   setEditingId(null);
-                  setFormData({ empresa: "", nota: "Médio", faturamento: "", alcance: "" });
+                  setFormData({ empresa: "", nota: "Médio", faturamento: "", alcance: "", relatorio: "" });
                 }}
               >
                 Cancelar
@@ -192,8 +209,18 @@ const LeadsTab = () => {
                     <Button 
                       size="sm" 
                       variant="outline" 
+                      onClick={() => navigate(`/admin/lead/${lead.id}`)}
+                      className="hover:bg-muted"
+                      title="Ver detalhes"
+                    >
+                      <Eye size={14} />
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
                       onClick={() => handleEdit(lead)}
                       className="hover:bg-muted"
+                      title="Editar"
                     >
                       <Pencil size={14} />
                     </Button>
@@ -202,6 +229,7 @@ const LeadsTab = () => {
                       variant="outline" 
                       onClick={() => handleDelete(lead.id)}
                       className="hover:bg-destructive hover:text-destructive-foreground"
+                      title="Excluir"
                     >
                       <Trash2 size={14} />
                     </Button>

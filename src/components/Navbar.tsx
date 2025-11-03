@@ -20,20 +20,20 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             <a
-              href="#servicos"
-              className={`hover:text-foreground transition-all duration-300 hover:scale-110 text-muted-foreground ${
-                location.pathname === "/" ? "" : "hidden"
-              }`}
-            >
-              Serviços
-            </a>
-            <a
               href="#sobre"
               className={`hover:text-foreground transition-all duration-300 hover:scale-110 text-muted-foreground ${
                 location.pathname === "/" ? "" : "hidden"
               }`}
             >
               Sobre Nós
+            </a>
+            <a
+              href="#servicos"
+              className={`hover:text-foreground transition-all duration-300 hover:scale-110 text-muted-foreground ${
+                location.pathname === "/" ? "" : "hidden"
+              }`}
+            >
+              Serviços
             </a>
             <Link
               to="/contact"
@@ -62,15 +62,6 @@ const Navbar = () => {
         {isMenuOpen && (
           <div className="md:hidden mt-4 pb-4 flex flex-col gap-4 animate-fade-in">
             <a
-              href="#servicos"
-              className={`hover:text-muted-foreground transition-colors ${
-                location.pathname === "/" ? "" : "hidden"
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Serviços
-            </a>
-            <a
               href="#sobre"
               className={`hover:text-muted-foreground transition-colors ${
                 location.pathname === "/" ? "" : "hidden"
@@ -78,6 +69,15 @@ const Navbar = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               Sobre Nós
+            </a>
+            <a
+              href="#servicos"
+              className={`hover:text-muted-foreground transition-colors ${
+                location.pathname === "/" ? "" : "hidden"
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Serviços
             </a>
             <Link
               to="/contact"
