@@ -3,8 +3,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 const ContactSection = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="py-24 bg-background" id="contato">
       <div className="container mx-auto px-4">
@@ -75,24 +79,25 @@ const ContactSection = () => {
                 />
               </div>
 
-              <div className="flex gap-4">
-                <Button
-                  type="submit"
-                  className="flex-1 bg-background text-foreground border border-foreground hover:bg-foreground hover:text-background transition-all duration-300"
-                >
-                  Enviar Mensagem
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                  variant="outline"
-                  className="flex-1 border-border hover:bg-muted transition-all duration-300"
-                >
-                  Voltar à Home
-                </Button>
-              </div>
+              <Button
+                type="submit"
+                className="w-full bg-background text-foreground border border-foreground hover:bg-foreground hover:text-background transition-all duration-300"
+              >
+                Enviar Mensagem
+              </Button>
             </form>
           </Card>
+
+          <div className="text-center mt-8">
+            <Button
+              variant="outline"
+              onClick={() => navigate("/")}
+              className="border-border hover:bg-muted transition-all duration-300"
+            >
+              <ArrowLeft className="mr-2" size={16} />
+              Voltar à Home
+            </Button>
+          </div>
         </div>
       </div>
     </section>
