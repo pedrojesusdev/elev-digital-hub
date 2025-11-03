@@ -4,27 +4,33 @@ import { Zap, TrendingUp, FileText } from "lucide-react";
 const services = [
   {
     icon: Zap,
-    title: "Automação de processos",
+    title: "Criação de sites",
     description:
-      "Integramos ferramentas e sistemas para otimizar tarefas repetitivas.",
-  },
-  {
-    icon: TrendingUp,
-    title: "Marketing digital",
-    description:
-      "Estratégias de tráfego pago, redes sociais e posicionamento de marca.",
+      "Sites modernos e responsivos com design personalizado e otimizado para conversão.",
   },
   {
     icon: FileText,
-    title: "Soluções administrativas",
+    title: "Criação de landing pages",
     description:
-      "Organização financeira, relatórios e planejamento operacional.",
+      "Páginas de alta conversão focadas em capturar leads e gerar resultados.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Automação de processos",
+    description:
+      "Integramos ferramentas e sistemas para otimizar tarefas repetitivas e aumentar eficiência.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Estratégias digitais e relatórios",
+    description:
+      "Análise de desempenho, métricas e estratégias para crescimento digital sustentável.",
   },
 ];
 
 const ServicesSection = () => {
   return (
-    <section className="py-24 bg-secondary" id="servicos">
+    <section className="py-24 bg-card relative" id="servicos">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-slide-up">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">Serviços</h2>
@@ -33,18 +39,18 @@ const ServicesSection = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {services.map((service, index) => (
             <Card
               key={index}
-              className="p-8 hover:shadow-lg transition-shadow bg-card border-border animate-slide-up"
+              className="p-6 hover:shadow-xl hover-scale hover-glow transition-all bg-secondary border border-border animate-slide-up"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className="w-12 h-12 bg-primary text-primary-foreground rounded-lg flex items-center justify-center mb-6">
+              <div className="w-12 h-12 bg-foreground text-background rounded-lg flex items-center justify-center mb-4">
                 <service.icon size={24} />
               </div>
-              <h3 className="text-xl font-semibold mb-3">{service.title}</h3>
-              <p className="text-muted-foreground leading-relaxed">
+              <h3 className="text-lg font-semibold mb-2">{service.title}</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">
                 {service.description}
               </p>
             </Card>

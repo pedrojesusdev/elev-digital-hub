@@ -10,43 +10,49 @@ const Navbar = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm text-foreground border-b border-border shadow-lg transition-all duration-300">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold tracking-tight">
+          <Link to="/" className="text-2xl font-bold tracking-tight hover:text-muted-foreground transition-colors">
             Elev Business
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <Link
-              to="/"
-              className={`text-sm font-medium transition-colors hover:text-foreground/80 ${
-                isActive("/") ? "text-foreground" : "text-foreground/60"
+            <a
+              href="#servicos"
+              className={`hover:text-muted-foreground transition-all duration-300 ${
+                location.pathname === "/" ? "" : "hidden"
               }`}
             >
-              Início
-            </Link>
+              Serviços
+            </a>
+            <a
+              href="#sobre"
+              className={`hover:text-muted-foreground transition-all duration-300 ${
+                location.pathname === "/" ? "" : "hidden"
+              }`}
+            >
+              Sobre Nós
+            </a>
             <Link
               to="/lead"
-              className={`text-sm font-medium transition-colors hover:text-foreground/80 ${
-                isActive("/lead") ? "text-foreground" : "text-foreground/60"
-              }`}
+              className="hover:text-muted-foreground transition-all duration-300"
             >
               Contato
             </Link>
-            <Link to="/login">
-              <Button variant="outline" size="sm">
-                Área Administrativa
-              </Button>
+            <Link
+              to="/login"
+              className="px-4 py-2 border border-foreground rounded hover:bg-foreground hover:text-background transition-all duration-300"
+            >
+              Área Administrativa
             </Link>
           </div>
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden"
+            className="md:hidden hover:text-muted-foreground transition-colors"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -54,25 +60,38 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden pt-4 pb-2 space-y-3 animate-fade-in">
-            <Link
-              to="/"
-              className="block text-sm font-medium py-2"
+          <div className="md:hidden mt-4 pb-4 flex flex-col gap-4 animate-fade-in">
+            <a
+              href="#servicos"
+              className={`hover:text-muted-foreground transition-colors ${
+                location.pathname === "/" ? "" : "hidden"
+              }`}
               onClick={() => setIsMenuOpen(false)}
             >
-              Início
-            </Link>
+              Serviços
+            </a>
+            <a
+              href="#sobre"
+              className={`hover:text-muted-foreground transition-colors ${
+                location.pathname === "/" ? "" : "hidden"
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Sobre Nós
+            </a>
             <Link
               to="/lead"
-              className="block text-sm font-medium py-2"
+              className="hover:text-muted-foreground transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Contato
             </Link>
-            <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-              <Button variant="outline" size="sm" className="w-full">
-                Área Administrativa
-              </Button>
+            <Link
+              to="/login"
+              className="hover:text-muted-foreground transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Área Administrativa
             </Link>
           </div>
         )}
