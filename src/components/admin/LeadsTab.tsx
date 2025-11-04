@@ -78,12 +78,12 @@ const LeadsTab = () => {
   }, []);
 
   const chartData = [
-    { mes: "Jan", leads: leads.length > 0 ? 12 : 0 },
-    { mes: "Fev", leads: leads.length > 1 ? 19 : 0 },
-    { mes: "Mar", leads: leads.length > 2 ? 15 : 0 },
-    { mes: "Abr", leads: leads.length > 3 ? 25 : 0 },
-    { mes: "Mai", leads: leads.length },
-    { mes: "Jun", leads: leads.length + 5 },
+    { mes: "Jan", leads: 0 },
+    { mes: "Fev", leads: 0 },
+    { mes: "Mar", leads: 0 },
+    { mes: "Abr", leads: 0 },
+    { mes: "Mai", leads: 0 },
+    { mes: "Jun", leads: 0 },
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
