@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
-import { Plus } from "lucide-react";
+import { Plus, Pencil, Trash2, Check, X } from "lucide-react";
+import { toast } from "sonner";
 
 interface MonthlyData {
   mes: string;
@@ -43,7 +44,8 @@ const ReportsTab = () => {
     analise: "",
   });
 
-  
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editData, setEditData] = useState<MonthlyData | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,6 +59,36 @@ const ReportsTab = () => {
     };
     setData([...data, newData]);
     setFormData({ mes: "", clientes: "", servicos: "", leads: "", faturamento: "", analise: "" });
+    toast.success("Dados adicionados com sucesso!");
+  };
+
+  const handleEdit = (index: number) => {
+    setEditingIndex(index);
+    setEditData({ ...data[index] });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingIndex(null);
+    setEditData(null);
+  };
+
+  const handleSaveEdit = () => {
+    if (editingIndex !== null && editData) {
+      const updatedData = [...data];
+      updatedData[editingIndex] = editData;
+      setData(updatedData);
+      setEditingIndex(null);
+      setEditData(null);
+      toast.success("Dados atualizados com sucesso!");
+    }
+  };
+
+  const handleDelete = (index: number) => {
+    if (confirm("Tem certeza que deseja excluir este registro?")) {
+      const updatedData = data.filter((_, i) => i !== index);
+      setData(updatedData);
+      toast.success("Registro excluído com sucesso!");
+    }
   };
 
   return (
@@ -119,13 +151,93 @@ const ReportsTab = () => {
         <div className="space-y-4">
           {data.map((item, index) => (
             <div key={index} className="p-4 bg-muted/50 rounded-lg border border-border">
-              <div className="flex justify-between items-start mb-2">
-                <h4 className="font-semibold">{item.mes}</h4>
-                <div className="text-sm text-muted-foreground">
-                  C: {item.clientes} | S: {item.servicos} | L: {item.leads} | F: {item.faturamento}k
+              {editingIndex === index && editData ? (
+                <div className="space-y-4">
+                  <div className="grid md:grid-cols-3 gap-3">
+                    <Input
+                      value={editData.mes}
+                      onChange={(e) => setEditData({ ...editData, mes: e.target.value })}
+                      placeholder="Mês"
+                      className="bg-input border-border"
+                    />
+                    <Input
+                      type="number"
+                      value={editData.clientes}
+                      onChange={(e) => setEditData({ ...editData, clientes: parseInt(e.target.value) || 0 })}
+                      placeholder="Clientes"
+                      className="bg-input border-border"
+                    />
+                    <Input
+                      type="number"
+                      value={editData.servicos}
+                      onChange={(e) => setEditData({ ...editData, servicos: parseInt(e.target.value) || 0 })}
+                      placeholder="Serviços"
+                      className="bg-input border-border"
+                    />
+                    <Input
+                      type="number"
+                      value={editData.leads}
+                      onChange={(e) => setEditData({ ...editData, leads: parseInt(e.target.value) || 0 })}
+                      placeholder="Leads"
+                      className="bg-input border-border"
+                    />
+                    <Input
+                      type="number"
+                      value={editData.faturamento}
+                      onChange={(e) => setEditData({ ...editData, faturamento: parseInt(e.target.value) || 0 })}
+                      placeholder="Faturamento"
+                      className="bg-input border-border"
+                    />
+                  </div>
+                  <Textarea
+                    value={editData.analise}
+                    onChange={(e) => setEditData({ ...editData, analise: e.target.value })}
+                    placeholder="Análise do mês..."
+                    rows={3}
+                    className="bg-input border-border resize-none"
+                  />
+                  <div className="flex gap-2">
+                    <Button onClick={handleSaveEdit} size="sm" className="bg-foreground text-background hover:bg-muted-foreground">
+                      <Check className="mr-1" size={16} />
+                      Salvar
+                    </Button>
+                    <Button onClick={handleCancelEdit} size="sm" variant="outline">
+                      <X className="mr-1" size={16} />
+                      Cancelar
+                    </Button>
+                  </div>
                 </div>
-              </div>
-              <p className="text-sm text-muted-foreground">{item.analise}</p>
+              ) : (
+                <>
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-semibold">{item.mes}</h4>
+                    <div className="flex items-center gap-4">
+                      <div className="text-sm text-muted-foreground">
+                        C: {item.clientes} | S: {item.servicos} | L: {item.leads} | F: {item.faturamento}k
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => handleEdit(index)}
+                          size="icon"
+                          variant="ghost"
+                          className="h-8 w-8"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          onClick={() => handleDelete(index)}
+                          size="icon"
+                          variant="ghost"
+                          className="h-8 w-8 text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground">{item.analise}</p>
+                </>
+              )}
             </div>
           ))}
         </div>
