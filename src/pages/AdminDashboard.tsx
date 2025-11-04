@@ -38,7 +38,7 @@ const AdminDashboard = () => {
 
         <div className="pt-[57px] container mx-auto px-4 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className={`grid w-full max-w-4xl mx-auto mb-8 bg-secondary ${isSuperAdmin ? 'grid-cols-7' : 'grid-cols-6'}`}>
+            <TabsList className={`grid w-full max-w-4xl mx-auto mb-8 mt-6 bg-secondary ${isSuperAdmin ? 'grid-cols-7' : 'grid-cols-6'}`}>
               <TabsTrigger value="leads" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
                 <Users className="mr-2" size={16} />
                 Leads
