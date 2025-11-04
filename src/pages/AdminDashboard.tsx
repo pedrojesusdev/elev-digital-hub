@@ -2,11 +2,13 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Zap, BarChart3, Share2, LogOut } from "lucide-react";
+import { Users, Zap, BarChart3, Share2, LogOut, Search, Calendar as CalendarIcon } from "lucide-react";
 import LeadsTab from "@/components/admin/LeadsTab";
 import AutomationsTab from "@/components/admin/AutomationsTab";
 import ReportsTab from "@/components/admin/ReportsTab";
 import SocialMediaTab from "@/components/admin/SocialMediaTab";
+import ProspeccaoTab from "@/components/admin/ProspeccaoTab";
+import CalendarioTab from "@/components/admin/CalendarioTab";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("leads");
@@ -29,10 +31,18 @@ const AdminDashboard = () => {
 
       <div className="pt-[73px] container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-4 mb-8 bg-secondary">
+          <TabsList className="grid w-full max-w-4xl mx-auto grid-cols-6 mb-8 bg-secondary">
             <TabsTrigger value="leads" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
               <Users className="mr-2" size={16} />
               Leads
+            </TabsTrigger>
+            <TabsTrigger value="prospeccao" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
+              <Search className="mr-2" size={16} />
+              Prospecção
+            </TabsTrigger>
+            <TabsTrigger value="calendario" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
+              <CalendarIcon className="mr-2" size={16} />
+              Calendário
             </TabsTrigger>
             <TabsTrigger value="automations" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
               <Zap className="mr-2" size={16} />
@@ -50,6 +60,14 @@ const AdminDashboard = () => {
 
           <TabsContent value="leads" className="mt-0">
             <LeadsTab />
+          </TabsContent>
+
+          <TabsContent value="prospeccao" className="mt-0">
+            <ProspeccaoTab />
+          </TabsContent>
+
+          <TabsContent value="calendario" className="mt-0">
+            <CalendarioTab />
           </TabsContent>
 
           <TabsContent value="automations" className="mt-0">
