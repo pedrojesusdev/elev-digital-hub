@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -11,14 +11,16 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } fro
 import { Textarea } from "@/components/ui/textarea";
 import { Pencil, Trash2, Plus, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Lead {
-  id: number;
+  id: string;
   empresa: string;
   nota: "Quente" | "Médio" | "Frio";
   faturamento: string;
   alcance: string;
-  relatorio: string;
+  relatorio: string | null;
 }
 
 const chartConfig = {
@@ -30,14 +32,9 @@ const chartConfig = {
 
 const LeadsTab = () => {
   const navigate = useNavigate();
-  const [leads, setLeads] = useState<Lead[]>([
-    { id: 1, empresa: "Tech Solutions", nota: "Quente", faturamento: "R$ 500k", alcance: "10k seguidores", relatorio: "Lead com alto potencial de conversão." },
-    { id: 2, empresa: "Digital Marketing Co", nota: "Médio", faturamento: "R$ 250k", alcance: "5k seguidores", relatorio: "Aguardando retorno do cliente." },
-    { id: 3, empresa: "E-commerce Plus", nota: "Frio", faturamento: "R$ 100k", alcance: "2k seguidores", relatorio: "Lead em fase inicial de prospecção." },
-    { id: 4, empresa: "Startup Innovation", nota: "Quente", faturamento: "R$ 750k", alcance: "15k seguidores", relatorio: "Negociação avançada, proposta enviada." },
-  ]);
-
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     empresa: "",
     nota: "Médio" as "Quente" | "Médio" | "Frio",
@@ -45,6 +42,40 @@ const LeadsTab = () => {
     alcance: "",
     relatorio: "",
   });
+
+  const fetchLeads = async () => {
+    const { data, error } = await supabase
+      .from('leads_management')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      toast.error("Erro ao carregar leads");
+      console.error(error);
+    } else {
+      setLeads((data as Lead[]) || []);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchLeads();
+
+    const channel = supabase
+      .channel('leads_management_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'leads_management' },
+        () => {
+          fetchLeads();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const chartData = [
     { mes: "Jan", leads: leads.length > 0 ? 12 : 0 },
@@ -55,28 +86,83 @@ const LeadsTab = () => {
     { mes: "Jun", leads: leads.length + 5 },
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (editingId) {
-      setLeads(leads.map(lead => 
-        lead.id === editingId ? { ...formData, id: editingId } : lead
-      ));
-      setEditingId(null);
+      const { error } = await supabase
+        .from('leads_management')
+        .update({
+          empresa: formData.empresa,
+          nota: formData.nota,
+          faturamento: formData.faturamento,
+          alcance: formData.alcance,
+          relatorio: formData.relatorio || null,
+        })
+        .eq('id', editingId);
+
+      if (error) {
+        toast.error("Erro ao atualizar lead");
+        console.error(error);
+      } else {
+        toast.success("Lead atualizado com sucesso!");
+        setEditingId(null);
+      }
     } else {
-      const newLead = { ...formData, id: Date.now() };
-      setLeads([...leads, newLead]);
+      const { error } = await supabase
+        .from('leads_management')
+        .insert([{
+          empresa: formData.empresa,
+          nota: formData.nota,
+          faturamento: formData.faturamento,
+          alcance: formData.alcance,
+          relatorio: formData.relatorio || null,
+        }]);
+
+      if (error) {
+        toast.error("Erro ao adicionar lead");
+        console.error(error);
+      } else {
+        toast.success("Lead adicionado com sucesso!");
+      }
     }
     setFormData({ empresa: "", nota: "Médio", faturamento: "", alcance: "", relatorio: "" });
   };
 
   const handleEdit = (lead: Lead) => {
     setEditingId(lead.id);
-    setFormData({ empresa: lead.empresa, nota: lead.nota, faturamento: lead.faturamento, alcance: lead.alcance, relatorio: lead.relatorio });
+    setFormData({ 
+      empresa: lead.empresa, 
+      nota: lead.nota, 
+      faturamento: lead.faturamento, 
+      alcance: lead.alcance, 
+      relatorio: lead.relatorio || "" 
+    });
   };
 
-  const handleDelete = (id: number) => {
-    setLeads(leads.filter(lead => lead.id !== id));
+  const handleDelete = async (id: string) => {
+    if (!confirm("Tem certeza que deseja excluir este lead?")) return;
+
+    const { error } = await supabase
+      .from('leads_management')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      toast.error("Erro ao excluir lead");
+      console.error(error);
+    } else {
+      toast.success("Lead excluído com sucesso!");
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-foreground"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-fade-in">

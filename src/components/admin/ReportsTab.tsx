@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,8 +8,10 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { Plus, Pencil, Trash2, Check, X } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface MonthlyData {
+  id: string;
   mes: string;
   clientes: number;
   servicos: number;
@@ -26,15 +28,8 @@ const chartConfig = {
 };
 
 const ReportsTab = () => {
-  const [data, setData] = useState<MonthlyData[]>([
-    { mes: "Jan", clientes: 10, servicos: 15, leads: 30, faturamento: 50, analise: "Início do ano com crescimento estável" },
-    { mes: "Fev", clientes: 15, servicos: 20, leads: 45, faturamento: 75, analise: "Crescimento significativo em todas as métricas" },
-    { mes: "Mar", clientes: 18, servicos: 25, leads: 50, faturamento: 90, analise: "Manutenção do ritmo de crescimento" },
-    { mes: "Abr", clientes: 22, servicos: 30, leads: 60, faturamento: 110, analise: "Expansão acelerada" },
-    { mes: "Mai", clientes: 28, servicos: 35, leads: 70, faturamento: 140, analise: "Melhor mês do semestre" },
-    { mes: "Jun", clientes: 35, servicos: 42, leads: 85, faturamento: 180, analise: "Performance excepcional" },
-  ]);
-
+  const [data, setData] = useState<MonthlyData[]>([]);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     mes: "",
     clientes: "",
@@ -44,52 +39,124 @@ const ReportsTab = () => {
     analise: "",
   });
 
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState<MonthlyData | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newData: MonthlyData = {
-      mes: formData.mes,
-      clientes: parseInt(formData.clientes),
-      servicos: parseInt(formData.servicos),
-      leads: parseInt(formData.leads),
-      faturamento: parseInt(formData.faturamento),
-      analise: formData.analise,
-    };
-    setData([...data, newData]);
-    setFormData({ mes: "", clientes: "", servicos: "", leads: "", faturamento: "", analise: "" });
-    toast.success("Dados adicionados com sucesso!");
+  const fetchData = async () => {
+    const { data: reports, error } = await supabase
+      .from('monthly_reports')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      toast.error("Erro ao carregar relatórios");
+      console.error(error);
+    } else {
+      setData(reports || []);
+    }
+    setLoading(false);
   };
 
-  const handleEdit = (index: number) => {
-    setEditingIndex(index);
-    setEditData({ ...data[index] });
+  useEffect(() => {
+    fetchData();
+
+    const channel = supabase
+      .channel('monthly_reports_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'monthly_reports' },
+        () => {
+          fetchData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const { error } = await supabase
+      .from('monthly_reports')
+      .insert([{
+        mes: formData.mes,
+        clientes: parseInt(formData.clientes),
+        servicos: parseInt(formData.servicos),
+        leads: parseInt(formData.leads),
+        faturamento: parseInt(formData.faturamento),
+        analise: formData.analise,
+      }]);
+
+    if (error) {
+      toast.error("Erro ao adicionar dados");
+      console.error(error);
+    } else {
+      toast.success("Dados adicionados com sucesso!");
+      setFormData({ mes: "", clientes: "", servicos: "", leads: "", faturamento: "", analise: "" });
+    }
+  };
+
+  const handleEdit = (report: MonthlyData) => {
+    setEditingId(report.id);
+    setEditData({ ...report });
   };
 
   const handleCancelEdit = () => {
-    setEditingIndex(null);
+    setEditingId(null);
     setEditData(null);
   };
 
-  const handleSaveEdit = () => {
-    if (editingIndex !== null && editData) {
-      const updatedData = [...data];
-      updatedData[editingIndex] = editData;
-      setData(updatedData);
-      setEditingIndex(null);
-      setEditData(null);
-      toast.success("Dados atualizados com sucesso!");
+  const handleSaveEdit = async () => {
+    if (editingId && editData) {
+      const { error } = await supabase
+        .from('monthly_reports')
+        .update({
+          mes: editData.mes,
+          clientes: editData.clientes,
+          servicos: editData.servicos,
+          leads: editData.leads,
+          faturamento: editData.faturamento,
+          analise: editData.analise,
+        })
+        .eq('id', editingId);
+
+      if (error) {
+        toast.error("Erro ao atualizar dados");
+        console.error(error);
+      } else {
+        toast.success("Dados atualizados com sucesso!");
+        setEditingId(null);
+        setEditData(null);
+      }
     }
   };
 
-  const handleDelete = (index: number) => {
-    if (confirm("Tem certeza que deseja excluir este registro?")) {
-      const updatedData = data.filter((_, i) => i !== index);
-      setData(updatedData);
+  const handleDelete = async (id: string) => {
+    if (!confirm("Tem certeza que deseja excluir este registro?")) return;
+
+    const { error } = await supabase
+      .from('monthly_reports')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      toast.error("Erro ao excluir registro");
+      console.error(error);
+    } else {
       toast.success("Registro excluído com sucesso!");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-foreground"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -149,9 +216,9 @@ const ReportsTab = () => {
       <Card className="p-6 bg-card border-border hover-glow">
         <h3 className="text-lg font-semibold mb-4">Histórico de Análises</h3>
         <div className="space-y-4">
-          {data.map((item, index) => (
-            <div key={index} className="p-4 bg-muted/50 rounded-lg border border-border">
-              {editingIndex === index && editData ? (
+          {data.map((item) => (
+            <div key={item.id} className="p-4 bg-muted/50 rounded-lg border border-border">
+              {editingId === item.id && editData ? (
                 <div className="space-y-4">
                   <div className="grid md:grid-cols-3 gap-3">
                     <Input
@@ -217,7 +284,7 @@ const ReportsTab = () => {
                       </div>
                       <div className="flex gap-2">
                         <Button
-                          onClick={() => handleEdit(index)}
+                          onClick={() => handleEdit(item)}
                           size="icon"
                           variant="ghost"
                           className="h-8 w-8"
@@ -225,7 +292,7 @@ const ReportsTab = () => {
                           <Pencil className="h-4 w-4" />
                         </Button>
                         <Button
-                          onClick={() => handleDelete(index)}
+                          onClick={() => handleDelete(item.id)}
                           size="icon"
                           variant="ghost"
                           className="h-8 w-8 text-destructive hover:text-destructive"

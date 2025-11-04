@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,70 +9,29 @@ import { Badge } from "@/components/ui/badge";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { Video, FileText, TrendingUp, Users, Heart, MessageCircle, Share2, Plus, Pencil, Trash2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface SocialMediaService {
-  id: number;
+  id: string;
   empresa: string;
   campanha: string;
   descricao: string;
   periodo: string;
   metas: string;
   status: "Ativa" | "Pausada" | "Finalizada";
-  data: string;
-  videosGravados: number;
-  postsPublicados: number;
-  alcanceTotal: number;
-  engajamentoMedio: number;
+  created_at?: string;
+  videos_gravados: number;
+  posts_publicados: number;
+  alcance_total: number;
+  engajamento_medio: number;
 }
 
 const SocialMediaTab = () => {
-  const [services, setServices] = useState<SocialMediaService[]>([
-    { 
-      id: 1, 
-      empresa: "Tech Solutions", 
-      campanha: "Campanha de Lançamento", 
-      descricao: "Divulgação de novo produto",
-      periodo: "Jan - Mar 2025",
-      metas: "10k seguidores, 500k alcance",
-      status: "Ativa",
-      data: "15/01/2025",
-      videosGravados: 25,
-      postsPublicados: 78,
-      alcanceTotal: 150000,
-      engajamentoMedio: 5200
-    },
-    { 
-      id: 2, 
-      empresa: "Digital Marketing Co", 
-      campanha: "Engajamento Q1", 
-      descricao: "Aumentar interações nas redes",
-      periodo: "Jan - Abr 2025",
-      metas: "1000 posts, 50k curtidas",
-      status: "Ativa",
-      data: "10/01/2025",
-      videosGravados: 18,
-      postsPublicados: 56,
-      alcanceTotal: 98000,
-      engajamentoMedio: 4100
-    },
-    { 
-      id: 3, 
-      empresa: "Tech Solutions", 
-      campanha: "Crescimento Orgânico", 
-      descricao: "Foco em conteúdo educativo",
-      periodo: "Fev - Mai 2025",
-      metas: "5k seguidores, 200k alcance",
-      status: "Ativa",
-      data: "20/02/2025",
-      videosGravados: 20,
-      postsPublicados: 50,
-      alcanceTotal: 95000,
-      engajamentoMedio: 3450
-    },
-  ]);
-
-  const [selectedCompany, setSelectedCompany] = useState<string>("Tech Solutions");
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [services, setServices] = useState<SocialMediaService[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCompany, setSelectedCompany] = useState<string>("");
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     empresa: "",
     campanha: "",
@@ -86,17 +45,56 @@ const SocialMediaTab = () => {
     engajamentoMedio: 0,
   });
 
+  const fetchServices = async () => {
+    const { data, error } = await supabase
+      .from('social_media_services')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      toast.error("Erro ao carregar serviços");
+      console.error(error);
+    } else {
+      const typedData = (data as SocialMediaService[]) || [];
+      setServices(typedData);
+      if (typedData.length > 0 && !selectedCompany) {
+        const companies = Array.from(new Set(typedData.map(s => s.empresa)));
+        setSelectedCompany(companies[0]);
+      }
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchServices();
+
+    const channel = supabase
+      .channel('social_media_services_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'social_media_services' },
+        () => {
+          fetchServices();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   // Calcular métricas dinamicamente por empresa
   const companies = Array.from(new Set(services.map(s => s.empresa)));
   
   const calculateMetrics = (company: string) => {
     const companyServices = services.filter(s => s.empresa === company);
     
-    const totalVideos = companyServices.reduce((sum, s) => sum + s.videosGravados, 0);
-    const totalPosts = companyServices.reduce((sum, s) => sum + s.postsPublicados, 0);
-    const totalAlcance = companyServices.reduce((sum, s) => sum + s.alcanceTotal, 0);
+    const totalVideos = companyServices.reduce((sum, s) => sum + s.videos_gravados, 0);
+    const totalPosts = companyServices.reduce((sum, s) => sum + s.posts_publicados, 0);
+    const totalAlcance = companyServices.reduce((sum, s) => sum + s.alcance_total, 0);
     const avgEngajamento = companyServices.length > 0 
-      ? Math.round(companyServices.reduce((sum, s) => sum + s.engajamentoMedio, 0) / companyServices.length)
+      ? Math.round(companyServices.reduce((sum, s) => sum + s.engajamento_medio, 0) / companyServices.length)
       : 0;
     
     // Gerar dados de crescimento baseados nas métricas
@@ -121,22 +119,55 @@ const SocialMediaTab = () => {
   
   const currentMetrics = calculateMetrics(selectedCompany);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (editingId) {
-      setServices(services.map(service => 
-        service.id === editingId 
-          ? { ...formData, id: editingId, data: service.data } 
-          : service
-      ));
-      setEditingId(null);
+      const { error } = await supabase
+        .from('social_media_services')
+        .update({
+          empresa: formData.empresa,
+          campanha: formData.campanha,
+          descricao: formData.descricao,
+          periodo: formData.periodo,
+          metas: formData.metas,
+          status: formData.status,
+          videos_gravados: formData.videosGravados,
+          posts_publicados: formData.postsPublicados,
+          alcance_total: formData.alcanceTotal,
+          engajamento_medio: formData.engajamentoMedio,
+        })
+        .eq('id', editingId);
+
+      if (error) {
+        toast.error("Erro ao atualizar serviço");
+        console.error(error);
+      } else {
+        toast.success("Serviço atualizado!");
+        setEditingId(null);
+      }
     } else {
-      const newService = {
-        ...formData,
-        id: Date.now(),
-        data: new Date().toLocaleDateString('pt-BR'),
-      };
-      setServices([...services, newService]);
+      const { error } = await supabase
+        .from('social_media_services')
+        .insert([{
+          empresa: formData.empresa,
+          campanha: formData.campanha,
+          descricao: formData.descricao,
+          periodo: formData.periodo,
+          metas: formData.metas,
+          status: formData.status,
+          videos_gravados: formData.videosGravados,
+          posts_publicados: formData.postsPublicados,
+          alcance_total: formData.alcanceTotal,
+          engajamento_medio: formData.engajamentoMedio,
+        }]);
+
+      if (error) {
+        toast.error("Erro ao adicionar serviço");
+        console.error(error);
+      } else {
+        toast.success("Serviço adicionado!");
+      }
     }
     setFormData({ 
       empresa: "", 
@@ -161,18 +192,36 @@ const SocialMediaTab = () => {
       periodo: service.periodo,
       metas: service.metas,
       status: service.status,
-      videosGravados: service.videosGravados,
-      postsPublicados: service.postsPublicados,
-      alcanceTotal: service.alcanceTotal,
-      engajamentoMedio: service.engajamentoMedio,
+      videosGravados: service.videos_gravados,
+      postsPublicados: service.posts_publicados,
+      alcanceTotal: service.alcance_total,
+      engajamentoMedio: service.engajamento_medio,
     });
   };
 
-  const handleDelete = (id: number) => {
-    if (confirm("Tem certeza que deseja excluir este serviço?")) {
-      setServices(services.filter(service => service.id !== id));
+  const handleDelete = async (id: string) => {
+    if (!confirm("Tem certeza que deseja excluir este serviço?")) return;
+
+    const { error } = await supabase
+      .from('social_media_services')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      toast.error("Erro ao excluir serviço");
+      console.error(error);
+    } else {
+      toast.success("Serviço excluído!");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-foreground"></div>
+      </div>
+    );
+  }
 
   const getStatusBadge = (status: string) => {
     const styles = {
@@ -569,22 +618,24 @@ const SocialMediaTab = () => {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3 p-3 bg-background rounded border border-border">
                       <div>
                         <p className="text-xs text-muted-foreground">Vídeos</p>
-                        <p className="text-sm font-semibold">{service.videosGravados}</p>
+                        <p className="text-sm font-semibold">{service.videos_gravados}</p>
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground">Posts</p>
-                        <p className="text-sm font-semibold">{service.postsPublicados}</p>
+                        <p className="text-sm font-semibold">{service.posts_publicados}</p>
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground">Alcance</p>
-                        <p className="text-sm font-semibold">{(service.alcanceTotal / 1000).toFixed(0)}k</p>
+                        <p className="text-sm font-semibold">{(service.alcance_total / 1000).toFixed(0)}k</p>
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground">Engajamento</p>
-                        <p className="text-sm font-semibold">{(service.engajamentoMedio / 1000).toFixed(1)}k</p>
+                        <p className="text-sm font-semibold">{(service.engajamento_medio / 1000).toFixed(1)}k</p>
                       </div>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-2">Criado em: {service.data}</p>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Criado em: {service.created_at ? new Date(service.created_at).toLocaleDateString('pt-BR') : 'N/A'}
+                    </p>
                   </div>
                   <div className="flex gap-2 ml-4">
                     <Button 

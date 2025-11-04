@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,47 +9,26 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Pencil, Trash2, Calendar as CalendarIcon, Clock, Building2, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface CalendarEvent {
-  id: number;
+  id: string;
   titulo: string;
-  dataInicio: string;
-  horaInicio: string;
-  dataFim: string;
-  horaFim: string;
-  descricao: string;
-  empresa: string;
-  googleEventId?: string;
+  data_inicio: string;
+  hora_inicio: string;
+  data_fim: string;
+  hora_fim: string;
+  descricao: string | null;
+  empresa: string | null;
+  google_event_id?: string | null;
 }
 
 const CalendarioTab = () => {
-  const [events, setEvents] = useState<CalendarEvent[]>([
-    {
-      id: 1,
-      titulo: "Reunião com Tech Solutions",
-      dataInicio: "2025-01-25",
-      horaInicio: "10:00",
-      dataFim: "2025-01-25",
-      horaFim: "11:00",
-      descricao: "Apresentação de proposta de automação",
-      empresa: "Tech Solutions",
-      googleEventId: "google-event-1"
-    },
-    {
-      id: 2,
-      titulo: "Follow-up Digital Marketing",
-      dataInicio: "2025-01-25",
-      horaInicio: "14:30",
-      dataFim: "2025-01-25",
-      horaFim: "15:30",
-      descricao: "Discussão sobre gestão de redes sociais",
-      empresa: "Digital Marketing Co",
-      googleEventId: "google-event-2"
-    },
-  ]);
-
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"monthly" | "weekly" | "daily">("monthly");
   const [formData, setFormData] = useState({
     titulo: "",
@@ -61,29 +40,86 @@ const CalendarioTab = () => {
     empresa: "",
   });
 
+  const fetchEvents = async () => {
+    const { data, error } = await supabase
+      .from('calendar_events')
+      .select('*')
+      .order('data_inicio', { ascending: true });
+
+    if (error) {
+      toast.error("Erro ao carregar eventos");
+      console.error(error);
+    } else {
+      setEvents(data || []);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchEvents();
+
+    const channel = supabase
+      .channel('calendar_events_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'calendar_events' },
+        () => {
+          fetchEvents();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Simulação de integração com Google Calendar
-    const googleEventId = `google-${Date.now()}`;
-    
     if (editingId) {
-      setEvents(events.map(event => 
-        event.id === editingId 
-          ? { ...formData, id: editingId, googleEventId: event.googleEventId } 
-          : event
-      ));
-      setEditingId(null);
+      const { error } = await supabase
+        .from('calendar_events')
+        .update({
+          titulo: formData.titulo,
+          data_inicio: formData.dataInicio,
+          hora_inicio: formData.horaInicio,
+          data_fim: formData.dataFim,
+          hora_fim: formData.horaFim,
+          descricao: formData.descricao || null,
+          empresa: formData.empresa || null,
+        })
+        .eq('id', editingId);
+
+      if (error) {
+        toast.error("Erro ao atualizar evento");
+        console.error(error);
+      } else {
+        toast.success("Evento atualizado!");
+        setEditingId(null);
+      }
     } else {
-      const newEvent: CalendarEvent = {
-        ...formData,
-        id: Date.now(),
-        googleEventId,
-      };
-      setEvents([...events, newEvent]);
+      const { error } = await supabase
+        .from('calendar_events')
+        .insert([{
+          titulo: formData.titulo,
+          data_inicio: formData.dataInicio,
+          hora_inicio: formData.horaInicio,
+          data_fim: formData.dataFim,
+          hora_fim: formData.horaFim,
+          descricao: formData.descricao || null,
+          empresa: formData.empresa || null,
+          google_event_id: `google-${Date.now()}`,
+        }]);
+
+      if (error) {
+        toast.error("Erro ao adicionar evento");
+        console.error(error);
+      } else {
+        toast.success("Evento adicionado!");
+      }
     }
     
-    // Resetar formulário
     setFormData({
       titulo: "",
       dataInicio: format(new Date(), "yyyy-MM-dd"),
@@ -99,32 +135,49 @@ const CalendarioTab = () => {
     setEditingId(event.id);
     setFormData({
       titulo: event.titulo,
-      dataInicio: event.dataInicio,
-      horaInicio: event.horaInicio,
-      dataFim: event.dataFim,
-      horaFim: event.horaFim,
-      descricao: event.descricao,
-      empresa: event.empresa,
+      dataInicio: event.data_inicio,
+      horaInicio: event.hora_inicio,
+      dataFim: event.data_fim,
+      horaFim: event.hora_fim,
+      descricao: event.descricao || "",
+      empresa: event.empresa || "",
     });
   };
 
-  const handleDelete = (id: number) => {
-    if (confirm("Tem certeza que deseja excluir este evento? Ele também será removido do Google Calendar.")) {
-      setEvents(events.filter(event => event.id !== id));
-      // Aqui seria feita a chamada para remover do Google Calendar
+  const handleDelete = async (id: string) => {
+    if (!confirm("Tem certeza que deseja excluir este evento?")) return;
+
+    const { error } = await supabase
+      .from('calendar_events')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      toast.error("Erro ao excluir evento");
+      console.error(error);
+    } else {
+      toast.success("Evento excluído!");
     }
   };
 
   const getEventsForDate = (date: Date) => {
     const dateStr = format(date, "yyyy-MM-dd");
-    return events.filter(event => event.dataInicio === dateStr);
+    return events.filter(event => event.data_inicio === dateStr);
   };
 
   const todayEvents = getEventsForDate(selectedDate);
 
   const getDatesWithEvents = () => {
-    return events.map(event => new Date(event.dataInicio));
+    return events.map(event => new Date(event.data_inicio));
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-foreground"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -165,21 +218,21 @@ const CalendarioTab = () => {
           <p className="text-2xl font-bold">{todayEvents.length}</p>
         </Card>
         <Card className="p-4 bg-card border-border hover-glow">
-          <p className="text-sm text-muted-foreground mb-1">Total do Mês</p>
-          <p className="text-2xl font-bold">
-            {events.filter(e => e.dataInicio.startsWith(format(selectedDate, "yyyy-MM"))).length}
-          </p>
+            <p className="text-sm text-muted-foreground mb-1">Total do Mês</p>
+            <p className="text-2xl font-bold">
+              {events.filter(e => e.data_inicio.startsWith(format(selectedDate, "yyyy-MM"))).length}
+            </p>
         </Card>
         <Card className="p-4 bg-card border-border hover-glow">
           <p className="text-sm text-muted-foreground mb-1">Próximas 7 dias</p>
-          <p className="text-2xl font-bold">
-            {events.filter(e => {
-              const eventDate = new Date(e.dataInicio);
-              const today = new Date();
-              const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-              return eventDate >= today && eventDate <= nextWeek;
-            }).length}
-          </p>
+            <p className="text-2xl font-bold">
+              {events.filter(e => {
+                const eventDate = new Date(e.data_inicio);
+                const today = new Date();
+                const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+                return eventDate >= today && eventDate <= nextWeek;
+              }).length}
+            </p>
         </Card>
       </div>
 
@@ -236,7 +289,7 @@ const CalendarioTab = () => {
                       </p>
                     </div>
                     <Badge className="bg-foreground text-background">
-                      {event.horaInicio} - {event.horaFim}
+                      {event.hora_inicio} - {event.hora_fim}
                     </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground mb-3">{event.descricao}</p>
@@ -259,7 +312,7 @@ const CalendarioTab = () => {
                       <Trash2 className="w-3 h-3 mr-1" />
                       Excluir
                     </Button>
-                    {event.googleEventId && (
+                    {event.google_event_id && (
                       <Button
                         variant="outline"
                         size="sm"
@@ -427,7 +480,7 @@ const CalendarioTab = () => {
         <div className="space-y-3 max-h-[500px] overflow-y-auto">
           {events.length > 0 ? (
             events
-              .sort((a, b) => new Date(a.dataInicio + ' ' + a.horaInicio).getTime() - new Date(b.dataInicio + ' ' + b.horaInicio).getTime())
+              .sort((a, b) => new Date(a.data_inicio + ' ' + a.hora_inicio).getTime() - new Date(b.data_inicio + ' ' + b.hora_inicio).getTime())
               .map((event) => (
                 <div key={event.id} className="p-4 bg-secondary rounded-lg border border-border hover:bg-muted/50 transition-colors">
                   <div className="flex items-start justify-between">
@@ -436,11 +489,11 @@ const CalendarioTab = () => {
                       <div className="flex flex-wrap gap-2 mt-2 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <CalendarIcon className="w-3 h-3" />
-                          {format(new Date(event.dataInicio), "dd/MM/yyyy")}
+                          {format(new Date(event.data_inicio), "dd/MM/yyyy")}
                         </span>
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
-                          {event.horaInicio} - {event.horaFim}
+                          {event.hora_inicio} - {event.hora_fim}
                         </span>
                         {event.empresa && (
                           <span className="flex items-center gap-1">

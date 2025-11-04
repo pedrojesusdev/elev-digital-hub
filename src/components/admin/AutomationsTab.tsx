@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,37 +7,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Pencil, Trash2, Plus } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Automation {
-  id: number;
+  id: string;
   empresa: string;
   tipo: string;
   detalhes: string;
   status: "Ativa" | "Pendente" | "Finalizada";
-  data: string;
+  created_at?: string;
 }
 
 const AutomationsTab = () => {
-  const [automations, setAutomations] = useState<Automation[]>([
-    { 
-      id: 1, 
-      empresa: "Tech Solutions", 
-      tipo: "Integração CRM", 
-      detalhes: "Automatizar importação de leads",
-      status: "Ativa",
-      data: "15/01/2025" 
-    },
-    { 
-      id: 2, 
-      empresa: "Digital Marketing Co", 
-      tipo: "Email Marketing", 
-      detalhes: "Campanha automatizada semanal",
-      status: "Ativa",
-      data: "10/01/2025" 
-    },
-  ]);
-
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [automations, setAutomations] = useState<Automation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     empresa: "",
     tipo: "",
@@ -45,22 +30,77 @@ const AutomationsTab = () => {
     status: "Pendente" as "Ativa" | "Pendente" | "Finalizada",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (editingId) {
-      setAutomations(automations.map(auto => 
-        auto.id === editingId 
-          ? { ...formData, id: editingId, data: auto.data } 
-          : auto
-      ));
-      setEditingId(null);
+  const fetchAutomations = async () => {
+    const { data, error } = await supabase
+      .from('automations')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      toast.error("Erro ao carregar automatizações");
+      console.error(error);
     } else {
-      const newAutomation = {
-        ...formData,
-        id: Date.now(),
-        data: new Date().toLocaleDateString('pt-BR'),
-      };
-      setAutomations([...automations, newAutomation]);
+      setAutomations((data as Automation[]) || []);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchAutomations();
+
+    const channel = supabase
+      .channel('automations_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'automations' },
+        () => {
+          fetchAutomations();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (editingId) {
+      const { error } = await supabase
+        .from('automations')
+        .update({
+          empresa: formData.empresa,
+          tipo: formData.tipo,
+          detalhes: formData.detalhes,
+          status: formData.status,
+        })
+        .eq('id', editingId);
+
+      if (error) {
+        toast.error("Erro ao atualizar automatização");
+        console.error(error);
+      } else {
+        toast.success("Automatização atualizada!");
+        setEditingId(null);
+      }
+    } else {
+      const { error } = await supabase
+        .from('automations')
+        .insert([{
+          empresa: formData.empresa,
+          tipo: formData.tipo,
+          detalhes: formData.detalhes,
+          status: formData.status,
+        }]);
+
+      if (error) {
+        toast.error("Erro ao adicionar automatização");
+        console.error(error);
+      } else {
+        toast.success("Automatização adicionada!");
+      }
     }
     setFormData({ empresa: "", tipo: "", detalhes: "", status: "Pendente" });
   };
@@ -75,9 +115,29 @@ const AutomationsTab = () => {
     });
   };
 
-  const handleDelete = (id: number) => {
-    setAutomations(automations.filter(auto => auto.id !== id));
+  const handleDelete = async (id: string) => {
+    if (!confirm("Tem certeza que deseja excluir esta automatização?")) return;
+
+    const { error } = await supabase
+      .from('automations')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      toast.error("Erro ao excluir automatização");
+      console.error(error);
+    } else {
+      toast.success("Automatização excluída!");
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-foreground"></div>
+      </div>
+    );
+  }
 
   const getStatusBadge = (status: string) => {
     const styles = {
@@ -201,7 +261,9 @@ const AutomationsTab = () => {
                   </div>
                   <p className="text-sm font-medium text-muted-foreground">{automation.tipo}</p>
                   <p className="text-sm text-muted-foreground mt-2">{automation.detalhes}</p>
-                  <p className="text-xs text-muted-foreground mt-2">Criado em: {automation.data}</p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Criado em: {automation.created_at ? new Date(automation.created_at).toLocaleDateString('pt-BR') : 'N/A'}
+                  </p>
                 </div>
                 <div className="flex gap-2 ml-4">
                   <Button 
