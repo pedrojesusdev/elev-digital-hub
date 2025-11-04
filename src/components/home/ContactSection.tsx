@@ -27,15 +27,15 @@ const ContactSection = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.from("leads").insert({
-        empresa: formData.company || formData.name,
-        localidade: formData.location,
-        telefone: formData.phone,
-        instagram: formData.instagram || null,
-        email: formData.email || null,
-        observacoes: formData.message || null,
-        status: "Não contatado",
-        origem: "formulario",
+      const { data, error } = await supabase.functions.invoke('submit-lead', {
+        body: {
+          empresa: formData.company || formData.name,
+          localidade: formData.location,
+          telefone: formData.phone,
+          instagram: formData.instagram || null,
+          email: formData.email || null,
+          observacoes: formData.message || null,
+        },
       });
 
       if (error) throw error;
