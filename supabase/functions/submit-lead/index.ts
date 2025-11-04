@@ -1,6 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+// SECURITY NOTE: This endpoint is publicly accessible (verify_jwt: false in config.toml)
+// Consider implementing:
+// 1. Rate limiting per IP (e.g., 5 submissions per hour)
+// 2. CAPTCHA verification (hCaptcha/reCAPTCHA)
+// 3. Honeypot fields to catch bots
+// 4. IP-based submission logging for abuse detection
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',

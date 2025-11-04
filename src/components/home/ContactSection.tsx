@@ -8,6 +8,17 @@ import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { z } from "zod";
+
+const contactFormSchema = z.object({
+  name: z.string().trim().min(1, "Nome é obrigatório").max(100, "Nome muito longo"),
+  company: z.string().trim().min(1, "Empresa é obrigatória").max(200, "Nome da empresa muito longo"),
+  email: z.string().trim().email("E-mail inválido").max(255, "E-mail muito longo").optional().or(z.literal("")),
+  phone: z.string().trim().min(10, "Telefone deve ter pelo menos 10 dígitos").max(20, "Telefone muito longo"),
+  location: z.string().trim().min(1, "Localização é obrigatória").max(200, "Localização muito longa"),
+  instagram: z.string().trim().max(100, "Instagram muito longo").optional().or(z.literal("")),
+  message: z.string().trim().max(1000, "Mensagem muito longa").optional().or(z.literal("")),
+});
 
 const ContactSection = () => {
   const navigate = useNavigate();
@@ -27,14 +38,17 @@ const ContactSection = () => {
     setLoading(true);
 
     try {
+      // Validate form data with zod
+      const validatedData = contactFormSchema.parse(formData);
+
       const { data, error } = await supabase.functions.invoke('submit-lead', {
         body: {
-          empresa: formData.company || formData.name,
-          localidade: formData.location,
-          telefone: formData.phone,
-          instagram: formData.instagram || null,
-          email: formData.email || null,
-          observacoes: formData.message || null,
+          empresa: validatedData.company || validatedData.name,
+          localidade: validatedData.location,
+          telefone: validatedData.phone,
+          instagram: validatedData.instagram || null,
+          email: validatedData.email || null,
+          observacoes: validatedData.message || null,
         },
       });
 
@@ -55,12 +69,21 @@ const ContactSection = () => {
         instagram: "",
       });
     } catch (error) {
-      console.error("Error submitting form:", error);
-      toast({
-        title: "Erro ao enviar",
-        description: "Tente novamente mais tarde.",
-        variant: "destructive",
-      });
+      if (error instanceof z.ZodError) {
+        // Display validation errors to user
+        const firstError = error.errors[0];
+        toast({
+          title: "Erro de validação",
+          description: firstError.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Erro ao enviar",
+          description: "Tente novamente mais tarde.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }

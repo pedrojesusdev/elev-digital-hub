@@ -205,6 +205,7 @@ export type Database = {
           full_name: string
           id: string
           updated_at: string
+          user_company: string | null
         }
         Insert: {
           created_at?: string
@@ -213,6 +214,7 @@ export type Database = {
           full_name: string
           id: string
           updated_at?: string
+          user_company?: string | null
         }
         Update: {
           created_at?: string
@@ -221,6 +223,7 @@ export type Database = {
           full_name?: string
           id?: string
           updated_at?: string
+          user_company?: string | null
         }
         Relationships: []
       }
@@ -301,6 +304,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_user_company: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
