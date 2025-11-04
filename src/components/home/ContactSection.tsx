@@ -95,7 +95,7 @@ const ContactSection = () => {
               className="border-border hover:bg-muted transition-all duration-300"
             >
               <ArrowLeft className="mr-2" size={16} />
-              Voltar à Home
+              Voltar ao Início
             </Button>
           </div>
         </div>
