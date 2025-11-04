@@ -20,16 +20,9 @@ const AdminDashboard = () => {
     <ProtectedRoute>
       <div className="min-h-screen bg-background relative">
         <header className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-card/95 backdrop-blur-sm">
-          <div className="container mx-auto px-4 py-4">
+          <div className="container mx-auto px-4 py-2">
             <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold">Painel Elev Business</h1>
-                {user && (
-                  <p className="text-sm text-muted-foreground">
-                    Bem-vindo, {user.email}
-                  </p>
-                )}
-              </div>
+              <h1 className="text-xl font-bold">Painel Elev Business</h1>
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -43,7 +36,7 @@ const AdminDashboard = () => {
           </div>
         </header>
 
-        <div className="pt-[73px] container mx-auto px-4 py-8">
+        <div className="pt-[57px] container mx-auto px-4 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className={`grid w-full max-w-4xl mx-auto mb-8 bg-secondary ${isSuperAdmin ? 'grid-cols-7' : 'grid-cols-6'}`}>
               <TabsTrigger value="leads" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
