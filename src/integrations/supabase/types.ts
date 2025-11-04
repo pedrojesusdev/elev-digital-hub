@@ -14,6 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
+      automations: {
+        Row: {
+          created_at: string | null
+          detalhes: string
+          empresa: string
+          id: string
+          status: string
+          tipo: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          detalhes: string
+          empresa: string
+          id?: string
+          status: string
+          tipo: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          detalhes?: string
+          empresa?: string
+          id?: string
+          status?: string
+          tipo?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      calendar_events: {
+        Row: {
+          created_at: string | null
+          data_fim: string
+          data_inicio: string
+          descricao: string | null
+          empresa: string | null
+          google_event_id: string | null
+          hora_fim: string
+          hora_inicio: string
+          id: string
+          titulo: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          data_fim: string
+          data_inicio: string
+          descricao?: string | null
+          empresa?: string | null
+          google_event_id?: string | null
+          hora_fim: string
+          hora_inicio: string
+          id?: string
+          titulo: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          data_fim?: string
+          data_inicio?: string
+          descricao?: string | null
+          empresa?: string | null
+          google_event_id?: string | null
+          hora_fim?: string
+          hora_inicio?: string
+          id?: string
+          titulo?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           created_at: string
@@ -56,6 +128,75 @@ export type Database = {
         }
         Relationships: []
       }
+      leads_management: {
+        Row: {
+          alcance: string
+          created_at: string | null
+          empresa: string
+          faturamento: string
+          id: string
+          nota: string
+          relatorio: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          alcance: string
+          created_at?: string | null
+          empresa: string
+          faturamento: string
+          id?: string
+          nota: string
+          relatorio?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          alcance?: string
+          created_at?: string | null
+          empresa?: string
+          faturamento?: string
+          id?: string
+          nota?: string
+          relatorio?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      monthly_reports: {
+        Row: {
+          analise: string
+          clientes: number
+          created_at: string | null
+          faturamento: number
+          id: string
+          leads: number
+          mes: string
+          servicos: number
+          updated_at: string | null
+        }
+        Insert: {
+          analise: string
+          clientes?: number
+          created_at?: string | null
+          faturamento?: number
+          id?: string
+          leads?: number
+          mes: string
+          servicos?: number
+          updated_at?: string | null
+        }
+        Update: {
+          analise?: string
+          clientes?: number
+          created_at?: string | null
+          faturamento?: number
+          id?: string
+          leads?: number
+          mes?: string
+          servicos?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -80,6 +221,54 @@ export type Database = {
           full_name?: string
           id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      social_media_services: {
+        Row: {
+          alcance_total: number
+          campanha: string
+          created_at: string | null
+          descricao: string
+          empresa: string
+          engajamento_medio: number
+          id: string
+          metas: string
+          periodo: string
+          posts_publicados: number
+          status: string
+          updated_at: string | null
+          videos_gravados: number
+        }
+        Insert: {
+          alcance_total?: number
+          campanha: string
+          created_at?: string | null
+          descricao: string
+          empresa: string
+          engajamento_medio?: number
+          id?: string
+          metas: string
+          periodo: string
+          posts_publicados?: number
+          status: string
+          updated_at?: string | null
+          videos_gravados?: number
+        }
+        Update: {
+          alcance_total?: number
+          campanha?: string
+          created_at?: string | null
+          descricao?: string
+          empresa?: string
+          engajamento_medio?: number
+          id?: string
+          metas?: string
+          periodo?: string
+          posts_publicados?: number
+          status?: string
+          updated_at?: string | null
+          videos_gravados?: number
         }
         Relationships: []
       }
