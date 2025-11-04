@@ -5,9 +5,66 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const ContactSection = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    company: "",
+    email: "",
+    phone: "",
+    location: "",
+    message: "",
+    instagram: "",
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.from("leads").insert({
+        empresa: formData.company || formData.name,
+        localidade: formData.location,
+        telefone: formData.phone,
+        instagram: formData.instagram || null,
+        email: formData.email || null,
+        observacoes: formData.message || null,
+        status: "Não contatado",
+        origem: "formulario",
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Mensagem enviada!",
+        description: "Entraremos em contato em breve.",
+      });
+
+      setFormData({
+        name: "",
+        company: "",
+        email: "",
+        phone: "",
+        location: "",
+        message: "",
+        instagram: "",
+      });
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast({
+        title: "Erro ao enviar",
+        description: "Tente novamente mais tarde.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section className="py-24 bg-background" id="contato">
@@ -21,11 +78,13 @@ const ContactSection = () => {
           </div>
 
           <Card className="p-8 bg-card border-border shadow-xl hover-glow animate-scale-in">
-            <form className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-foreground">Nome</Label>
                 <Input
                   id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Seu nome completo"
                   className="bg-input border-border text-foreground placeholder:text-muted-foreground"
                 />
@@ -35,7 +94,10 @@ const ContactSection = () => {
                 <Label htmlFor="company" className="text-foreground">Empresa</Label>
                 <Input
                   id="company"
+                  value={formData.company}
+                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                   placeholder="Nome da sua empresa"
+                  required
                   className="bg-input border-border text-foreground placeholder:text-muted-foreground"
                 />
               </div>
@@ -45,6 +107,8 @@ const ContactSection = () => {
                 <Input
                   id="email"
                   type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="seu@email.com"
                   className="bg-input border-border text-foreground placeholder:text-muted-foreground"
                 />
@@ -55,7 +119,10 @@ const ContactSection = () => {
                 <Input
                   id="phone"
                   type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="(00) 00000-0000"
+                  required
                   className="bg-input border-border text-foreground placeholder:text-muted-foreground"
                 />
               </div>
@@ -64,7 +131,21 @@ const ContactSection = () => {
                 <Label htmlFor="location" className="text-foreground">Localização</Label>
                 <Input
                   id="location"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   placeholder="Cidade, Estado"
+                  required
+                  className="bg-input border-border text-foreground placeholder:text-muted-foreground"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="instagram" className="text-foreground">Instagram (opcional)</Label>
+                <Input
+                  id="instagram"
+                  value={formData.instagram}
+                  onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+                  placeholder="@seuinstagram"
                   className="bg-input border-border text-foreground placeholder:text-muted-foreground"
                 />
               </div>
@@ -73,6 +154,8 @@ const ContactSection = () => {
                 <Label htmlFor="message" className="text-foreground">Mensagem</Label>
                 <Textarea
                   id="message"
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   placeholder="Como podemos ajudar sua empresa?"
                   rows={4}
                   className="bg-input border-border text-foreground placeholder:text-muted-foreground resize-none"
@@ -81,9 +164,10 @@ const ContactSection = () => {
 
               <Button
                 type="submit"
+                disabled={loading}
                 className="w-full bg-background text-foreground border border-foreground hover:bg-foreground hover:text-background transition-all duration-300"
               >
-                Enviar Mensagem
+                {loading ? "Enviando..." : "Enviar Mensagem"}
               </Button>
             </form>
           </Card>
