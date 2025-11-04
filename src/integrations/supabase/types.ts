@@ -98,6 +98,7 @@ export type Database = {
           origem: string
           status: string
           telefone: string
+          tem_site: boolean | null
           updated_at: string
         }
         Insert: {
@@ -111,6 +112,7 @@ export type Database = {
           origem?: string
           status?: string
           telefone: string
+          tem_site?: boolean | null
           updated_at?: string
         }
         Update: {
@@ -124,6 +126,7 @@ export type Database = {
           origem?: string
           status?: string
           telefone?: string
+          tem_site?: boolean | null
           updated_at?: string
         }
         Relationships: []

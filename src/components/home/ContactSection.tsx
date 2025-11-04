@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
@@ -18,6 +19,7 @@ const contactFormSchema = z.object({
   location: z.string().trim().min(1, "Localização é obrigatória").max(200, "Localização muito longa"),
   instagram: z.string().trim().max(100, "Instagram muito longo").optional().or(z.literal("")),
   message: z.string().trim().max(1000, "Mensagem muito longa").optional().or(z.literal("")),
+  hasSite: z.boolean(),
 });
 
 const ContactSection = () => {
@@ -31,6 +33,7 @@ const ContactSection = () => {
     location: "",
     message: "",
     instagram: "",
+    hasSite: false,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -49,6 +52,7 @@ const ContactSection = () => {
           instagram: validatedData.instagram || null,
           email: validatedData.email || null,
           observacoes: validatedData.message || null,
+          tem_site: validatedData.hasSite,
         },
       });
 
@@ -67,6 +71,7 @@ const ContactSection = () => {
         location: "",
         message: "",
         instagram: "",
+        hasSite: false,
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -183,6 +188,22 @@ const ContactSection = () => {
                   rows={4}
                   className="bg-input border-border text-foreground placeholder:text-muted-foreground resize-none"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="hasSite" className="text-foreground">Sua empresa tem site?</Label>
+                <Select 
+                  value={formData.hasSite ? "sim" : "nao"} 
+                  onValueChange={(value) => setFormData({ ...formData, hasSite: value === "sim" })}
+                >
+                  <SelectTrigger className="bg-input border-border text-foreground">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="sim">Sim</SelectItem>
+                    <SelectItem value="nao">Não</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <Button

@@ -20,6 +20,7 @@ interface ProspeccaoLead {
   instagram: string | null;
   email: string | null;
   observacoes: string | null;
+  tem_site: boolean | null;
   status: "Novo lead" | "Não contatado" | "Aguardando resposta" | "Recusado" | "Cliente";
   origem: string;
   created_at: string;
@@ -37,6 +38,7 @@ const ProspeccaoTab = () => {
     instagram: "",
     email: "",
     observacoes: "",
+    tem_site: false,
     status: "Novo lead" as ProspeccaoLead["status"],
   });
 
@@ -110,6 +112,7 @@ const ProspeccaoTab = () => {
             instagram: formData.instagram || null,
             email: formData.email || null,
             observacoes: formData.observacoes || null,
+            tem_site: formData.tem_site,
             status: formData.status,
           })
           .eq("id", editingId);
@@ -129,6 +132,7 @@ const ProspeccaoTab = () => {
           instagram: formData.instagram || null,
           email: formData.email || null,
           observacoes: formData.observacoes || null,
+          tem_site: formData.tem_site,
           status: formData.status,
           origem: "manual",
         });
@@ -148,6 +152,7 @@ const ProspeccaoTab = () => {
         instagram: "",
         email: "",
         observacoes: "",
+        tem_site: false,
         status: "Novo lead",
       });
 
@@ -171,6 +176,7 @@ const ProspeccaoTab = () => {
       instagram: lead.instagram || "",
       email: lead.email || "",
       observacoes: lead.observacoes || "",
+      tem_site: lead.tem_site || false,
       status: lead.status,
     });
   };
@@ -382,6 +388,22 @@ const ProspeccaoTab = () => {
                 />
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="tem_site">A empresa tem site?</Label>
+                <Select 
+                  value={formData.tem_site ? "sim" : "nao"} 
+                  onValueChange={(value) => setFormData({ ...formData, tem_site: value === "sim" })}
+                >
+                  <SelectTrigger className="bg-input border-border">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="sim">Sim</SelectItem>
+                    <SelectItem value="nao">Não</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div className="flex gap-2">
                 <Button type="submit" className="bg-foreground text-background hover:bg-foreground/90">
                   {editingId ? "Atualizar Lead" : "Adicionar Lead"}
@@ -399,6 +421,7 @@ const ProspeccaoTab = () => {
                         instagram: "",
                         email: "",
                         observacoes: "",
+                        tem_site: false,
                         status: "Novo lead",
                       });
                     }}

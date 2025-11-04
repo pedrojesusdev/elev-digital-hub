@@ -20,6 +20,7 @@ interface LeadSubmission {
   instagram?: string;
   email?: string;
   observacoes?: string;
+  tem_site?: boolean;
 }
 
 serve(async (req) => {
@@ -88,6 +89,7 @@ serve(async (req) => {
           instagram: leadData.instagram?.trim() || null,
           email: leadData.email?.trim() || null,
           observacoes: leadData.observacoes?.trim() || null,
+          tem_site: leadData.tem_site ?? false,
           status: 'Não contatado',
           origem: 'formulario',
         },
