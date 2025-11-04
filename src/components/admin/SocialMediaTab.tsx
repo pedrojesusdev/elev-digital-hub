@@ -19,6 +19,10 @@ interface SocialMediaService {
   metas: string;
   status: "Ativa" | "Pausada" | "Finalizada";
   data: string;
+  videosGravados: number;
+  postsPublicados: number;
+  alcanceTotal: number;
+  engajamentoMedio: number;
 }
 
 const SocialMediaTab = () => {
@@ -31,7 +35,11 @@ const SocialMediaTab = () => {
       periodo: "Jan - Mar 2025",
       metas: "10k seguidores, 500k alcance",
       status: "Ativa",
-      data: "15/01/2025" 
+      data: "15/01/2025",
+      videosGravados: 25,
+      postsPublicados: 78,
+      alcanceTotal: 150000,
+      engajamentoMedio: 5200
     },
     { 
       id: 2, 
@@ -41,7 +49,25 @@ const SocialMediaTab = () => {
       periodo: "Jan - Abr 2025",
       metas: "1000 posts, 50k curtidas",
       status: "Ativa",
-      data: "10/01/2025" 
+      data: "10/01/2025",
+      videosGravados: 18,
+      postsPublicados: 56,
+      alcanceTotal: 98000,
+      engajamentoMedio: 4100
+    },
+    { 
+      id: 3, 
+      empresa: "Tech Solutions", 
+      campanha: "Crescimento Orgânico", 
+      descricao: "Foco em conteúdo educativo",
+      periodo: "Fev - Mai 2025",
+      metas: "5k seguidores, 200k alcance",
+      status: "Ativa",
+      data: "20/02/2025",
+      videosGravados: 20,
+      postsPublicados: 50,
+      alcanceTotal: 95000,
+      engajamentoMedio: 3450
     },
   ]);
 
@@ -54,64 +80,46 @@ const SocialMediaTab = () => {
     periodo: "",
     metas: "",
     status: "Ativa" as "Ativa" | "Pausada" | "Finalizada",
+    videosGravados: 0,
+    postsPublicados: 0,
+    alcanceTotal: 0,
+    engajamentoMedio: 0,
   });
 
-  // Dados de métricas por empresa
-  const metricsData = {
-    "Tech Solutions": {
-      videosGravados: 45,
-      postsPublicados: 128,
-      crescimento: [
-        { mes: "Jan", valor: 3200 },
-        { mes: "Fev", valor: 4500 },
-        { mes: "Mar", valor: 5800 },
-        { mes: "Abr", valor: 7200 },
-        { mes: "Mai", valor: 8900 },
-        { mes: "Jun", valor: 10500 },
-      ],
-      alcance: {
-        total: 245000,
-        semanal: 42000,
-        mensal: 180000,
-        variacao: "+12%"
-      },
-      engajamento: {
-        curtidas: 15420,
-        comentarios: 2845,
-        compartilhamentos: 1230,
-        media: 8650,
-        variacao: "+8.5%"
-      }
-    },
-    "Digital Marketing Co": {
-      videosGravados: 32,
-      postsPublicados: 96,
-      crescimento: [
-        { mes: "Jan", valor: 2800 },
-        { mes: "Fev", valor: 3900 },
-        { mes: "Mar", valor: 4600 },
-        { mes: "Abr", valor: 6100 },
-        { mes: "Mai", valor: 7800 },
-        { mes: "Jun", valor: 9200 },
-      ],
-      alcance: {
-        total: 198000,
-        semanal: 35000,
-        mensal: 150000,
-        variacao: "+10%"
-      },
-      engajamento: {
-        curtidas: 12800,
-        comentarios: 2100,
-        compartilhamentos: 980,
-        media: 7200,
-        variacao: "+6.2%"
-      }
-    }
-  };
-
-  const currentMetrics = metricsData[selectedCompany as keyof typeof metricsData] || metricsData["Tech Solutions"];
+  // Calcular métricas dinamicamente por empresa
   const companies = Array.from(new Set(services.map(s => s.empresa)));
+  
+  const calculateMetrics = (company: string) => {
+    const companyServices = services.filter(s => s.empresa === company);
+    
+    const totalVideos = companyServices.reduce((sum, s) => sum + s.videosGravados, 0);
+    const totalPosts = companyServices.reduce((sum, s) => sum + s.postsPublicados, 0);
+    const totalAlcance = companyServices.reduce((sum, s) => sum + s.alcanceTotal, 0);
+    const avgEngajamento = companyServices.length > 0 
+      ? Math.round(companyServices.reduce((sum, s) => sum + s.engajamentoMedio, 0) / companyServices.length)
+      : 0;
+    
+    // Gerar dados de crescimento baseados nas métricas
+    const crescimentoData = [
+      { mes: "Jan", valor: Math.round(totalAlcance * 0.5) },
+      { mes: "Fev", valor: Math.round(totalAlcance * 0.65) },
+      { mes: "Mar", valor: Math.round(totalAlcance * 0.75) },
+      { mes: "Abr", valor: Math.round(totalAlcance * 0.85) },
+      { mes: "Mai", valor: Math.round(totalAlcance * 0.95) },
+      { mes: "Jun", valor: totalAlcance },
+    ];
+    
+    return {
+      videosGravados: totalVideos,
+      postsPublicados: totalPosts,
+      alcanceTotal: totalAlcance,
+      engajamentoMedio: avgEngajamento,
+      crescimento: crescimentoData,
+      variacao: "+12%"
+    };
+  };
+  
+  const currentMetrics = calculateMetrics(selectedCompany);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,7 +138,18 @@ const SocialMediaTab = () => {
       };
       setServices([...services, newService]);
     }
-    setFormData({ empresa: "", campanha: "", descricao: "", periodo: "", metas: "", status: "Ativa" });
+    setFormData({ 
+      empresa: "", 
+      campanha: "", 
+      descricao: "", 
+      periodo: "", 
+      metas: "", 
+      status: "Ativa",
+      videosGravados: 0,
+      postsPublicados: 0,
+      alcanceTotal: 0,
+      engajamentoMedio: 0
+    });
   };
 
   const handleEdit = (service: SocialMediaService) => {
@@ -142,6 +161,10 @@ const SocialMediaTab = () => {
       periodo: service.periodo,
       metas: service.metas,
       status: service.status,
+      videosGravados: service.videosGravados,
+      postsPublicados: service.postsPublicados,
+      alcanceTotal: service.alcanceTotal,
+      engajamentoMedio: service.engajamentoMedio,
     });
   };
 
@@ -200,6 +223,7 @@ const SocialMediaTab = () => {
             <div>
               <p className="text-sm text-muted-foreground">Vídeos Gravados</p>
               <p className="text-2xl font-bold">{currentMetrics.videosGravados}</p>
+              <p className="text-xs text-muted-foreground mt-1">Total de todos os serviços</p>
             </div>
           </div>
         </Card>
@@ -212,6 +236,7 @@ const SocialMediaTab = () => {
             <div>
               <p className="text-sm text-muted-foreground">Posts Publicados</p>
               <p className="text-2xl font-bold">{currentMetrics.postsPublicados}</p>
+              <p className="text-xs text-muted-foreground mt-1">Total de todos os serviços</p>
             </div>
           </div>
         </Card>
@@ -223,8 +248,8 @@ const SocialMediaTab = () => {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Alcance Total</p>
-              <p className="text-2xl font-bold">{(currentMetrics.alcance.total / 1000).toFixed(0)}k</p>
-              <p className="text-xs text-foreground">{currentMetrics.alcance.variacao}</p>
+              <p className="text-2xl font-bold">{(currentMetrics.alcanceTotal / 1000).toFixed(0)}k</p>
+              <p className="text-xs text-foreground">{currentMetrics.variacao}</p>
             </div>
           </div>
         </Card>
@@ -236,8 +261,8 @@ const SocialMediaTab = () => {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Engajamento Médio</p>
-              <p className="text-2xl font-bold">{(currentMetrics.engajamento.media / 1000).toFixed(1)}k</p>
-              <p className="text-xs text-foreground">{currentMetrics.engajamento.variacao}</p>
+              <p className="text-2xl font-bold">{(currentMetrics.engajamentoMedio / 1000).toFixed(1)}k</p>
+              <p className="text-xs text-muted-foreground mt-1">Média por serviço</p>
             </div>
           </div>
         </Card>
@@ -286,29 +311,52 @@ const SocialMediaTab = () => {
         </Card>
       </div>
 
-      {/* Detalhes de Engajamento */}
+      {/* Resumo de Métricas */}
       <Card className="p-6 bg-card border-border hover-glow">
-        <h3 className="text-lg font-semibold mb-4">Detalhes de Engajamento</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <h3 className="text-lg font-semibold mb-4">Resumo de Performance</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="flex items-center gap-3 p-4 bg-secondary rounded-lg">
-            <Heart className="w-8 h-8 text-muted-foreground" />
+            <Video className="w-8 h-8 text-muted-foreground" />
             <div>
-              <p className="text-sm text-muted-foreground">Curtidas</p>
-              <p className="text-xl font-bold">{currentMetrics.engajamento.curtidas.toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground">Média de Vídeos</p>
+              <p className="text-xl font-bold">
+                {services.filter(s => s.empresa === selectedCompany).length > 0 
+                  ? Math.round(currentMetrics.videosGravados / services.filter(s => s.empresa === selectedCompany).length)
+                  : 0}
+              </p>
+              <p className="text-xs text-muted-foreground">por campanha</p>
             </div>
           </div>
           <div className="flex items-center gap-3 p-4 bg-secondary rounded-lg">
-            <MessageCircle className="w-8 h-8 text-muted-foreground" />
+            <FileText className="w-8 h-8 text-muted-foreground" />
             <div>
-              <p className="text-sm text-muted-foreground">Comentários</p>
-              <p className="text-xl font-bold">{currentMetrics.engajamento.comentarios.toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground">Média de Posts</p>
+              <p className="text-xl font-bold">
+                {services.filter(s => s.empresa === selectedCompany).length > 0 
+                  ? Math.round(currentMetrics.postsPublicados / services.filter(s => s.empresa === selectedCompany).length)
+                  : 0}
+              </p>
+              <p className="text-xs text-muted-foreground">por campanha</p>
             </div>
           </div>
           <div className="flex items-center gap-3 p-4 bg-secondary rounded-lg">
-            <Share2 className="w-8 h-8 text-muted-foreground" />
+            <Users className="w-8 h-8 text-muted-foreground" />
             <div>
-              <p className="text-sm text-muted-foreground">Compartilhamentos</p>
-              <p className="text-xl font-bold">{currentMetrics.engajamento.compartilhamentos.toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground">Campanhas Ativas</p>
+              <p className="text-xl font-bold">
+                {services.filter(s => s.empresa === selectedCompany && s.status === "Ativa").length}
+              </p>
+              <p className="text-xs text-muted-foreground">em andamento</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-4 bg-secondary rounded-lg">
+            <TrendingUp className="w-8 h-8 text-muted-foreground" />
+            <div>
+              <p className="text-sm text-muted-foreground">Total de Serviços</p>
+              <p className="text-xl font-bold">
+                {services.filter(s => s.empresa === selectedCompany).length}
+              </p>
+              <p className="text-xs text-muted-foreground">cadastrados</p>
             </div>
           </div>
         </div>
@@ -402,6 +450,68 @@ const SocialMediaTab = () => {
             />
           </div>
 
+          {/* Campos de Métricas */}
+          <div className="border-t border-border pt-4 mt-4">
+            <h4 className="text-sm font-semibold mb-3">Métricas da Campanha</h4>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="videosGravados">Vídeos Gravados</Label>
+                <Input
+                  id="videosGravados"
+                  type="number"
+                  min="0"
+                  value={formData.videosGravados}
+                  onChange={(e) => setFormData({ ...formData, videosGravados: Math.max(0, parseInt(e.target.value) || 0) })}
+                  placeholder="0"
+                  required
+                  className="bg-input border-border"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="postsPublicados">Posts Publicados</Label>
+                <Input
+                  id="postsPublicados"
+                  type="number"
+                  min="0"
+                  value={formData.postsPublicados}
+                  onChange={(e) => setFormData({ ...formData, postsPublicados: Math.max(0, parseInt(e.target.value) || 0) })}
+                  placeholder="0"
+                  required
+                  className="bg-input border-border"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="alcanceTotal">Alcance Total</Label>
+                <Input
+                  id="alcanceTotal"
+                  type="number"
+                  min="0"
+                  value={formData.alcanceTotal}
+                  onChange={(e) => setFormData({ ...formData, alcanceTotal: Math.max(0, parseInt(e.target.value) || 0) })}
+                  placeholder="0"
+                  required
+                  className="bg-input border-border"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="engajamentoMedio">Engajamento Médio</Label>
+                <Input
+                  id="engajamentoMedio"
+                  type="number"
+                  min="0"
+                  value={formData.engajamentoMedio}
+                  onChange={(e) => setFormData({ ...formData, engajamentoMedio: Math.max(0, parseInt(e.target.value) || 0) })}
+                  placeholder="0"
+                  required
+                  className="bg-input border-border"
+                />
+              </div>
+            </div>
+          </div>
+
           <div className="flex gap-2">
             <Button type="submit" className="bg-foreground text-background hover:bg-muted-foreground">
               <Plus className="mr-2" size={16} />
@@ -413,7 +523,18 @@ const SocialMediaTab = () => {
                 variant="outline" 
                 onClick={() => {
                   setEditingId(null);
-                  setFormData({ empresa: "", campanha: "", descricao: "", periodo: "", metas: "", status: "Ativa" });
+                  setFormData({ 
+                    empresa: "", 
+                    campanha: "", 
+                    descricao: "", 
+                    periodo: "", 
+                    metas: "", 
+                    status: "Ativa",
+                    videosGravados: 0,
+                    postsPublicados: 0,
+                    alcanceTotal: 0,
+                    engajamentoMedio: 0
+                  });
                 }}
               >
                 Cancelar
@@ -444,6 +565,24 @@ const SocialMediaTab = () => {
                     <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
                       <span>Período: {service.periodo}</span>
                       <span>Metas: {service.metas}</span>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3 p-3 bg-background rounded border border-border">
+                      <div>
+                        <p className="text-xs text-muted-foreground">Vídeos</p>
+                        <p className="text-sm font-semibold">{service.videosGravados}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Posts</p>
+                        <p className="text-sm font-semibold">{service.postsPublicados}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Alcance</p>
+                        <p className="text-sm font-semibold">{(service.alcanceTotal / 1000).toFixed(0)}k</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Engajamento</p>
+                        <p className="text-sm font-semibold">{(service.engajamentoMedio / 1000).toFixed(1)}k</p>
+                      </div>
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">Criado em: {service.data}</p>
                   </div>
