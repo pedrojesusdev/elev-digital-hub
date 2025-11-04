@@ -14,6 +14,7 @@ interface MonthlyData {
   servicos: number;
   leads: number;
   faturamento: number;
+  analise: string;
 }
 
 const chartConfig = {
@@ -25,12 +26,12 @@ const chartConfig = {
 
 const ReportsTab = () => {
   const [data, setData] = useState<MonthlyData[]>([
-    { mes: "Jan", clientes: 10, servicos: 15, leads: 30, faturamento: 50 },
-    { mes: "Fev", clientes: 15, servicos: 20, leads: 45, faturamento: 75 },
-    { mes: "Mar", clientes: 18, servicos: 25, leads: 50, faturamento: 90 },
-    { mes: "Abr", clientes: 22, servicos: 30, leads: 60, faturamento: 110 },
-    { mes: "Mai", clientes: 28, servicos: 35, leads: 70, faturamento: 140 },
-    { mes: "Jun", clientes: 35, servicos: 42, leads: 85, faturamento: 180 },
+    { mes: "Jan", clientes: 10, servicos: 15, leads: 30, faturamento: 50, analise: "Início do ano com crescimento estável" },
+    { mes: "Fev", clientes: 15, servicos: 20, leads: 45, faturamento: 75, analise: "Crescimento significativo em todas as métricas" },
+    { mes: "Mar", clientes: 18, servicos: 25, leads: 50, faturamento: 90, analise: "Manutenção do ritmo de crescimento" },
+    { mes: "Abr", clientes: 22, servicos: 30, leads: 60, faturamento: 110, analise: "Expansão acelerada" },
+    { mes: "Mai", clientes: 28, servicos: 35, leads: 70, faturamento: 140, analise: "Melhor mês do semestre" },
+    { mes: "Jun", clientes: 35, servicos: 42, leads: 85, faturamento: 180, analise: "Performance excepcional" },
   ]);
 
   const [formData, setFormData] = useState({
@@ -39,9 +40,10 @@ const ReportsTab = () => {
     servicos: "",
     leads: "",
     faturamento: "",
+    analise: "",
   });
 
-  const [analise, setAnalise] = useState("");
+  
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,9 +53,10 @@ const ReportsTab = () => {
       servicos: parseInt(formData.servicos),
       leads: parseInt(formData.leads),
       faturamento: parseInt(formData.faturamento),
+      analise: formData.analise,
     };
     setData([...data, newData]);
-    setFormData({ mes: "", clientes: "", servicos: "", leads: "", faturamento: "" });
+    setFormData({ mes: "", clientes: "", servicos: "", leads: "", faturamento: "", analise: "" });
   };
 
   return (
@@ -61,7 +64,7 @@ const ReportsTab = () => {
       <h2 className="text-2xl font-bold">Relatórios e Análises</h2>
 
       <Card className="p-6 bg-card border-border hover-glow">
-        <h3 className="text-lg font-semibold mb-4">Adicionar Dados Mensais</h3>
+        <h3 className="text-lg font-semibold mb-4">Adicionar Dados e Análise Mensal</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid md:grid-cols-3 gap-4">
             <Input value={formData.mes} onChange={(e) => setFormData({ ...formData, mes: e.target.value })} placeholder="Mês" required className="bg-input border-border" />
@@ -70,6 +73,7 @@ const ReportsTab = () => {
             <Input type="number" value={formData.leads} onChange={(e) => setFormData({ ...formData, leads: e.target.value })} placeholder="Leads" required className="bg-input border-border" />
             <Input type="number" value={formData.faturamento} onChange={(e) => setFormData({ ...formData, faturamento: e.target.value })} placeholder="Faturamento" required className="bg-input border-border" />
           </div>
+          <Textarea value={formData.analise} onChange={(e) => setFormData({ ...formData, analise: e.target.value })} placeholder="Análise do mês..." rows={4} className="bg-input border-border resize-none" required />
           <Button type="submit" className="bg-foreground text-background hover:bg-muted-foreground"><Plus className="mr-2" size={16} />Adicionar</Button>
         </form>
       </Card>
@@ -111,9 +115,20 @@ const ReportsTab = () => {
       </div>
 
       <Card className="p-6 bg-card border-border hover-glow">
-        <h3 className="text-lg font-semibold mb-4">Análise Mensal</h3>
-        <Textarea value={analise} onChange={(e) => setAnalise(e.target.value)} placeholder="Escreva sua análise mensal..." rows={6} className="bg-input border-border resize-none mb-4" />
-        <Button className="bg-foreground text-background hover:bg-muted-foreground">Salvar Análise</Button>
+        <h3 className="text-lg font-semibold mb-4">Histórico de Análises</h3>
+        <div className="space-y-4">
+          {data.map((item, index) => (
+            <div key={index} className="p-4 bg-muted/50 rounded-lg border border-border">
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="font-semibold">{item.mes}</h4>
+                <div className="text-sm text-muted-foreground">
+                  C: {item.clientes} | S: {item.servicos} | L: {item.leads} | F: {item.faturamento}k
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground">{item.analise}</p>
+            </div>
+          ))}
+        </div>
       </Card>
     </div>
   );
