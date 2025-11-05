@@ -15,7 +15,9 @@ interface Trafego {
   id: string;
   periodo: string;
   google_ads_investido: number;
+  google_ads_texto: string;
   meta_ads_investido: number;
+  meta_ads_texto: string;
   pecas_video: number;
   pecas_estatico: number;
   metas: string;
@@ -30,7 +32,9 @@ const TrafegoTab = () => {
   const [formData, setFormData] = useState({
     periodo: "",
     google_ads_investido: "",
+    google_ads_texto: "",
     meta_ads_investido: "",
+    meta_ads_texto: "",
     pecas_video: "",
     pecas_estatico: "",
     metas: "",
@@ -82,7 +86,9 @@ const TrafegoTab = () => {
       const trafegoData = {
         periodo: formData.periodo,
         google_ads_investido: parseFloat(formData.google_ads_investido) || 0,
+        google_ads_texto: formData.google_ads_texto || '',
         meta_ads_investido: parseFloat(formData.meta_ads_investido) || 0,
+        meta_ads_texto: formData.meta_ads_texto || '',
         pecas_video: parseInt(formData.pecas_video) || 0,
         pecas_estatico: parseInt(formData.pecas_estatico) || 0,
         metas: formData.metas,
@@ -109,7 +115,9 @@ const TrafegoTab = () => {
       setFormData({
         periodo: "",
         google_ads_investido: "",
+        google_ads_texto: "",
         meta_ads_investido: "",
+        meta_ads_texto: "",
         pecas_video: "",
         pecas_estatico: "",
         metas: "",
@@ -129,7 +137,9 @@ const TrafegoTab = () => {
     setFormData({
       periodo: trafego.periodo,
       google_ads_investido: trafego.google_ads_investido.toString(),
+      google_ads_texto: trafego.google_ads_texto || "",
       meta_ads_investido: trafego.meta_ads_investido.toString(),
+      meta_ads_texto: trafego.meta_ads_texto || "",
       pecas_video: trafego.pecas_video.toString(),
       pecas_estatico: trafego.pecas_estatico.toString(),
       metas: trafego.metas || "",
@@ -234,6 +244,17 @@ const TrafegoTab = () => {
               </div>
 
               <div>
+                <Label htmlFor="google_ads_texto">Texto do Anúncio Google Ads</Label>
+                <Textarea
+                  id="google_ads_texto"
+                  value={formData.google_ads_texto}
+                  onChange={(e) => setFormData({ ...formData, google_ads_texto: e.target.value })}
+                  rows={2}
+                  placeholder="Texto do anúncio Google Ads..."
+                />
+              </div>
+
+              <div>
                 <Label htmlFor="meta_ads">Meta Ads (R$)</Label>
                 <Input
                   id="meta_ads"
@@ -243,6 +264,17 @@ const TrafegoTab = () => {
                   value={formData.meta_ads_investido}
                   onChange={(e) => setFormData({ ...formData, meta_ads_investido: e.target.value })}
                   required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="meta_ads_texto">Texto do Anúncio Meta Ads</Label>
+                <Textarea
+                  id="meta_ads_texto"
+                  value={formData.meta_ads_texto}
+                  onChange={(e) => setFormData({ ...formData, meta_ads_texto: e.target.value })}
+                  rows={2}
+                  placeholder="Texto do anúncio Meta Ads..."
                 />
               </div>
 
@@ -295,7 +327,9 @@ const TrafegoTab = () => {
                     setFormData({
                       periodo: "",
                       google_ads_investido: "",
+                      google_ads_texto: "",
                       meta_ads_investido: "",
+                      meta_ads_texto: "",
                       pecas_video: "",
                       pecas_estatico: "",
                       metas: "",
