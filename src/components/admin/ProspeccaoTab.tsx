@@ -21,7 +21,11 @@ interface ProspeccaoLead {
   email: string | null;
   observacoes: string | null;
   tem_site: boolean | null;
-  status: "Novo lead" | "Não contatado" | "Aguardando resposta" | "Recusado" | "Cliente";
+  status_contato: "Novo lead" | "Não contatado" | "Aguardando resposta" | "Recusado" | "Cliente";
+  tipo: "prospecto" | "lead" | "cliente";
+  nota: "quente" | "medio" | "frio" | null;
+  faturamento_estimado: string | null;
+  alcance_estimado: string | null;
   origem: string;
   created_at: string;
 }
@@ -39,7 +43,11 @@ const ProspeccaoTab = () => {
     email: "",
     observacoes: "",
     tem_site: false,
-    status: "Novo lead" as ProspeccaoLead["status"],
+    status_contato: "Novo lead" as ProspeccaoLead["status_contato"],
+    tipo: "prospecto" as ProspeccaoLead["tipo"],
+    nota: null as ProspeccaoLead["nota"],
+    faturamento_estimado: "",
+    alcance_estimado: "",
   });
 
   // Fetch leads from database
@@ -113,7 +121,11 @@ const ProspeccaoTab = () => {
             email: formData.email || null,
             observacoes: formData.observacoes || null,
             tem_site: formData.tem_site,
-            status: formData.status,
+            status_contato: formData.status_contato,
+            tipo: formData.tipo,
+            nota: formData.nota,
+            faturamento_estimado: formData.faturamento_estimado || null,
+            alcance_estimado: formData.alcance_estimado || null,
           })
           .eq("id", editingId);
 
@@ -133,7 +145,11 @@ const ProspeccaoTab = () => {
           email: formData.email || null,
           observacoes: formData.observacoes || null,
           tem_site: formData.tem_site,
-          status: formData.status,
+          status_contato: formData.status_contato,
+          tipo: formData.tipo,
+          nota: formData.nota,
+          faturamento_estimado: formData.faturamento_estimado || null,
+          alcance_estimado: formData.alcance_estimado || null,
           origem: "manual",
         });
 
@@ -153,7 +169,11 @@ const ProspeccaoTab = () => {
         email: "",
         observacoes: "",
         tem_site: false,
-        status: "Novo lead",
+        status_contato: "Novo lead",
+        tipo: "prospecto",
+        nota: null,
+        faturamento_estimado: "",
+        alcance_estimado: "",
       });
 
       fetchLeads();
@@ -177,7 +197,11 @@ const ProspeccaoTab = () => {
       email: lead.email || "",
       observacoes: lead.observacoes || "",
       tem_site: lead.tem_site || false,
-      status: lead.status,
+      status_contato: lead.status_contato,
+      tipo: lead.tipo,
+      nota: lead.nota,
+      faturamento_estimado: lead.faturamento_estimado || "",
+      alcance_estimado: lead.alcance_estimado || "",
     });
   };
 
@@ -205,7 +229,7 @@ const ProspeccaoTab = () => {
     }
   };
 
-  const getStatusBadge = (status: ProspeccaoLead["status"]) => {
+  const getStatusBadge = (status: ProspeccaoLead["status_contato"]) => {
     const styles = {
       "Novo lead": "bg-foreground text-background",
       "Não contatado": "bg-muted text-foreground",
@@ -216,9 +240,42 @@ const ProspeccaoTab = () => {
     return styles[status] || "";
   };
 
+  const getTipoBadge = (tipo: ProspeccaoLead["tipo"]) => {
+    const styles = {
+      "prospecto": "bg-blue-500 text-white",
+      "lead": "bg-green-500 text-white",
+      "cliente": "bg-purple-500 text-white",
+    };
+    return styles[tipo] || "";
+  };
+
+  const handleConvertToLead = async (lead: ProspeccaoLead) => {
+    try {
+      const { error } = await supabase
+        .from("leads")
+        .update({ tipo: "lead" })
+        .eq("id", lead.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Prospecto convertido em lead!",
+        description: "Agora você pode editar os detalhes do lead.",
+      });
+      fetchLeads();
+    } catch (error) {
+      console.error("Error converting to lead:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível converter o prospecto.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const filteredLeads = filterStatus === "all" 
-    ? leads 
-    : leads.filter(lead => lead.status === filterStatus);
+    ? leads.filter(l => l.tipo !== 'cliente')
+    : leads.filter(lead => lead.status_contato === filterStatus && lead.tipo !== 'cliente');
 
   const formularioLeads = leads.filter(lead => lead.origem === "formulario");
 
@@ -245,15 +302,25 @@ const ProspeccaoTab = () => {
       </div>
 
       {/* Estatísticas */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        {["Novo lead", "Não contatado", "Aguardando resposta", "Recusado", "Cliente"].map((status) => (
-          <Card key={status} className="p-4 bg-card border-border hover-glow">
-            <p className="text-sm text-muted-foreground mb-1">{status}</p>
-            <p className="text-2xl font-bold">
-              {leads.filter(l => l.status === status).length}
-            </p>
-          </Card>
-        ))}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <Card className="p-4 bg-card border-border hover-glow">
+          <p className="text-sm text-muted-foreground mb-1">Prospectos</p>
+          <p className="text-2xl font-bold">
+            {leads.filter(l => l.tipo === "prospecto").length}
+          </p>
+        </Card>
+        <Card className="p-4 bg-card border-border hover-glow">
+          <p className="text-sm text-muted-foreground mb-1">Leads</p>
+          <p className="text-2xl font-bold">
+            {leads.filter(l => l.tipo === "lead").length}
+          </p>
+        </Card>
+        <Card className="p-4 bg-card border-border hover-glow">
+          <p className="text-sm text-muted-foreground mb-1">Clientes</p>
+          <p className="text-2xl font-bold">
+            {leads.filter(l => l.tipo === "cliente").length}
+          </p>
+        </Card>
       </div>
 
       <Tabs defaultValue="todos" className="w-full">
@@ -357,10 +424,10 @@ const ProspeccaoTab = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="status">Status do Lead *</Label>
+                  <Label htmlFor="status_contato">Status de Contato *</Label>
                   <Select 
-                    value={formData.status} 
-                    onValueChange={(value: ProspeccaoLead["status"]) => setFormData({ ...formData, status: value })}
+                    value={formData.status_contato} 
+                    onValueChange={(value: ProspeccaoLead["status_contato"]) => setFormData({ ...formData, status_contato: value })}
                   >
                     <SelectTrigger className="bg-input border-border">
                       <SelectValue />
@@ -374,6 +441,68 @@ const ProspeccaoTab = () => {
                     </SelectContent>
                   </Select>
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="tipo">Tipo *</Label>
+                  <Select 
+                    value={formData.tipo} 
+                    onValueChange={(value: ProspeccaoLead["tipo"]) => setFormData({ ...formData, tipo: value })}
+                  >
+                    <SelectTrigger className="bg-input border-border">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="prospecto">Prospecto</SelectItem>
+                      <SelectItem value="lead">Lead</SelectItem>
+                      <SelectItem value="cliente">Cliente</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {formData.tipo === "lead" && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="nota">Nota do Lead</Label>
+                      <Select 
+                        value={formData.nota || ""} 
+                        onValueChange={(value) => setFormData({ ...formData, nota: value as ProspeccaoLead["nota"] })}
+                      >
+                        <SelectTrigger className="bg-input border-border">
+                          <SelectValue placeholder="Selecione a nota" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="quente">Quente</SelectItem>
+                          <SelectItem value="medio">Médio</SelectItem>
+                          <SelectItem value="frio">Frio</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="faturamento_estimado">Faturamento Estimado</Label>
+                        <Input
+                          id="faturamento_estimado"
+                          value={formData.faturamento_estimado}
+                          onChange={(e) => setFormData({ ...formData, faturamento_estimado: e.target.value })}
+                          placeholder="Ex: R$ 50.000,00/mês"
+                          className="bg-input border-border"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="alcance_estimado">Alcance Estimado</Label>
+                        <Input
+                          id="alcance_estimado"
+                          value={formData.alcance_estimado}
+                          onChange={(e) => setFormData({ ...formData, alcance_estimado: e.target.value })}
+                          placeholder="Ex: 10k seguidores"
+                          className="bg-input border-border"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -422,7 +551,11 @@ const ProspeccaoTab = () => {
                         email: "",
                         observacoes: "",
                         tem_site: false,
-                        status: "Novo lead",
+                        status_contato: "Novo lead",
+                        tipo: "prospecto",
+                        nota: null,
+                        faturamento_estimado: "",
+                        alcance_estimado: "",
                       });
                     }}
                     className="border-border"
@@ -496,9 +629,14 @@ const ProspeccaoTab = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className={getStatusBadge(lead.status)}>
-                          {lead.status}
-                        </Badge>
+                        <div className="flex flex-col gap-1">
+                          <Badge className={getTipoBadge(lead.tipo)}>
+                            {lead.tipo}
+                          </Badge>
+                          <Badge className={getStatusBadge(lead.status_contato)}>
+                            {lead.status_contato}
+                          </Badge>
+                        </div>
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         {new Date(lead.created_at).toLocaleDateString('pt-BR')}
@@ -590,9 +728,14 @@ const ProspeccaoTab = () => {
                         </p>
                       </TableCell>
                       <TableCell>
-                        <Badge className={getStatusBadge(lead.status)}>
-                          {lead.status}
-                        </Badge>
+                        <div className="flex flex-col gap-1">
+                          <Badge className={getTipoBadge(lead.tipo)}>
+                            {lead.tipo}
+                          </Badge>
+                          <Badge className={getStatusBadge(lead.status_contato)}>
+                            {lead.status_contato}
+                          </Badge>
+                        </div>
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         {new Date(lead.created_at).toLocaleDateString('pt-BR')} às{" "}

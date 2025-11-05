@@ -46,6 +46,12 @@ export type Database = {
       }
       calendar_events: {
         Row: {
+          categoria_empresa:
+            | Database["public"]["Enums"]["evento_categoria_empresa"]
+            | null
+          categoria_servicos:
+            | Database["public"]["Enums"]["evento_categoria_servicos"]
+            | null
           created_at: string | null
           data_fim: string
           data_inicio: string
@@ -55,10 +61,17 @@ export type Database = {
           hora_fim: string
           hora_inicio: string
           id: string
+          tipo: Database["public"]["Enums"]["evento_tipo"]
           titulo: string
           updated_at: string | null
         }
         Insert: {
+          categoria_empresa?:
+            | Database["public"]["Enums"]["evento_categoria_empresa"]
+            | null
+          categoria_servicos?:
+            | Database["public"]["Enums"]["evento_categoria_servicos"]
+            | null
           created_at?: string | null
           data_fim: string
           data_inicio: string
@@ -68,10 +81,17 @@ export type Database = {
           hora_fim: string
           hora_inicio: string
           id?: string
+          tipo?: Database["public"]["Enums"]["evento_tipo"]
           titulo: string
           updated_at?: string | null
         }
         Update: {
+          categoria_empresa?:
+            | Database["public"]["Enums"]["evento_categoria_empresa"]
+            | null
+          categoria_servicos?:
+            | Database["public"]["Enums"]["evento_categoria_servicos"]
+            | null
           created_at?: string | null
           data_fim?: string
           data_inicio?: string
@@ -81,52 +101,92 @@ export type Database = {
           hora_fim?: string
           hora_inicio?: string
           id?: string
+          tipo?: Database["public"]["Enums"]["evento_tipo"]
           titulo?: string
           updated_at?: string | null
         }
         Relationships: []
       }
-      leads: {
+      funcionarios: {
         Row: {
           created_at: string
-          email: string | null
           empresa: string
+          funcao: string
           id: string
-          instagram: string | null
-          localidade: string
-          observacoes: string | null
-          origem: string
-          status: string
-          telefone: string
-          tem_site: boolean | null
+          nome: string
           updated_at: string
         }
         Insert: {
           created_at?: string
-          email?: string | null
           empresa: string
+          funcao: string
           id?: string
-          instagram?: string | null
-          localidade: string
-          observacoes?: string | null
-          origem?: string
-          status?: string
-          telefone: string
-          tem_site?: boolean | null
+          nome: string
           updated_at?: string
         }
         Update: {
           created_at?: string
+          empresa?: string
+          funcao?: string
+          id?: string
+          nome?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      leads: {
+        Row: {
+          alcance_estimado: string | null
+          created_at: string
+          email: string | null
+          empresa: string
+          faturamento_estimado: string | null
+          id: string
+          instagram: string | null
+          localidade: string
+          nota: Database["public"]["Enums"]["lead_nota"] | null
+          observacoes: string | null
+          origem: string
+          status_contato: string
+          telefone: string
+          tem_site: boolean | null
+          tipo: Database["public"]["Enums"]["lead_tipo"]
+          updated_at: string
+        }
+        Insert: {
+          alcance_estimado?: string | null
+          created_at?: string
+          email?: string | null
+          empresa: string
+          faturamento_estimado?: string | null
+          id?: string
+          instagram?: string | null
+          localidade: string
+          nota?: Database["public"]["Enums"]["lead_nota"] | null
+          observacoes?: string | null
+          origem?: string
+          status_contato?: string
+          telefone: string
+          tem_site?: boolean | null
+          tipo?: Database["public"]["Enums"]["lead_tipo"]
+          updated_at?: string
+        }
+        Update: {
+          alcance_estimado?: string | null
+          created_at?: string
           email?: string | null
           empresa?: string
+          faturamento_estimado?: string | null
           id?: string
           instagram?: string | null
           localidade?: string
+          nota?: Database["public"]["Enums"]["lead_nota"] | null
           observacoes?: string | null
           origem?: string
-          status?: string
+          status_contato?: string
           telefone?: string
           tem_site?: boolean | null
+          tipo?: Database["public"]["Enums"]["lead_tipo"]
           updated_at?: string
         }
         Relationships: []
@@ -239,9 +299,19 @@ export type Database = {
           empresa: string
           engajamento_medio: number
           id: string
+          meta_carrosseis: number | null
+          meta_posts_estaticos: number | null
+          meta_posts_linkedin: number | null
+          meta_videos_curtos: number | null
+          meta_videos_longos: number | null
           metas: string
           periodo: string
           posts_publicados: number
+          realizados_carrosseis: number | null
+          realizados_posts_estaticos: number | null
+          realizados_posts_linkedin: number | null
+          realizados_videos_curtos: number | null
+          realizados_videos_longos: number | null
           status: string
           updated_at: string | null
           videos_gravados: number
@@ -254,9 +324,19 @@ export type Database = {
           empresa: string
           engajamento_medio?: number
           id?: string
+          meta_carrosseis?: number | null
+          meta_posts_estaticos?: number | null
+          meta_posts_linkedin?: number | null
+          meta_videos_curtos?: number | null
+          meta_videos_longos?: number | null
           metas: string
           periodo: string
           posts_publicados?: number
+          realizados_carrosseis?: number | null
+          realizados_posts_estaticos?: number | null
+          realizados_posts_linkedin?: number | null
+          realizados_videos_curtos?: number | null
+          realizados_videos_longos?: number | null
           status: string
           updated_at?: string | null
           videos_gravados?: number
@@ -269,12 +349,108 @@ export type Database = {
           empresa?: string
           engajamento_medio?: number
           id?: string
+          meta_carrosseis?: number | null
+          meta_posts_estaticos?: number | null
+          meta_posts_linkedin?: number | null
+          meta_videos_curtos?: number | null
+          meta_videos_longos?: number | null
           metas?: string
           periodo?: string
           posts_publicados?: number
+          realizados_carrosseis?: number | null
+          realizados_posts_estaticos?: number | null
+          realizados_posts_linkedin?: number | null
+          realizados_videos_curtos?: number | null
+          realizados_videos_longos?: number | null
           status?: string
           updated_at?: string | null
           videos_gravados?: number
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          created_at: string
+          data_conclusao: string | null
+          descricao: string | null
+          empresa: string
+          funcionario_id: string | null
+          id: string
+          status: Database["public"]["Enums"]["task_status"]
+          tipo: Database["public"]["Enums"]["task_tipo"]
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data_conclusao?: string | null
+          descricao?: string | null
+          empresa: string
+          funcionario_id?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["task_status"]
+          tipo: Database["public"]["Enums"]["task_tipo"]
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data_conclusao?: string | null
+          descricao?: string | null
+          empresa?: string
+          funcionario_id?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["task_status"]
+          tipo?: Database["public"]["Enums"]["task_tipo"]
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_funcionario_id_fkey"
+            columns: ["funcionario_id"]
+            isOneToOne: false
+            referencedRelation: "funcionarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trafego_pago: {
+        Row: {
+          created_at: string
+          empresa: string
+          google_ads_investido: number
+          id: string
+          meta_ads_investido: number
+          metas: string | null
+          pecas_estatico: number
+          pecas_video: number
+          periodo: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          empresa: string
+          google_ads_investido?: number
+          id?: string
+          meta_ads_investido?: number
+          metas?: string | null
+          pecas_estatico?: number
+          pecas_video?: number
+          periodo: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          empresa?: string
+          google_ads_investido?: number
+          id?: string
+          meta_ads_investido?: number
+          metas?: string | null
+          pecas_estatico?: number
+          pecas_video?: number
+          periodo?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -319,6 +495,26 @@ export type Database = {
     }
     Enums: {
       app_role: "super_admin" | "admin" | "readonly"
+      evento_categoria_empresa:
+        | "all_hands"
+        | "comunicacao"
+        | "magic_number"
+        | "tecnologia"
+        | "marketing"
+        | "comercial"
+        | "estrategia"
+        | "diretoria"
+        | "analise_metas"
+      evento_categoria_servicos:
+        | "reuniao_diagnostico"
+        | "reuniao_fechamento"
+        | "followup"
+        | "relacionamento"
+      evento_tipo: "servicos" | "empresa"
+      lead_nota: "quente" | "medio" | "frio"
+      lead_tipo: "prospecto" | "lead" | "cliente"
+      task_status: "pendente" | "concluida"
+      task_tipo: "diaria" | "semanal" | "mensal"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -447,6 +643,28 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["super_admin", "admin", "readonly"],
+      evento_categoria_empresa: [
+        "all_hands",
+        "comunicacao",
+        "magic_number",
+        "tecnologia",
+        "marketing",
+        "comercial",
+        "estrategia",
+        "diretoria",
+        "analise_metas",
+      ],
+      evento_categoria_servicos: [
+        "reuniao_diagnostico",
+        "reuniao_fechamento",
+        "followup",
+        "relacionamento",
+      ],
+      evento_tipo: ["servicos", "empresa"],
+      lead_nota: ["quente", "medio", "frio"],
+      lead_tipo: ["prospecto", "lead", "cliente"],
+      task_status: ["pendente", "concluida"],
+      task_tipo: ["diaria", "semanal", "mensal"],
     },
   },
 } as const
