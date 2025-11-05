@@ -111,9 +111,12 @@ const UsersTab = () => {
     if (!confirm("Tem certeza que deseja excluir este usuário?")) return;
 
     try {
-      const { error } = await supabase.auth.admin.deleteUser(userId);
+      const { data, error } = await supabase.functions.invoke('delete-user', {
+        body: { userId }
+      });
 
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
 
       toast.success("Usuário excluído com sucesso");
       fetchUsers();
