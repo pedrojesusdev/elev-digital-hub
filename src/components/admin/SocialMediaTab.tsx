@@ -126,8 +126,8 @@ const SocialMediaTab = () => {
       { mes: "Mai", valor: Math.round(totalAlcance * 0.95) },
       { mes: "Jun", valor: totalAlcance },
     ];
-    
-    const variacao = currentMetrics.alcanceTotal > 0 ? "+0%" : "0%";
+
+    const variacao = totalAlcance > 0 ? "+0%" : "0%";
     
     return {
       videosGravados: totalVideos,
