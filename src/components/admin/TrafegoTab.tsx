@@ -217,21 +217,21 @@ const TrafegoTab = () => {
           <CardTitle>{editingId ? "Editar Registro" : "Novo Registro"}</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="periodo">Período</Label>
-                <Input
-                  id="periodo"
-                  placeholder="Ex: Janeiro 2024"
-                  value={formData.periodo}
-                  onChange={(e) => setFormData({ ...formData, periodo: e.target.value })}
-                  required
-                />
-              </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <Label htmlFor="periodo">Período</Label>
+              <Input
+                id="periodo"
+                placeholder="Ex: Janeiro 2024"
+                value={formData.periodo}
+                onChange={(e) => setFormData({ ...formData, periodo: e.target.value })}
+                required
+              />
+            </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="google_ads">Google Ads (R$)</Label>
+                <Label htmlFor="google_ads">Google Ads - Valor Investido (R$)</Label>
                 <Input
                   id="google_ads"
                   type="number"
@@ -244,18 +244,7 @@ const TrafegoTab = () => {
               </div>
 
               <div>
-                <Label htmlFor="google_ads_texto">Texto do Anúncio Google Ads</Label>
-                <Textarea
-                  id="google_ads_texto"
-                  value={formData.google_ads_texto}
-                  onChange={(e) => setFormData({ ...formData, google_ads_texto: e.target.value })}
-                  rows={2}
-                  placeholder="Texto do anúncio Google Ads..."
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="meta_ads">Meta Ads (R$)</Label>
+                <Label htmlFor="meta_ads">Meta Ads - Valor Investido (R$)</Label>
                 <Input
                   id="meta_ads"
                   type="number"
@@ -266,6 +255,19 @@ const TrafegoTab = () => {
                   required
                 />
               </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="google_ads_texto">Texto do Anúncio Google Ads</Label>
+                <Textarea
+                  id="google_ads_texto"
+                  value={formData.google_ads_texto}
+                  onChange={(e) => setFormData({ ...formData, google_ads_texto: e.target.value })}
+                  rows={3}
+                  placeholder="Texto do anúncio Google Ads..."
+                />
+              </div>
 
               <div>
                 <Label htmlFor="meta_ads_texto">Texto do Anúncio Meta Ads</Label>
@@ -273,11 +275,13 @@ const TrafegoTab = () => {
                   id="meta_ads_texto"
                   value={formData.meta_ads_texto}
                   onChange={(e) => setFormData({ ...formData, meta_ads_texto: e.target.value })}
-                  rows={2}
+                  rows={3}
                   placeholder="Texto do anúncio Meta Ads..."
                 />
               </div>
+            </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="pecas_video">Peças de Vídeo</Label>
                 <Input
