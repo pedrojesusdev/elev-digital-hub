@@ -15,7 +15,6 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 interface Trafego {
   id: string;
   periodo: string;
-  google_ads_investido: number;
   google_ads_texto?: string | null;
   meta_ads_investido: number;
   meta_ads_texto?: string | null;
@@ -34,7 +33,6 @@ const TrafegoTab = () => {
   const [metricFilter, setMetricFilter] = useState<"geral" | "anual" | "mensal">("geral");
   const [formData, setFormData] = useState({
     periodo: "",
-    google_ads_investido: "",
     google_ads_texto: "",
     meta_ads_investido: "",
     meta_ads_texto: "",
@@ -88,7 +86,7 @@ const TrafegoTab = () => {
 
       const trafegoData = {
         periodo: formData.periodo,
-        google_ads_investido: parseFloat(formData.google_ads_investido) || 0,
+        google_ads_investido: 0,
         google_ads_texto: formData.google_ads_texto || '',
         meta_ads_investido: parseFloat(formData.meta_ads_investido) || 0,
         meta_ads_texto: formData.meta_ads_texto || '',
@@ -117,7 +115,6 @@ const TrafegoTab = () => {
 
       setFormData({
         periodo: "",
-        google_ads_investido: "",
         google_ads_texto: "",
         meta_ads_investido: "",
         meta_ads_texto: "",
@@ -139,7 +136,6 @@ const TrafegoTab = () => {
     setEditingId(trafego.id);
     setFormData({
       periodo: trafego.periodo,
-      google_ads_investido: trafego.google_ads_investido.toString(),
       google_ads_texto: trafego.google_ads_texto || trafego.google_ads_texto === null ? "" : trafego.google_ads_texto,
       meta_ads_investido: trafego.meta_ads_investido.toString(),
       meta_ads_texto: trafego.meta_ads_texto || trafego.meta_ads_texto === null ? "" : trafego.meta_ads_texto,
@@ -181,11 +177,10 @@ const TrafegoTab = () => {
 
   const chartData = filteredTrafegos.map(t => ({
     periodo: t.periodo,
-    'Google Ads': t.google_ads_investido,
     'Meta Ads': t.meta_ads_investido,
   }));
 
-  const totalInvestido = filteredTrafegos.reduce((sum, t) => sum + t.google_ads_investido + t.meta_ads_investido, 0);
+  const totalInvestido = filteredTrafegos.reduce((sum, t) => sum + t.meta_ads_investido, 0);
   const totalPecasVideo = filteredTrafegos.reduce((sum, t) => sum + t.pecas_video, 0);
   const totalPecasEstatico = filteredTrafegos.reduce((sum, t) => sum + t.pecas_estatico, 0);
 
@@ -257,38 +252,20 @@ const TrafegoTab = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="google_ads">Google Ads - Valor Investido (R$)</Label>
-                <Input
-                  id="google_ads"
-                  type="number"
-                  inputMode="decimal"
-                  min="0"
-                  step="0.01"
-                  placeholder="0.00"
-                  className="bg-input border-border"
-                  value={formData.google_ads_investido}
-                  onChange={(e) => setFormData({ ...formData, google_ads_investido: e.target.value })}
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="meta_ads">Meta Ads - Valor Investido (R$)</Label>
-                <Input
-                  id="meta_ads"
-                  type="number"
-                  inputMode="decimal"
-                  min="0"
-                  step="0.01"
-                  placeholder="0.00"
-                  className="bg-input border-border"
-                  value={formData.meta_ads_investido}
-                  onChange={(e) => setFormData({ ...formData, meta_ads_investido: e.target.value })}
-                  required
-                />
-              </div>
+            <div>
+              <Label htmlFor="meta_ads">Meta Ads - Valor Investido (R$)</Label>
+              <Input
+                id="meta_ads"
+                type="number"
+                inputMode="decimal"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                className="bg-input border-border"
+                value={formData.meta_ads_investido}
+                onChange={(e) => setFormData({ ...formData, meta_ads_investido: e.target.value })}
+                required
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -357,23 +334,22 @@ const TrafegoTab = () => {
                 {editingId ? "Atualizar" : "Adicionar"}
               </Button>
               {editingId && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setEditingId(null);
-                    setFormData({
-                      periodo: "",
-                      google_ads_investido: "",
-                      google_ads_texto: "",
-                      meta_ads_investido: "",
-                      meta_ads_texto: "",
-                      pecas_video: "",
-                      pecas_estatico: "",
-                      metas: "",
-                    });
-                  }}
-                >
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setEditingId(null);
+                      setFormData({
+                        periodo: "",
+                        google_ads_texto: "",
+                        meta_ads_investido: "",
+                        meta_ads_texto: "",
+                        pecas_video: "",
+                        pecas_estatico: "",
+                        metas: "",
+                      });
+                    }}
+                  >
                   Cancelar
                 </Button>
               )}
@@ -394,7 +370,6 @@ const TrafegoTab = () => {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="Google Ads" fill="#4285f4" />
               <Bar dataKey="Meta Ads" fill="#1877f2" />
             </BarChart>
           </ResponsiveContainer>
@@ -413,7 +388,6 @@ const TrafegoTab = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Período</TableHead>
-                  <TableHead>Google Ads</TableHead>
                   <TableHead>Meta Ads</TableHead>
                   <TableHead>Peças Vídeo</TableHead>
                   <TableHead>Peças Estático</TableHead>
@@ -424,7 +398,6 @@ const TrafegoTab = () => {
                 {filteredTrafegos.map((trafego) => (
                   <TableRow key={trafego.id}>
                     <TableCell>{trafego.periodo}</TableCell>
-                    <TableCell>R$ {trafego.google_ads_investido.toFixed(2)}</TableCell>
                     <TableCell>R$ {trafego.meta_ads_investido.toFixed(2)}</TableCell>
                     <TableCell>{trafego.pecas_video}</TableCell>
                     <TableCell>{trafego.pecas_estatico}</TableCell>
