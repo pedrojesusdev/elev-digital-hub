@@ -34,7 +34,7 @@ const ProspeccaoTab = () => {
   const [leads, setLeads] = useState<ProspeccaoLead[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [filterTipo, setFilterTipo] = useState<string>("all");
   const [formData, setFormData] = useState({
     empresa: "",
     localidade: "",
@@ -273,9 +273,9 @@ const ProspeccaoTab = () => {
     }
   };
 
-  const filteredLeads = filterStatus === "all" 
-    ? leads.filter(l => l.tipo !== 'cliente')
-    : leads.filter(lead => lead.status_contato === filterStatus && lead.tipo !== 'cliente');
+  const filteredLeads = filterTipo === "all" 
+    ? leads
+    : leads.filter(lead => lead.tipo === filterTipo);
 
   const formularioLeads = leads.filter(lead => lead.origem === "formulario");
 
@@ -302,7 +302,7 @@ const ProspeccaoTab = () => {
       </div>
 
       {/* Estatísticas */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card className="p-4 bg-card border-border hover-glow">
           <p className="text-sm text-muted-foreground mb-1">Prospectos</p>
           <p className="text-2xl font-bold">
@@ -320,6 +320,19 @@ const ProspeccaoTab = () => {
           <p className="text-2xl font-bold">
             {leads.filter(l => l.tipo === "cliente").length}
           </p>
+        </Card>
+        <Card className="p-4 bg-card border-border hover-glow">
+          <p className="text-sm text-muted-foreground mb-1">Taxa de Conversão</p>
+          <p className="text-2xl font-bold">
+            {leads.length > 0 
+              ? `${Math.round((leads.filter(l => l.tipo === "cliente").length / leads.length) * 100)}%`
+              : "0%"
+            }
+          </p>
+        </Card>
+        <Card className="p-4 bg-card border-border hover-glow">
+          <p className="text-sm text-muted-foreground mb-1">Total Cadastrados</p>
+          <p className="text-2xl font-bold">{leads.length}</p>
         </Card>
       </div>
 
@@ -573,17 +586,15 @@ const ProspeccaoTab = () => {
               <h3 className="text-lg font-semibold">Leads Cadastrados</h3>
               <div className="flex items-center gap-2">
                 <Filter className="w-4 h-4 text-muted-foreground" />
-                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                <Select value={filterTipo} onValueChange={setFilterTipo}>
                   <SelectTrigger className="w-[200px] bg-input border-border">
-                    <SelectValue placeholder="Filtrar por status" />
+                    <SelectValue placeholder="Filtrar por tipo" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Todos os status</SelectItem>
-                    <SelectItem value="Novo lead">Novo lead</SelectItem>
-                    <SelectItem value="Não contatado">Não contatado</SelectItem>
-                    <SelectItem value="Aguardando resposta">Aguardando resposta</SelectItem>
-                    <SelectItem value="Recusado">Recusado</SelectItem>
-                    <SelectItem value="Cliente">Cliente</SelectItem>
+                    <SelectItem value="all">Todos os tipos</SelectItem>
+                    <SelectItem value="prospecto">Prospectos</SelectItem>
+                    <SelectItem value="lead">Leads</SelectItem>
+                    <SelectItem value="cliente">Clientes</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

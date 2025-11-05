@@ -127,13 +127,15 @@ const SocialMediaTab = () => {
       { mes: "Jun", valor: totalAlcance },
     ];
     
+    const variacao = currentMetrics.alcanceTotal > 0 ? "+0%" : "0%";
+    
     return {
       videosGravados: totalVideos,
       postsPublicados: totalPosts,
       alcanceTotal: totalAlcance,
       engajamentoMedio: avgEngajamento,
       crescimento: crescimentoData,
-      variacao: "+12%"
+      variacao
     };
   };
   
@@ -156,6 +158,16 @@ const SocialMediaTab = () => {
           posts_publicados: formData.postsPublicados,
           alcance_total: formData.alcanceTotal,
           engajamento_medio: formData.engajamentoMedio,
+          meta_videos_longos: formData.metaVideosLongos,
+          meta_videos_curtos: formData.metaVideosCurtos,
+          meta_posts_estaticos: formData.metaPostsEstaticos,
+          meta_carrosseis: formData.metaCarrosseis,
+          meta_posts_linkedin: formData.metaPostsLinkedin,
+          realizados_videos_longos: formData.realizadosVideosLongos,
+          realizados_videos_curtos: formData.realizadosVideosCurtos,
+          realizados_posts_estaticos: formData.realizadosPostsEstaticos,
+          realizados_carrosseis: formData.realizadosCarrosseis,
+          realizados_posts_linkedin: formData.realizadosPostsLinkedin,
         })
         .eq('id', editingId);
 
@@ -180,6 +192,16 @@ const SocialMediaTab = () => {
           posts_publicados: formData.postsPublicados,
           alcance_total: formData.alcanceTotal,
           engajamento_medio: formData.engajamentoMedio,
+          meta_videos_longos: formData.metaVideosLongos,
+          meta_videos_curtos: formData.metaVideosCurtos,
+          meta_posts_estaticos: formData.metaPostsEstaticos,
+          meta_carrosseis: formData.metaCarrosseis,
+          meta_posts_linkedin: formData.metaPostsLinkedin,
+          realizados_videos_longos: formData.realizadosVideosLongos,
+          realizados_videos_curtos: formData.realizadosVideosCurtos,
+          realizados_posts_estaticos: formData.realizadosPostsEstaticos,
+          realizados_carrosseis: formData.realizadosCarrosseis,
+          realizados_posts_linkedin: formData.realizadosPostsLinkedin,
         }]);
 
       if (error) {
@@ -539,12 +561,154 @@ const SocialMediaTab = () => {
             />
           </div>
 
-          {/* Campos de Métricas */}
+          {/* Campos de Metas */}
           <div className="border-t border-border pt-4 mt-4">
-            <h4 className="text-sm font-semibold mb-3">Métricas da Campanha</h4>
+            <h4 className="text-sm font-semibold mb-3">Metas de Conteúdo</h4>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="metaVideosLongos">Meta: Vídeos Longos (YouTube)</Label>
+                <Input
+                  id="metaVideosLongos"
+                  type="number"
+                  min="0"
+                  value={formData.metaVideosLongos}
+                  onChange={(e) => setFormData({ ...formData, metaVideosLongos: Math.max(0, parseInt(e.target.value) || 0) })}
+                  placeholder="0"
+                  className="bg-input border-border"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="metaVideosCurtos">Meta: Vídeos Curtos (Reels/Shorts)</Label>
+                <Input
+                  id="metaVideosCurtos"
+                  type="number"
+                  min="0"
+                  value={formData.metaVideosCurtos}
+                  onChange={(e) => setFormData({ ...formData, metaVideosCurtos: Math.max(0, parseInt(e.target.value) || 0) })}
+                  placeholder="0"
+                  className="bg-input border-border"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="metaPostsEstaticos">Meta: Posts Estáticos</Label>
+                <Input
+                  id="metaPostsEstaticos"
+                  type="number"
+                  min="0"
+                  value={formData.metaPostsEstaticos}
+                  onChange={(e) => setFormData({ ...formData, metaPostsEstaticos: Math.max(0, parseInt(e.target.value) || 0) })}
+                  placeholder="0"
+                  className="bg-input border-border"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="metaCarrosseis">Meta: Carrosséis</Label>
+                <Input
+                  id="metaCarrosseis"
+                  type="number"
+                  min="0"
+                  value={formData.metaCarrosseis}
+                  onChange={(e) => setFormData({ ...formData, metaCarrosseis: Math.max(0, parseInt(e.target.value) || 0) })}
+                  placeholder="0"
+                  className="bg-input border-border"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="metaPostsLinkedin">Meta: Posts LinkedIn</Label>
+                <Input
+                  id="metaPostsLinkedin"
+                  type="number"
+                  min="0"
+                  value={formData.metaPostsLinkedin}
+                  onChange={(e) => setFormData({ ...formData, metaPostsLinkedin: Math.max(0, parseInt(e.target.value) || 0) })}
+                  placeholder="0"
+                  className="bg-input border-border"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Campos de Realizados */}
+          <div className="border-t border-border pt-4 mt-4">
+            <h4 className="text-sm font-semibold mb-3">Conteúdos Realizados</h4>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="realizadosVideosLongos">Realizados: Vídeos Longos</Label>
+                <Input
+                  id="realizadosVideosLongos"
+                  type="number"
+                  min="0"
+                  value={formData.realizadosVideosLongos}
+                  onChange={(e) => setFormData({ ...formData, realizadosVideosLongos: Math.max(0, parseInt(e.target.value) || 0) })}
+                  placeholder="0"
+                  className="bg-input border-border"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="realizadosVideosCurtos">Realizados: Vídeos Curtos</Label>
+                <Input
+                  id="realizadosVideosCurtos"
+                  type="number"
+                  min="0"
+                  value={formData.realizadosVideosCurtos}
+                  onChange={(e) => setFormData({ ...formData, realizadosVideosCurtos: Math.max(0, parseInt(e.target.value) || 0) })}
+                  placeholder="0"
+                  className="bg-input border-border"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="realizadosPostsEstaticos">Realizados: Posts Estáticos</Label>
+                <Input
+                  id="realizadosPostsEstaticos"
+                  type="number"
+                  min="0"
+                  value={formData.realizadosPostsEstaticos}
+                  onChange={(e) => setFormData({ ...formData, realizadosPostsEstaticos: Math.max(0, parseInt(e.target.value) || 0) })}
+                  placeholder="0"
+                  className="bg-input border-border"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="realizadosCarrosseis">Realizados: Carrosséis</Label>
+                <Input
+                  id="realizadosCarrosseis"
+                  type="number"
+                  min="0"
+                  value={formData.realizadosCarrosseis}
+                  onChange={(e) => setFormData({ ...formData, realizadosCarrosseis: Math.max(0, parseInt(e.target.value) || 0) })}
+                  placeholder="0"
+                  className="bg-input border-border"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="realizadosPostsLinkedin">Realizados: Posts LinkedIn</Label>
+                <Input
+                  id="realizadosPostsLinkedin"
+                  type="number"
+                  min="0"
+                  value={formData.realizadosPostsLinkedin}
+                  onChange={(e) => setFormData({ ...formData, realizadosPostsLinkedin: Math.max(0, parseInt(e.target.value) || 0) })}
+                  placeholder="0"
+                  className="bg-input border-border"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Campos de Métricas Gerais */}
+          <div className="border-t border-border pt-4 mt-4">
+            <h4 className="text-sm font-semibold mb-3">Métricas Gerais</h4>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="videosGravados">Vídeos Gravados</Label>
+                <Label htmlFor="videosGravados">Vídeos Gravados (Total)</Label>
                 <Input
                   id="videosGravados"
                   type="number"
@@ -558,7 +722,7 @@ const SocialMediaTab = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="postsPublicados">Posts Publicados</Label>
+                <Label htmlFor="postsPublicados">Posts Publicados (Total)</Label>
                 <Input
                   id="postsPublicados"
                   type="number"
@@ -572,7 +736,7 @@ const SocialMediaTab = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="alcanceTotal">Alcance Total</Label>
+                <Label htmlFor="alcanceTotal">Meta de Alcance Total</Label>
                 <Input
                   id="alcanceTotal"
                   type="number"
@@ -641,6 +805,98 @@ const SocialMediaTab = () => {
             )}
           </div>
         </form>
+      </Card>
+
+      {/* Dashboard de Progresso por Tipo de Conteúdo */}
+      <Card className="p-6 bg-card border-border hover-glow">
+        <h3 className="text-lg font-semibold mb-4">Progresso de Conteúdos</h3>
+        {services.filter(s => s.empresa === selectedCompany).map((service) => (
+          <div key={service.id} className="mb-6 last:mb-0">
+            <h4 className="font-medium mb-3 flex items-center justify-between">
+              <span>{service.campanha}</span>
+              <Badge className={getStatusBadge(service.status)}>{service.status}</Badge>
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Vídeos Longos</span>
+                  <span className="text-sm font-bold">{service.realizados_videos_longos}/{service.meta_videos_longos}</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div 
+                    className="bg-foreground h-2 rounded-full transition-all" 
+                    style={{ width: `${service.meta_videos_longos > 0 ? (service.realizados_videos_longos / service.meta_videos_longos) * 100 : 0}%` }}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Vídeos Curtos</span>
+                  <span className="text-sm font-bold">{service.realizados_videos_curtos}/{service.meta_videos_curtos}</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div 
+                    className="bg-foreground h-2 rounded-full transition-all" 
+                    style={{ width: `${service.meta_videos_curtos > 0 ? (service.realizados_videos_curtos / service.meta_videos_curtos) * 100 : 0}%` }}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Posts Estáticos</span>
+                  <span className="text-sm font-bold">{service.realizados_posts_estaticos}/{service.meta_posts_estaticos}</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div 
+                    className="bg-foreground h-2 rounded-full transition-all" 
+                    style={{ width: `${service.meta_posts_estaticos > 0 ? (service.realizados_posts_estaticos / service.meta_posts_estaticos) * 100 : 0}%` }}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Carrosséis</span>
+                  <span className="text-sm font-bold">{service.realizados_carrosseis}/{service.meta_carrosseis}</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div 
+                    className="bg-foreground h-2 rounded-full transition-all" 
+                    style={{ width: `${service.meta_carrosseis > 0 ? (service.realizados_carrosseis / service.meta_carrosseis) * 100 : 0}%` }}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Posts LinkedIn</span>
+                  <span className="text-sm font-bold">{service.realizados_posts_linkedin}/{service.meta_posts_linkedin}</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div 
+                    className="bg-foreground h-2 rounded-full transition-all" 
+                    style={{ width: `${service.meta_posts_linkedin > 0 ? (service.realizados_posts_linkedin / service.meta_posts_linkedin) * 100 : 0}%` }}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Alcance</span>
+                  <span className="text-sm font-bold">{(service.alcance_total / 1000).toFixed(1)}k meta</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Meta de alcance</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+        {services.filter(s => s.empresa === selectedCompany).length === 0 && (
+          <p className="text-muted-foreground text-center py-4">Nenhum serviço cadastrado ainda.</p>
+        )}
       </Card>
 
       {/* Lista de Serviços */}

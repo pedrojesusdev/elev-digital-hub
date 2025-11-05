@@ -61,7 +61,11 @@ const TrafegoTab = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setTrafegos(data || []);
+      setTrafegos((data || []).map(t => ({
+        ...t,
+        google_ads_texto: t.google_ads_texto || '',
+        meta_ads_texto: t.meta_ads_texto || '',
+      })));
     } catch (error: any) {
       toast({
         variant: "destructive",

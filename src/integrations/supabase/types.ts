@@ -420,8 +420,10 @@ export type Database = {
           created_at: string
           empresa: string
           google_ads_investido: number
+          google_ads_texto: string | null
           id: string
           meta_ads_investido: number
+          meta_ads_texto: string | null
           metas: string | null
           pecas_estatico: number
           pecas_video: number
@@ -432,8 +434,10 @@ export type Database = {
           created_at?: string
           empresa: string
           google_ads_investido?: number
+          google_ads_texto?: string | null
           id?: string
           meta_ads_investido?: number
+          meta_ads_texto?: string | null
           metas?: string | null
           pecas_estatico?: number
           pecas_video?: number
@@ -444,8 +448,10 @@ export type Database = {
           created_at?: string
           empresa?: string
           google_ads_investido?: number
+          google_ads_texto?: string | null
           id?: string
           meta_ads_investido?: number
+          meta_ads_texto?: string | null
           metas?: string | null
           pecas_estatico?: number
           pecas_video?: number
