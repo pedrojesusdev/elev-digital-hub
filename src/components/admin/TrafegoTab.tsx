@@ -235,8 +235,11 @@ const TrafegoTab = () => {
                 <Input
                   id="google_ads"
                   type="number"
+                  inputMode="decimal"
+                  min="0"
                   step="0.01"
                   placeholder="0.00"
+                  className="bg-input border-border"
                   value={formData.google_ads_investido}
                   onChange={(e) => setFormData({ ...formData, google_ads_investido: e.target.value })}
                   required
@@ -248,8 +251,11 @@ const TrafegoTab = () => {
                 <Input
                   id="meta_ads"
                   type="number"
+                  inputMode="decimal"
+                  min="0"
                   step="0.01"
                   placeholder="0.00"
+                  className="bg-input border-border"
                   value={formData.meta_ads_investido}
                   onChange={(e) => setFormData({ ...formData, meta_ads_investido: e.target.value })}
                   required
