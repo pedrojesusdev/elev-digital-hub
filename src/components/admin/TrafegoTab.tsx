@@ -15,9 +15,9 @@ interface Trafego {
   id: string;
   periodo: string;
   google_ads_investido: number;
-  google_ads_texto: string;
+  google_ads_texto?: string | null;
   meta_ads_investido: number;
-  meta_ads_texto: string;
+  meta_ads_texto?: string | null;
   pecas_video: number;
   pecas_estatico: number;
   metas: string;
@@ -61,11 +61,7 @@ const TrafegoTab = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setTrafegos((data || []).map(t => ({
-        ...t,
-        google_ads_texto: t.google_ads_texto || '',
-        meta_ads_texto: t.meta_ads_texto || '',
-      })));
+      setTrafegos(data || []);
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -141,9 +137,9 @@ const TrafegoTab = () => {
     setFormData({
       periodo: trafego.periodo,
       google_ads_investido: trafego.google_ads_investido.toString(),
-      google_ads_texto: trafego.google_ads_texto || "",
+      google_ads_texto: trafego.google_ads_texto || trafego.google_ads_texto === null ? "" : trafego.google_ads_texto,
       meta_ads_investido: trafego.meta_ads_investido.toString(),
-      meta_ads_texto: trafego.meta_ads_texto || "",
+      meta_ads_texto: trafego.meta_ads_texto || trafego.meta_ads_texto === null ? "" : trafego.meta_ads_texto,
       pecas_video: trafego.pecas_video.toString(),
       pecas_estatico: trafego.pecas_estatico.toString(),
       metas: trafego.metas || "",
