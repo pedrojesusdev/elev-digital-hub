@@ -42,7 +42,7 @@ const ProspeccaoTab = () => {
     instagram: "",
     email: "",
     observacoes: "",
-    tem_site: false,
+    tem_site: "false",
     status_contato: "Novo lead" as ProspeccaoLead["status_contato"],
     tipo: "prospecto" as ProspeccaoLead["tipo"],
     nota: null as ProspeccaoLead["nota"],
@@ -120,7 +120,7 @@ const ProspeccaoTab = () => {
             instagram: formData.instagram || null,
             email: formData.email || null,
             observacoes: formData.observacoes || null,
-            tem_site: formData.tem_site,
+            tem_site: formData.tem_site === "true",
             status_contato: formData.status_contato,
             tipo: formData.tipo,
             nota: formData.nota,
@@ -144,7 +144,7 @@ const ProspeccaoTab = () => {
           instagram: formData.instagram || null,
           email: formData.email || null,
           observacoes: formData.observacoes || null,
-          tem_site: formData.tem_site,
+          tem_site: formData.tem_site === "true",
           status_contato: formData.status_contato,
           tipo: formData.tipo,
           nota: formData.nota,
@@ -168,7 +168,7 @@ const ProspeccaoTab = () => {
         instagram: "",
         email: "",
         observacoes: "",
-        tem_site: false,
+        tem_site: "false",
         status_contato: "Novo lead",
         tipo: "prospecto",
         nota: null,
@@ -196,7 +196,7 @@ const ProspeccaoTab = () => {
       instagram: lead.instagram || "",
       email: lead.email || "",
       observacoes: lead.observacoes || "",
-      tem_site: lead.tem_site || false,
+      tem_site: lead.tem_site ? "true" : "false",
       status_contato: lead.status_contato,
       tipo: lead.tipo,
       nota: lead.nota,
@@ -520,15 +520,15 @@ const ProspeccaoTab = () => {
               <div className="space-y-2">
                 <Label htmlFor="tem_site">A empresa tem site?</Label>
                 <Select 
-                  value={formData.tem_site ? "sim" : "nao"} 
-                  onValueChange={(value) => setFormData({ ...formData, tem_site: value === "sim" })}
+                  value={formData.tem_site} 
+                  onValueChange={(value) => setFormData({ ...formData, tem_site: value })}
                 >
                   <SelectTrigger className="bg-input border-border">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="sim">Sim</SelectItem>
-                    <SelectItem value="nao">Não</SelectItem>
+                    <SelectItem value="true">Sim</SelectItem>
+                    <SelectItem value="false">Não</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -550,7 +550,7 @@ const ProspeccaoTab = () => {
                         instagram: "",
                         email: "",
                         observacoes: "",
-                        tem_site: false,
+                        tem_site: "false",
                         status_contato: "Novo lead",
                         tipo: "prospecto",
                         nota: null,

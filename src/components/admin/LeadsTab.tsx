@@ -17,10 +17,13 @@ import { toast } from "sonner";
 interface Lead {
   id: string;
   empresa: string;
-  nota: "Quente" | "Médio" | "Frio";
-  faturamento: string;
-  alcance: string;
-  relatorio: string | null;
+  telefone: string;
+  localidade: string;
+  nota: "quente" | "medio" | "frio" | null;
+  faturamento_estimado: string | null;
+  alcance_estimado: string | null;
+  observacoes: string | null;
+  tipo: "prospecto" | "lead" | "cliente";
 }
 
 const chartConfig = {
@@ -45,8 +48,9 @@ const LeadsTab = () => {
 
   const fetchLeads = async () => {
     const { data, error } = await supabase
-      .from('leads_management')
+      .from('leads')
       .select('*')
+      .eq('tipo', 'lead')
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -62,10 +66,10 @@ const LeadsTab = () => {
     fetchLeads();
 
     const channel = supabase
-      .channel('leads_management_changes')
+      .channel('leads_changes')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'leads_management' },
+        { event: '*', schema: 'public', table: 'leads' },
         () => {
           fetchLeads();
         }
@@ -86,65 +90,27 @@ const LeadsTab = () => {
     { mes: "Jun", leads: 0 },
   ];
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (editingId) {
-      const { error } = await supabase
-        .from('leads_management')
-        .update({
-          empresa: formData.empresa,
-          nota: formData.nota,
-          faturamento: formData.faturamento,
-          alcance: formData.alcance,
-          relatorio: formData.relatorio || null,
-        })
-        .eq('id', editingId);
+  const handleConvertToClient = async (id: string) => {
+    if (!confirm("Converter este lead em cliente?")) return;
 
-      if (error) {
-        toast.error("Erro ao atualizar lead");
-        console.error(error);
-      } else {
-        toast.success("Lead atualizado com sucesso!");
-        setEditingId(null);
-      }
+    const { error } = await supabase
+      .from('leads')
+      .update({ tipo: 'cliente' })
+      .eq('id', id);
+
+    if (error) {
+      toast.error("Erro ao converter lead");
+      console.error(error);
     } else {
-      const { error } = await supabase
-        .from('leads_management')
-        .insert([{
-          empresa: formData.empresa,
-          nota: formData.nota,
-          faturamento: formData.faturamento,
-          alcance: formData.alcance,
-          relatorio: formData.relatorio || null,
-        }]);
-
-      if (error) {
-        toast.error("Erro ao adicionar lead");
-        console.error(error);
-      } else {
-        toast.success("Lead adicionado com sucesso!");
-      }
+      toast.success("Lead convertido em cliente!");
     }
-    setFormData({ empresa: "", nota: "Médio", faturamento: "", alcance: "", relatorio: "" });
-  };
-
-  const handleEdit = (lead: Lead) => {
-    setEditingId(lead.id);
-    setFormData({ 
-      empresa: lead.empresa, 
-      nota: lead.nota, 
-      faturamento: lead.faturamento, 
-      alcance: lead.alcance, 
-      relatorio: lead.relatorio || "" 
-    });
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este lead?")) return;
 
     const { error } = await supabase
-      .from('leads_management')
+      .from('leads')
       .delete()
       .eq('id', id);
 
@@ -168,102 +134,15 @@ const LeadsTab = () => {
     <div className="space-y-8 animate-fade-in">
       <h2 className="text-2xl font-bold">Gerenciamento de Leads</h2>
       
-      {/* Formulário CRUD */}
-      <Card className="p-6 bg-card border-border hover-glow">
-        <h3 className="text-lg font-semibold mb-4">{editingId ? "Editar Lead" : "Adicionar Novo Lead"}</h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="empresa">Empresa</Label>
-              <Input
-                id="empresa"
-                value={formData.empresa}
-                onChange={(e) => setFormData({ ...formData, empresa: e.target.value })}
-                placeholder="Nome da empresa"
-                required
-                className="bg-input border-border"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="nota">Nota do Lead</Label>
-              <Select value={formData.nota} onValueChange={(value: "Quente" | "Médio" | "Frio") => setFormData({ ...formData, nota: value })}>
-                <SelectTrigger className="bg-input border-border">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Quente">Quente</SelectItem>
-                  <SelectItem value="Médio">Médio</SelectItem>
-                  <SelectItem value="Frio">Frio</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="faturamento">Faturamento</Label>
-              <Input
-                id="faturamento"
-                value={formData.faturamento}
-                onChange={(e) => setFormData({ ...formData, faturamento: e.target.value })}
-                placeholder="Ex: R$ 500k"
-                required
-                className="bg-input border-border"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="alcance">Alcance</Label>
-              <Input
-                id="alcance"
-                value={formData.alcance}
-                onChange={(e) => setFormData({ ...formData, alcance: e.target.value })}
-                placeholder="Ex: 10k seguidores"
-                required
-                className="bg-input border-border"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="relatorio">Relatório do Lead</Label>
-            <Textarea
-              id="relatorio"
-              value={formData.relatorio}
-              onChange={(e) => setFormData({ ...formData, relatorio: e.target.value })}
-              placeholder="Observações e anotações sobre este lead..."
-              rows={4}
-              className="bg-input border-border resize-none"
-            />
-          </div>
-          
-          <div className="flex gap-2">
-            <Button type="submit" className="bg-foreground text-background hover:bg-muted-foreground">
-              <Plus className="mr-2" size={16} />
-              {editingId ? "Atualizar Lead" : "Adicionar Lead"}
-            </Button>
-            {editingId && (
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => {
-                  setEditingId(null);
-                  setFormData({ empresa: "", nota: "Médio", faturamento: "", alcance: "", relatorio: "" });
-                }}
-              >
-                Cancelar
-              </Button>
-            )}
-          </div>
-        </form>
-      </Card>
-
       {/* Tabela de Leads */}
       <Card className="p-6 bg-card border-border hover-glow">
-        <h3 className="text-lg font-semibold mb-4">Leads Recebidos</h3>
+        <h3 className="text-lg font-semibold mb-4">Leads Ativos</h3>
         <Table>
           <TableHeader>
             <TableRow className="border-border hover:bg-muted/50">
               <TableHead className="text-foreground">Empresa</TableHead>
+              <TableHead className="text-foreground">Telefone</TableHead>
+              <TableHead className="text-foreground">Localidade</TableHead>
               <TableHead className="text-foreground">Nota</TableHead>
               <TableHead className="text-foreground">Faturamento</TableHead>
               <TableHead className="text-foreground">Alcance</TableHead>
@@ -274,22 +153,24 @@ const LeadsTab = () => {
             {leads.map((lead) => (
               <TableRow key={lead.id} className="border-border hover:bg-muted/50">
                 <TableCell className="font-medium">{lead.empresa}</TableCell>
+                <TableCell>{lead.telefone}</TableCell>
+                <TableCell>{lead.localidade}</TableCell>
                 <TableCell>
                   <Badge
-                    variant={lead.nota === "Quente" ? "default" : lead.nota === "Médio" ? "secondary" : "outline"}
+                    variant={lead.nota === "quente" ? "default" : lead.nota === "medio" ? "secondary" : "outline"}
                     className={
-                      lead.nota === "Quente"
-                        ? "bg-foreground text-background"
-                        : lead.nota === "Médio"
-                        ? "bg-muted text-foreground"
-                        : "border-border text-muted-foreground"
+                      lead.nota === "quente"
+                        ? "bg-green-500 text-white"
+                        : lead.nota === "medio"
+                        ? "bg-yellow-500 text-white"
+                        : "bg-blue-400 text-white"
                     }
                   >
-                    {lead.nota}
+                    {lead.nota === "quente" ? "Quente" : lead.nota === "medio" ? "Médio" : "Frio"}
                   </Badge>
                 </TableCell>
-                <TableCell>{lead.faturamento}</TableCell>
-                <TableCell>{lead.alcance}</TableCell>
+                <TableCell>{lead.faturamento_estimado || "-"}</TableCell>
+                <TableCell>{lead.alcance_estimado || "-"}</TableCell>
                 <TableCell>
                   <div className="flex gap-2">
                     <Button 
@@ -303,12 +184,12 @@ const LeadsTab = () => {
                     </Button>
                     <Button 
                       size="sm" 
-                      variant="outline" 
-                      onClick={() => handleEdit(lead)}
-                      className="hover:bg-muted"
-                      title="Editar"
+                      variant="default" 
+                      onClick={() => handleConvertToClient(lead.id)}
+                      className="bg-green-600 hover:bg-green-700"
+                      title="Converter em cliente"
                     >
-                      <Pencil size={14} />
+                      Cliente
                     </Button>
                     <Button 
                       size="sm" 

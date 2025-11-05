@@ -176,7 +176,6 @@ const UsersTab = () => {
           <TableRow>
             <TableHead>Nome</TableHead>
             <TableHead>E-mail</TableHead>
-            <TableHead>Status</TableHead>
             <TableHead>Permissão</TableHead>
             <TableHead>Cadastro</TableHead>
             <TableHead>Ações</TableHead>
@@ -187,13 +186,6 @@ const UsersTab = () => {
             <TableRow key={user.id}>
               <TableCell className="font-medium">{user.full_name}</TableCell>
               <TableCell>{user.email}</TableCell>
-              <TableCell>
-                {user.email_verified ? (
-                  <Badge variant="default">Verificado</Badge>
-                ) : (
-                  <Badge variant="secondary">Não verificado</Badge>
-                )}
-              </TableCell>
               <TableCell>{getRoleBadge(user.role)}</TableCell>
               <TableCell>
                 {new Date(user.created_at).toLocaleDateString("pt-BR")}

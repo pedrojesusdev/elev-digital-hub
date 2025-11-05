@@ -25,6 +25,16 @@ interface SocialMediaService {
   posts_publicados: number;
   alcance_total: number;
   engajamento_medio: number;
+  meta_videos_longos: number;
+  meta_videos_curtos: number;
+  meta_posts_estaticos: number;
+  meta_carrosseis: number;
+  meta_posts_linkedin: number;
+  realizados_videos_longos: number;
+  realizados_videos_curtos: number;
+  realizados_posts_estaticos: number;
+  realizados_carrosseis: number;
+  realizados_posts_linkedin: number;
 }
 
 const SocialMediaTab = () => {
@@ -43,6 +53,16 @@ const SocialMediaTab = () => {
     postsPublicados: 0,
     alcanceTotal: 0,
     engajamentoMedio: 0,
+    metaVideosLongos: 0,
+    metaVideosCurtos: 0,
+    metaPostsEstaticos: 0,
+    metaCarrosseis: 0,
+    metaPostsLinkedin: 0,
+    realizadosVideosLongos: 0,
+    realizadosVideosCurtos: 0,
+    realizadosPostsEstaticos: 0,
+    realizadosCarrosseis: 0,
+    realizadosPostsLinkedin: 0,
   });
 
   const fetchServices = async () => {
@@ -179,7 +199,17 @@ const SocialMediaTab = () => {
       videosGravados: 0,
       postsPublicados: 0,
       alcanceTotal: 0,
-      engajamentoMedio: 0
+      engajamentoMedio: 0,
+      metaVideosLongos: 0,
+      metaVideosCurtos: 0,
+      metaPostsEstaticos: 0,
+      metaCarrosseis: 0,
+      metaPostsLinkedin: 0,
+      realizadosVideosLongos: 0,
+      realizadosVideosCurtos: 0,
+      realizadosPostsEstaticos: 0,
+      realizadosCarrosseis: 0,
+      realizadosPostsLinkedin: 0,
     });
   };
 
@@ -196,6 +226,16 @@ const SocialMediaTab = () => {
       postsPublicados: service.posts_publicados,
       alcanceTotal: service.alcance_total,
       engajamentoMedio: service.engajamento_medio,
+      metaVideosLongos: service.meta_videos_longos,
+      metaVideosCurtos: service.meta_videos_curtos,
+      metaPostsEstaticos: service.meta_posts_estaticos,
+      metaCarrosseis: service.meta_carrosseis,
+      metaPostsLinkedin: service.meta_posts_linkedin,
+      realizadosVideosLongos: service.realizados_videos_longos,
+      realizadosVideosCurtos: service.realizados_videos_curtos,
+      realizadosPostsEstaticos: service.realizados_posts_estaticos,
+      realizadosCarrosseis: service.realizados_carrosseis,
+      realizadosPostsLinkedin: service.realizados_posts_linkedin,
     });
   };
 
@@ -582,7 +622,17 @@ const SocialMediaTab = () => {
                     videosGravados: 0,
                     postsPublicados: 0,
                     alcanceTotal: 0,
-                    engajamentoMedio: 0
+                    engajamentoMedio: 0,
+                    metaVideosLongos: 0,
+                    metaVideosCurtos: 0,
+                    metaPostsEstaticos: 0,
+                    metaCarrosseis: 0,
+                    metaPostsLinkedin: 0,
+                    realizadosVideosLongos: 0,
+                    realizadosVideosCurtos: 0,
+                    realizadosPostsEstaticos: 0,
+                    realizadosCarrosseis: 0,
+                    realizadosPostsLinkedin: 0,
                   });
                 }}
               >

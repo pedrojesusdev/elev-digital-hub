@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Zap, BarChart3, Share2, LogOut, Search, Calendar as CalendarIcon, Shield } from "lucide-react";
+import { Users, Zap, BarChart3, Share2, LogOut, Search, Calendar as CalendarIcon, Shield, CheckSquare, TrendingUp } from "lucide-react";
 import LeadsTab from "@/components/admin/LeadsTab";
 import AutomationsTab from "@/components/admin/AutomationsTab";
 import ReportsTab from "@/components/admin/ReportsTab";
@@ -9,6 +9,8 @@ import SocialMediaTab from "@/components/admin/SocialMediaTab";
 import ProspeccaoTab from "@/components/admin/ProspeccaoTab";
 import CalendarioTab from "@/components/admin/CalendarioTab";
 import UsersTab from "@/components/admin/UsersTab";
+import TasksTab from "@/components/admin/TasksTab";
+import TrafegoTab from "@/components/admin/TrafegoTab";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
@@ -38,38 +40,51 @@ const AdminDashboard = () => {
 
         <div className="pt-[57px] container mx-auto px-4 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className={`grid w-full max-w-4xl mx-auto mb-8 mt-6 bg-secondary ${isSuperAdmin ? 'grid-cols-7' : 'grid-cols-6'}`}>
-              <TabsTrigger value="leads" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
-                <Users className="mr-2" size={16} />
-                Leads
-              </TabsTrigger>
-              <TabsTrigger value="prospeccao" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
-                <Search className="mr-2" size={16} />
-                Prospecção
-              </TabsTrigger>
-              <TabsTrigger value="calendario" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
-                <CalendarIcon className="mr-2" size={16} />
-                Calendário
-              </TabsTrigger>
-              <TabsTrigger value="automations" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
-                <Zap className="mr-2" size={16} />
-                Automatizações
-              </TabsTrigger>
-              <TabsTrigger value="reports" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
-                <BarChart3 className="mr-2" size={16} />
-                Relatórios
-              </TabsTrigger>
-              <TabsTrigger value="social" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
-                <Share2 className="mr-2" size={16} />
-                Social Media
-              </TabsTrigger>
-              {isSuperAdmin && (
-                <TabsTrigger value="users" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
-                  <Shield className="mr-2" size={16} />
-                  Usuários
+            <div className="max-w-6xl mx-auto mb-8 mt-6 space-y-2">
+              <TabsList className="grid w-full bg-secondary grid-cols-5">
+                <TabsTrigger value="leads" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
+                  <Users className="mr-2" size={16} />
+                  Leads
                 </TabsTrigger>
-              )}
-            </TabsList>
+                <TabsTrigger value="prospeccao" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
+                  <Search className="mr-2" size={16} />
+                  Prospecção
+                </TabsTrigger>
+                <TabsTrigger value="calendario" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
+                  <CalendarIcon className="mr-2" size={16} />
+                  Calendário
+                </TabsTrigger>
+                <TabsTrigger value="automations" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
+                  <Zap className="mr-2" size={16} />
+                  Automações
+                </TabsTrigger>
+                <TabsTrigger value="tasks" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
+                  <CheckSquare className="mr-2" size={16} />
+                  Tasks
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsList className={`grid w-full bg-secondary ${isSuperAdmin ? 'grid-cols-4' : 'grid-cols-3'}`}>
+                <TabsTrigger value="reports" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
+                  <BarChart3 className="mr-2" size={16} />
+                  Relatórios
+                </TabsTrigger>
+                <TabsTrigger value="social" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
+                  <Share2 className="mr-2" size={16} />
+                  Social Media
+                </TabsTrigger>
+                <TabsTrigger value="trafego" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
+                  <TrendingUp className="mr-2" size={16} />
+                  Tráfego
+                </TabsTrigger>
+                {isSuperAdmin && (
+                  <TabsTrigger value="users" className="data-[state=active]:bg-foreground data-[state=active]:text-background">
+                    <Shield className="mr-2" size={16} />
+                    Usuários
+                  </TabsTrigger>
+                )}
+              </TabsList>
+            </div>
 
           <TabsContent value="leads" className="mt-0">
             <LeadsTab />
@@ -93,6 +108,14 @@ const AdminDashboard = () => {
 
           <TabsContent value="social" className="mt-0">
             <SocialMediaTab />
+          </TabsContent>
+
+          <TabsContent value="tasks" className="mt-0">
+            <TasksTab />
+          </TabsContent>
+
+          <TabsContent value="trafego" className="mt-0">
+            <TrafegoTab />
           </TabsContent>
 
           {isSuperAdmin && (
