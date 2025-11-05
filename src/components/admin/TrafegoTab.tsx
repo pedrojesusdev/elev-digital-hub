@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Pencil, Trash2, DollarSign, Video, Image as ImageIcon } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface Trafego {
   id: string;
@@ -21,6 +22,7 @@ interface Trafego {
   pecas_video: number;
   pecas_estatico: number;
   metas: string;
+  created_at?: string;
 }
 
 const TrafegoTab = () => {
@@ -29,6 +31,7 @@ const TrafegoTab = () => {
   const [trafegos, setTrafegos] = useState<Trafego[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [metricFilter, setMetricFilter] = useState<"geral" | "anual" | "mensal">("geral");
   const [formData, setFormData] = useState({
     periodo: "",
     google_ads_investido: "",
@@ -162,18 +165,43 @@ const TrafegoTab = () => {
     }
   };
 
-  const chartData = trafegos.map(t => ({
+  const now = new Date();
+  const filteredTrafegos = trafegos.filter((t: any) => {
+    const createdAt = t.created_at ? new Date(t.created_at) : null;
+    if (metricFilter === "mensal") {
+      if (!createdAt) return false;
+      return createdAt.getFullYear() === now.getFullYear() && createdAt.getMonth() === now.getMonth();
+    }
+    if (metricFilter === "anual") {
+      if (!createdAt) return false;
+      return createdAt.getFullYear() === now.getFullYear();
+    }
+    return true;
+  });
+
+  const chartData = filteredTrafegos.map(t => ({
     periodo: t.periodo,
     'Google Ads': t.google_ads_investido,
     'Meta Ads': t.meta_ads_investido,
   }));
 
-  const totalInvestido = trafegos.reduce((sum, t) => sum + t.google_ads_investido + t.meta_ads_investido, 0);
-  const totalPecasVideo = trafegos.reduce((sum, t) => sum + t.pecas_video, 0);
-  const totalPecasEstatico = trafegos.reduce((sum, t) => sum + t.pecas_estatico, 0);
+  const totalInvestido = filteredTrafegos.reduce((sum, t) => sum + t.google_ads_investido + t.meta_ads_investido, 0);
+  const totalPecasVideo = filteredTrafegos.reduce((sum, t) => sum + t.pecas_video, 0);
+  const totalPecasEstatico = filteredTrafegos.reduce((sum, t) => sum + t.pecas_estatico, 0);
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Label className="text-sm">Filtrar métricas</Label>
+          <ToggleGroup type="single" value={metricFilter} onValueChange={(v) => v && setMetricFilter(v as any)}>
+            <ToggleGroupItem value="mensal" aria-label="Mensal">Mensal</ToggleGroupItem>
+            <ToggleGroupItem value="anual" aria-label="Anual">Anual</ToggleGroupItem>
+            <ToggleGroupItem value="geral" aria-label="Geral">Geral</ToggleGroupItem>
+          </ToggleGroup>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="pt-6">
@@ -393,7 +421,7 @@ const TrafegoTab = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {trafegos.map((trafego) => (
+                {filteredTrafegos.map((trafego) => (
                   <TableRow key={trafego.id}>
                     <TableCell>{trafego.periodo}</TableCell>
                     <TableCell>R$ {trafego.google_ads_investido.toFixed(2)}</TableCell>
