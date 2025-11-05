@@ -43,7 +43,6 @@ const ProspeccaoTab = () => {
     email: "",
     observacoes: "",
     tem_site: "false",
-    status_contato: "Novo lead" as ProspeccaoLead["status_contato"],
     tipo: "prospecto" as ProspeccaoLead["tipo"],
     nota: null as ProspeccaoLead["nota"],
     faturamento_estimado: "",
@@ -121,7 +120,6 @@ const ProspeccaoTab = () => {
             email: formData.email || null,
             observacoes: formData.observacoes || null,
             tem_site: formData.tem_site === "true",
-            status_contato: formData.status_contato,
             tipo: formData.tipo,
             nota: formData.nota,
             faturamento_estimado: formData.faturamento_estimado || null,
@@ -145,12 +143,12 @@ const ProspeccaoTab = () => {
           email: formData.email || null,
           observacoes: formData.observacoes || null,
           tem_site: formData.tem_site === "true",
-          status_contato: formData.status_contato,
           tipo: formData.tipo,
           nota: formData.nota,
           faturamento_estimado: formData.faturamento_estimado || null,
           alcance_estimado: formData.alcance_estimado || null,
           origem: "manual",
+          status_contato: "Não contatado",
         });
 
         if (error) throw error;
@@ -169,7 +167,6 @@ const ProspeccaoTab = () => {
         email: "",
         observacoes: "",
         tem_site: "false",
-        status_contato: "Novo lead",
         tipo: "prospecto",
         nota: null,
         faturamento_estimado: "",
@@ -197,7 +194,6 @@ const ProspeccaoTab = () => {
       email: lead.email || "",
       observacoes: lead.observacoes || "",
       tem_site: lead.tem_site ? "true" : "false",
-      status_contato: lead.status_contato,
       tipo: lead.tipo,
       nota: lead.nota,
       faturamento_estimado: lead.faturamento_estimado || "",
@@ -227,17 +223,6 @@ const ProspeccaoTab = () => {
         variant: "destructive",
       });
     }
-  };
-
-  const getStatusBadge = (status: ProspeccaoLead["status_contato"]) => {
-    const styles = {
-      "Novo lead": "bg-foreground text-background",
-      "Não contatado": "bg-muted text-foreground",
-      "Aguardando resposta": "bg-accent text-accent-foreground",
-      "Recusado": "border-border text-muted-foreground",
-      "Cliente": "bg-foreground text-background",
-    };
-    return styles[status] || "";
   };
 
   const getTipoBadge = (tipo: ProspeccaoLead["tipo"]) => {
@@ -437,25 +422,6 @@ const ProspeccaoTab = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="status_contato">Status de Contato *</Label>
-                  <Select 
-                    value={formData.status_contato} 
-                    onValueChange={(value: ProspeccaoLead["status_contato"]) => setFormData({ ...formData, status_contato: value })}
-                  >
-                    <SelectTrigger className="bg-input border-border">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Novo lead">Novo lead</SelectItem>
-                      <SelectItem value="Não contatado">Não contatado</SelectItem>
-                      <SelectItem value="Aguardando resposta">Aguardando resposta</SelectItem>
-                      <SelectItem value="Recusado">Recusado</SelectItem>
-                      <SelectItem value="Cliente">Cliente</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
                   <Label htmlFor="tipo">Tipo *</Label>
                   <Select 
                     value={formData.tipo} 
@@ -564,7 +530,6 @@ const ProspeccaoTab = () => {
                         email: "",
                         observacoes: "",
                         tem_site: "false",
-                        status_contato: "Novo lead",
                         tipo: "prospecto",
                         nota: null,
                         faturamento_estimado: "",
@@ -640,14 +605,9 @@ const ProspeccaoTab = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex flex-col gap-1">
-                          <Badge className={getTipoBadge(lead.tipo)}>
-                            {lead.tipo}
-                          </Badge>
-                          <Badge className={getStatusBadge(lead.status_contato)}>
-                            {lead.status_contato}
-                          </Badge>
-                        </div>
+                        <Badge className={getTipoBadge(lead.tipo)}>
+                          {lead.tipo}
+                        </Badge>
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         {new Date(lead.created_at).toLocaleDateString('pt-BR')}
@@ -739,14 +699,9 @@ const ProspeccaoTab = () => {
                         </p>
                       </TableCell>
                       <TableCell>
-                        <div className="flex flex-col gap-1">
-                          <Badge className={getTipoBadge(lead.tipo)}>
-                            {lead.tipo}
-                          </Badge>
-                          <Badge className={getStatusBadge(lead.status_contato)}>
-                            {lead.status_contato}
-                          </Badge>
-                        </div>
+                        <Badge className={getTipoBadge(lead.tipo)}>
+                          {lead.tipo}
+                        </Badge>
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         {new Date(lead.created_at).toLocaleDateString('pt-BR')} às{" "}
