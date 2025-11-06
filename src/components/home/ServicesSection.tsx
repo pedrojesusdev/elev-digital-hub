@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Zap, TrendingUp, FileText } from "lucide-react";
+import estrategiasImage from "@/assets/estrategias-outdoor.png";
 
 const services = [
   {
@@ -39,6 +40,14 @@ const ServicesSection = () => {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto group-hover:text-foreground group-hover:drop-shadow-lg transition-all">
             Soluções completas para transformar sua empresa
           </p>
+        </div>
+
+        <div className="mb-16 max-w-5xl mx-auto animate-fade-in">
+          <img 
+            src={estrategiasImage} 
+            alt="Estratégias empresariais salvam a sua empresa do comodismo - Elev Business" 
+            className="w-full h-auto rounded-xl shadow-2xl hover:scale-105 transition-transform duration-500"
+          />
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">

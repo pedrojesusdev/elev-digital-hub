@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { Mockup, MockupFrame } from "@/components/ui/mockup";
 import { Glow } from "@/components/ui/glow";
 import { cn } from "@/lib/utils";
-import heroImage from "@/assets/hero-tech-bg.jpg";
+import heroImage from "@/assets/hero-marketing.png";
 
 const HeroSection = () => {
   return (
