@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { SplineScene } from "@/components/ui/spline-scene";
+import { Spotlight } from "@/components/ui/spotlight";
 import { TrendingUp, Bot, FileText, Target, Globe } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -69,30 +70,36 @@ const Services = () => {
       <Navbar />
       
       {/* Hero with Spline */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <SplineScene 
-            scene="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode"
-            className="w-full h-full"
-          />
-        </div>
+      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-black/[0.96]">
+        <Spotlight
+          className="-top-40 left-0 md:left-60 md:-top-20"
+          fill="white"
+        />
         
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
-        
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div 
-            className="max-w-4xl mx-auto text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
-              Nossos Serviços
-            </h1>
-            <p className="text-xl md:text-2xl text-white/90 max-w-2xl mx-auto">
-              Soluções completas para transformar sua empresa digitalmente
-            </p>
-          </motion.div>
+        <div className="flex h-full w-full max-w-7xl mx-auto px-4">
+          {/* Left content */}
+          <div className="flex-1 p-8 relative z-10 flex flex-col justify-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
+                Nossos Serviços
+              </h1>
+              <p className="mt-6 text-neutral-300 text-xl md:text-2xl max-w-lg">
+                Soluções completas para transformar sua empresa digitalmente com tecnologia de ponta
+              </p>
+            </motion.div>
+          </div>
+
+          {/* Right content - 3D Scene */}
+          <div className="flex-1 relative">
+            <SplineScene 
+              scene="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode"
+              className="w-full h-full"
+            />
+          </div>
         </div>
       </section>
 
