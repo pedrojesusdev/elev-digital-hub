@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { Mockup, MockupFrame } from "@/components/ui/mockup";
 import { Glow } from "@/components/ui/glow";
 import { cn } from "@/lib/utils";
-import heroImage from "@/assets/hero-marketing.png";
+import heroImage from "@/assets/team-photo.jpg";
 
 const HeroSection = () => {
   return (
@@ -56,7 +56,7 @@ const HeroSection = () => {
               <Mockup type="responsive">
                 <img 
                   src={heroImage} 
-                  alt="Elev Business Dashboard" 
+                  alt="Equipe Elev Business - Parceiros estratégicos da sua empresa" 
                   className="w-full h-auto"
                 />
               </Mockup>
