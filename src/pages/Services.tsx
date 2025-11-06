@@ -72,12 +72,12 @@ const Services = () => {
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <SplineScene 
-            scene="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode"
+            scene="https://prod.spline.design/lZByJL42ckRfWzkZ/scene.splinecode"
             className="w-full h-full"
           />
         </div>
         
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px]" />
         
         <div className="container mx-auto px-4 relative z-10">
           <motion.div 
