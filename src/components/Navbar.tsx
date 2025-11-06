@@ -1,102 +1,76 @@
-import { Link, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
-import { useState } from "react";
+"use client"
+
+import React, { useEffect, useState } from "react"
+import { motion } from "framer-motion"
+import { Link, useLocation } from "react-router-dom"
+import { Home, Briefcase, Mail, User } from "lucide-react"
+import { cn } from "@/lib/utils"
+
+const navItems = [
+  { name: "Início", url: "/", icon: Home },
+  { name: "Serviços", url: "/servicos", icon: Briefcase },
+  { name: "Contato", url: "/contact", icon: Mail },
+  { name: "Admin", url: "/login", icon: User },
+];
 
 const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const [activeTab, setActiveTab] = useState("Início");
+  const [isMobile, setIsMobile] = useState(false);
 
-  const isActive = (path: string) => location.pathname === path;
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const currentItem = navItems.find(item => item.url === location.pathname);
+    if (currentItem) {
+      setActiveTab(currentItem.name);
+    }
+  }, [location.pathname]);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md text-foreground border-b border-border shadow-lg transition-all duration-300">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold tracking-tight hover:text-primary transition-all duration-300 hover:scale-105">
-            Elev Business
-          </Link>
+    <div className="fixed bottom-6 sm:top-6 left-1/2 -translate-x-1/2 z-50">
+      <div className="flex items-center gap-3 bg-background/5 border border-border backdrop-blur-lg py-1 px-1 rounded-full shadow-lg">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = activeTab === item.name;
+          return (
+            <Link
+              key={item.name}
+              to={item.url}
+              onClick={() => setActiveTab(item.name)}
+              className={cn(
+                "relative cursor-pointer text-sm font-semibold px-6 py-2 rounded-full transition-colors",
+                "text-foreground/80 hover:text-primary",
+                isActive && "bg-muted text-primary",
+              )}
+            >
+              <span className="hidden md:inline">{item.name}</span>
+              <span className="md:hidden"><Icon size={18} strokeWidth={2.5} /></span>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
-            <a
-              href="#sobre"
-              className={`hover:text-foreground transition-all duration-300 hover:scale-110 text-muted-foreground ${
-                location.pathname === "/" ? "" : "hidden"
-              }`}
-            >
-              Sobre Nós
-            </a>
-            <a
-              href="#servicos"
-              className={`hover:text-foreground transition-all duration-300 hover:scale-110 text-muted-foreground ${
-                location.pathname === "/" ? "" : "hidden"
-              }`}
-            >
-              Serviços
-            </a>
-            <Link
-              to="/contact"
-              className="hover:text-foreground transition-all duration-300 hover:scale-110 text-muted-foreground"
-            >
-              Contato
+              {isActive && (
+                <motion.div
+                  layoutId="lamp"
+                  className="absolute inset-0 w-full bg-primary/5 rounded-full -z-10"
+                  initial={false}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                >
+                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-t-full">
+                    <div className="absolute w-12 h-6 bg-primary/20 rounded-full blur-md -top-2 -left-2" />
+                    <div className="absolute w-8 h-6 bg-primary/20 rounded-full blur-md -top-1" />
+                    <div className="absolute w-4 h-4 bg-primary/20 rounded-full blur-sm top-0 left-2" />
+                  </div>
+                </motion.div>
+              )}
             </Link>
-            <Link
-              to="/login"
-              className="px-4 py-2 border border-foreground rounded hover:bg-foreground hover:text-background transition-all duration-300 hover:scale-105"
-            >
-              Área Administrativa
-            </Link>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden hover:text-muted-foreground transition-colors"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 flex flex-col gap-4 animate-fade-in">
-            <a
-              href="#sobre"
-              className={`hover:text-muted-foreground transition-colors ${
-                location.pathname === "/" ? "" : "hidden"
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Sobre Nós
-            </a>
-            <a
-              href="#servicos"
-              className={`hover:text-muted-foreground transition-colors ${
-                location.pathname === "/" ? "" : "hidden"
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Serviços
-            </a>
-            <Link
-              to="/contact"
-              className="hover:text-foreground transition-all duration-300 text-muted-foreground"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Contato
-            </Link>
-            <Link
-              to="/login"
-              className="hover:text-muted-foreground transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Área Administrativa
-            </Link>
-          </div>
-        )}
+          );
+        })}
       </div>
-    </nav>
+    </div>
   );
 };
 

@@ -8,24 +8,24 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 12%;
-    --foreground: 0 0% 92%;
-    --card: 0 0% 15%;
-    --card-foreground: 0 0% 92%;
-    --popover: 0 0% 15%;
-    --popover-foreground: 0 0% 92%;
-    --primary: 0 0% 88%;
-    --primary-foreground: 0 0% 12%;
-    --secondary: 0 0% 20%;
-    --secondary-foreground: 0 0% 92%;
-    --muted: 0 0% 25%;
-    --muted-foreground: 0 0% 60%;
-    --accent: 0 0% 25%;
-    --accent-foreground: 0 0% 92%;
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 15%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 92%;
-    --border: 0 0% 28%;
-    --input: 0 0% 18%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 215 28% 20%;
+    --input: 215 28% 20%;
     --ring: 0 0% 80%;
     --chart-1: 0 0% 85%;
     --chart-2: 0 0% 70%;
@@ -34,18 +34,18 @@ All colors MUST be HSL.
     --chart-5: 0 0% 25%;
     --radius: 0.5rem;
 
-    /* Monochromatic gradients and shadows */
-    --gradient-primary: linear-gradient(135deg, hsl(0 0% 22%), hsl(0 0% 15%));
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 15%), hsl(0 0% 12%));
+    /* Futuristic gradients and shadows */
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(217 91% 50%));
+    --gradient-subtle: linear-gradient(180deg, hsl(222 47% 15%), hsl(222 47% 11%));
     --gradient-texture: repeating-linear-gradient(
       45deg,
       transparent,
       transparent 2px,
-      hsl(0 0% 100% / 0.02) 2px,
-      hsl(0 0% 100% / 0.02) 4px
+      hsl(217 91% 60% / 0.03) 2px,
+      hsl(217 91% 60% / 0.03) 4px
     );
-    --shadow-elegant: 0 10px 30px -10px hsl(0 0% 0% / 0.4);
-    --shadow-glow: 0 0 40px hsl(0 0% 80% / 0.12);
+    --shadow-elegant: 0 10px 30px -10px hsl(217 91% 60% / 0.4);
+    --shadow-glow: 0 0 40px hsl(217 91% 60% / 0.2);
     --shadow-card: 0 4px 12px hsl(0 0% 0% / 0.3);
     --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-premium: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -162,4 +162,15 @@ All colors MUST be HSL.
       transform: scale(1);
     }
   }
+
+  .fade-bottom {
+    mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  }
+
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-500 { animation-delay: 500ms; }
+  .delay-700 { animation-delay: 700ms; }
+  .delay-1000 { animation-delay: 1000ms; }
 }
