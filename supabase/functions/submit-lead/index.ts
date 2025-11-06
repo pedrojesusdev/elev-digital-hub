@@ -14,6 +14,7 @@ const corsHeaders = {
 };
 
 interface LeadSubmission {
+  name?: string;
   empresa: string;
   localidade: string;
   telefone: string;
@@ -79,6 +80,10 @@ serve(async (req) => {
     );
 
     // Inserir lead no banco de dados
+    const observacoesCompletas = leadData.name 
+      ? `Nome: ${leadData.name}\n\n${leadData.observacoes || ''}`
+      : leadData.observacoes;
+
     const { data, error } = await supabaseAdmin
       .from('leads')
       .insert([
@@ -88,10 +93,11 @@ serve(async (req) => {
           telefone: leadData.telefone.trim(),
           instagram: leadData.instagram?.trim() || null,
           email: leadData.email?.trim() || null,
-          observacoes: leadData.observacoes?.trim() || null,
+          observacoes: observacoesCompletas?.trim() || null,
           tem_site: leadData.tem_site ?? false,
-          status: 'Não contatado',
+          status_contato: 'Não contatado',
           origem: 'formulario',
+          tipo: 'lead',
         },
       ])
       .select();

@@ -67,16 +67,28 @@ export function MultiStepContactForm({ onClose }: { onClose: () => void }) {
 
       const { error } = await supabase.functions.invoke("submit-lead", {
         body: {
-          ...validatedData,
-          empresa: formData.company,
+          name: validatedData.name,
+          empresa: validatedData.company,
+          localidade: validatedData.location,
+          telefone: validatedData.phone,
+          instagram: validatedData.instagram || null,
+          email: validatedData.email,
+          observacoes: validatedData.message,
+          tem_site: validatedData.hasWebsite === "sim",
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error submitting lead:", error);
+        throw error;
+      }
 
       toast.success("Mensagem enviada com sucesso!");
-      onClose();
+      
+      // Redirecionar para página de agradecimento
+      window.location.href = "/obrigado";
     } catch (error) {
+      console.error("Error in form submission:", error);
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
       } else {
