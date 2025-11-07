@@ -13,6 +13,7 @@ import ContactMultiStep from "./pages/ContactMultiStep";
 import AdminDashboard from "./pages/AdminDashboard";
 import LeadDetail from "./pages/LeadDetail";
 import ThankYou from "./pages/ThankYou";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/contato-novo" element={<ContactMultiStep />} />
             <Route path="/obrigado" element={<ThankYou />} />
+            <Route path="/politica-privacidade" element={<PrivacyPolicy />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/lead/:id" element={<LeadDetail />} />

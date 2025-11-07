@@ -21,7 +21,7 @@ const CTASection = () => {
             <p className="text-xl mb-10 opacity-90">
               Comece sua transformação digital agora
             </p>
-            <a href="/contact#contato">
+            <a href="/contact">
               <Button
                 size="lg"
                 className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 text-lg px-8"

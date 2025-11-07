@@ -14,7 +14,7 @@ const Footer = () => {
 
           <div className="flex flex-wrap justify-center gap-6 text-sm">
             <Link
-              to="/lead"
+              to="/contact"
               className="opacity-80 hover:opacity-100 transition-opacity"
             >
               Contato
@@ -25,12 +25,12 @@ const Footer = () => {
             >
               Área Administrativa
             </Link>
-            <a
-              href="#"
+            <Link
+              to="/politica-privacidade"
               className="opacity-80 hover:opacity-100 transition-opacity"
             >
               Política de Privacidade
-            </a>
+            </Link>
           </div>
         </div>
 
