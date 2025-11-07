@@ -7,10 +7,10 @@ import { Home, Briefcase, Mail, User } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navItems = [
-  { name: "Home", url: "/", icon: Home },
+  { name: "Inicio", url: "/", icon: Home },
   { name: "Sobre Nós", url: "/#sobre", icon: User },
   { name: "Serviços", url: "/servicos", icon: Briefcase },
-  { name: "Contato", url: "/#contato", icon: Mail },
+  { name: "Contato", url: "/contato-novo", icon: Mail },
 ];
 
 const Navbar = () => {
@@ -35,7 +35,7 @@ const Navbar = () => {
     if (currentItem) {
       setActiveTab(currentItem.name);
     } else if (location.pathname === '/') {
-      setActiveTab('Home');
+      setActiveTab('Inicio');
     }
   }, [location.pathname, location.hash]);
 

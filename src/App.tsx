@@ -7,8 +7,6 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Services from "./pages/Services";
 import Login from "./pages/Login";
-import Lead from "./pages/Lead";
-import Contact from "./pages/Contact";
 import ContactMultiStep from "./pages/ContactMultiStep";
 import AdminDashboard from "./pages/AdminDashboard";
 import LeadDetail from "./pages/LeadDetail";
@@ -29,11 +27,9 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/servicos" element={<Services />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/lead" element={<Lead />} />
             <Route path="/contato-novo" element={<ContactMultiStep />} />
             <Route path="/obrigado" element={<ThankYou />} />
             <Route path="/politica-privacidade" element={<PrivacyPolicy />} />
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/lead/:id" element={<LeadDetail />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -6,6 +6,7 @@ import { Mockup, MockupFrame } from "@/components/ui/mockup";
 import { Glow } from "@/components/ui/glow";
 import { cn } from "@/lib/utils";
 import heroImage from "@/assets/team-photo.jpg";
+import { Link } from "react-router-dom";
 
 const HeroSection = () => {
   return (
@@ -39,21 +40,18 @@ const HeroSection = () => {
           <div className="relative z-10 flex animate-fade-in justify-center gap-4 delay-500">
             <Button 
               size="lg" 
-              onClick={() => {
-                const element = document.getElementById('contato');
-                if (element) {
-                  element.scrollIntoView({ behavior: 'smooth' });
-                }
-              }}
+              asChild
               className="flex items-center gap-2 group"
             >
-              Fale conosco
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <Link to="/contato-novo">
+                Fale conosco
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <a href="/servicos">
+              <Link to="/servicos">
                 Ver serviços
-              </a>
+              </Link>
             </Button>
           </div>
 

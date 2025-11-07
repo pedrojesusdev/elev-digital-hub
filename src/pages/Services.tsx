@@ -70,13 +70,7 @@ const Services = () => {
   const navigate = useNavigate();
 
   const handleContactClick = () => {
-    navigate('/#contato');
-    setTimeout(() => {
-      const element = document.getElementById('contato');
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
+    navigate('/contato-novo');
   };
 
   return (
