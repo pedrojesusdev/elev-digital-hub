@@ -2,8 +2,13 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Mail } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const PrivacyPolicy = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen relative bg-background">
       <Navbar />
@@ -156,6 +161,24 @@ const PrivacyPolicy = () => {
                   canais disponibilizados em nosso site.
                 </p>
               </section>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 mt-8">
+              <Button
+                onClick={() => navigate("/")}
+                variant="outline"
+                className="flex-1 group"
+              >
+                <ArrowLeft className="mr-2 transition-transform group-hover:-translate-x-1" size={18} />
+                Voltar ao Início
+              </Button>
+              <Button
+                onClick={() => navigate("/contact")}
+                className="flex-1 group"
+              >
+                <Mail className="mr-2" size={18} />
+                Entre em Contato
+              </Button>
             </div>
           </Card>
         </div>
