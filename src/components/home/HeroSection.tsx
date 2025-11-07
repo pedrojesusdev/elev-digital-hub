@@ -37,7 +37,7 @@ const HeroSection = () => {
           </p>
 
           {/* Actions */}
-          <div className="relative z-10 flex animate-fade-in justify-center gap-4 delay-500">
+          <div className="relative z-50 flex animate-fade-in justify-center gap-4 delay-500">
             <Button size="lg" className="flex items-center gap-2 group" asChild>
               <Link to="/contato-novo">
                 Fale conosco
@@ -52,7 +52,7 @@ const HeroSection = () => {
           </div>
 
           {/* Saiba Mais */}
-          <div className="relative z-10 animate-fade-in delay-600">
+          <div className="relative z-50 animate-fade-in delay-600">
             <Button 
               variant="ghost"
               onClick={() => {
@@ -67,7 +67,7 @@ const HeroSection = () => {
           </div>
 
           {/* Image with Glow */}
-          <div className="relative pt-12 w-full animate-fade-in delay-700">
+          <div className="relative z-0 pt-12 w-full animate-fade-in delay-700 pointer-events-none">
             <Glow variant="top" className="animate-scale-in delay-1000" />
             <MockupFrame size="small" className="relative z-10">
               <Mockup type="responsive">
