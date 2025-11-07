@@ -4,7 +4,6 @@ import HeroSection from "@/components/home/HeroSection";
 import AboutSection from "@/components/home/AboutSection";
 import DifferentialsSection from "@/components/home/DifferentialsSection";
 import CTASection from "@/components/home/CTASection";
-import ContactSection from "@/components/home/ContactSection";
 
 const Index = () => {
   return (
@@ -16,7 +15,6 @@ const Index = () => {
       <AboutSection />
       <DifferentialsSection />
       <CTASection />
-      <ContactSection />
       <Footer />
     </div>
   );
