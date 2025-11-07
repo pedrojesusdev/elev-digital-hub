@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Link, useLocation } from "react-router-dom"
-import { Home, Briefcase, Mail, User } from "lucide-react"
+import { Home, Briefcase, Mail, User, Shield } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navItems = [
@@ -11,6 +11,7 @@ const navItems = [
   { name: "Sobre Nós", url: "/#sobre", icon: User },
   { name: "Serviços", url: "/servicos", icon: Briefcase },
   { name: "Contato", url: "/contato-novo", icon: Mail },
+  { name: "Admin", url: "/login", icon: Shield },
 ];
 
 const Navbar = () => {
