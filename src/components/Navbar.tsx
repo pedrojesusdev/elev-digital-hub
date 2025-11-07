@@ -5,6 +5,8 @@ import { motion } from "framer-motion"
 import { Link, useLocation } from "react-router-dom"
 import { Home, Briefcase, Mail, User, Shield } from "lucide-react"
 import { cn } from "@/lib/utils"
+import logoWhite from "@/assets/logo-white.png"
+import logoBlack from "@/assets/logo-black.png"
 
 const navItems = [
   { name: "Inicio", url: "/", icon: Home },
@@ -43,6 +45,10 @@ const Navbar = () => {
   return (
     <div className="fixed bottom-6 sm:top-6 left-1/2 -translate-x-1/2 z-50">
       <div className="flex items-center gap-3 bg-background/5 border border-border backdrop-blur-lg py-1 px-1 rounded-full shadow-lg">
+        <Link to="/" className="hidden sm:flex items-center px-4">
+          <img src={logoBlack} alt="ElvB" className="h-8 w-auto dark:hidden" />
+          <img src={logoWhite} alt="ElvB" className="h-8 w-auto hidden dark:block" />
+        </Link>
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.name;

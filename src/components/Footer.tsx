@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom";
+import logoWhite from "@/assets/logo-white.png";
 
 const Footer = () => {
   return (
     <footer className="bg-primary text-primary-foreground py-12">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-center md:text-left">
-            <h3 className="text-xl font-bold mb-2">Elev Business</h3>
+          <div className="text-center md:text-left flex flex-col items-center md:items-start gap-3">
+            <img src={logoWhite} alt="ElvB" className="h-12 w-auto" />
             <p className="text-sm opacity-80">
               Elevando sua empresa com tecnologia
             </p>
