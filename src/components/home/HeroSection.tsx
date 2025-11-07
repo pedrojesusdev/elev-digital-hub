@@ -40,18 +40,34 @@ const HeroSection = () => {
           <div className="relative z-10 flex animate-fade-in justify-center gap-4 delay-500">
             <Button 
               size="lg" 
-              asChild
+              onClick={() => {
+                const element = document.getElementById('contato');
+                element?.scrollIntoView({ behavior: 'smooth' });
+              }}
               className="flex items-center gap-2 group"
             >
-              <Link to="/contato-novo">
-                Fale conosco
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
+              Fale conosco
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
             <Button size="lg" variant="outline" asChild>
               <Link to="/servicos">
                 Ver serviços
               </Link>
+            </Button>
+          </div>
+
+          {/* Saiba Mais */}
+          <div className="relative z-10 animate-fade-in delay-600">
+            <Button 
+              variant="ghost"
+              onClick={() => {
+                const element = document.getElementById('sobre');
+                element?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              Saiba Mais
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
 

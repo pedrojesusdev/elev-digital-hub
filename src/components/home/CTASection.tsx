@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import operacaoImage from "@/assets/operacao-vr.png";
-import { Link } from "react-router-dom";
 
 const CTASection = () => {
   return (
@@ -24,13 +23,14 @@ const CTASection = () => {
             </p>
             <Button
               size="lg"
-              asChild
+              onClick={() => {
+                const element = document.getElementById('contato');
+                element?.scrollIntoView({ behavior: 'smooth' });
+              }}
               className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 hover:scale-105 text-lg px-8 group transition-all duration-300"
             >
-              <Link to="/contato-novo">
-                Solicitar contato
-                <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" size={20} />
-              </Link>
+              Solicitar contato
+              <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" size={20} />
             </Button>
           </div>
         </div>
