@@ -37,14 +37,14 @@ const HeroSection = () => {
           </p>
 
           {/* Actions */}
-          <div className="relative z-50 flex animate-fade-in justify-center gap-4 delay-500">
-            <Button size="lg" className="flex items-center gap-2 group" asChild>
+          <div className="relative z-[100] pointer-events-auto flex animate-fade-in justify-center gap-4 delay-500">
+            <Button size="lg" className="flex items-center gap-2 group pointer-events-auto" asChild>
               <Link to="/contato-novo">
                 Fale conosco
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
-            <Button size="lg" variant="outline" asChild>
+            <Button size="lg" variant="outline" className="pointer-events-auto" asChild>
               <Link to="/servicos">
                 Ver serviços
               </Link>
@@ -67,7 +67,7 @@ const HeroSection = () => {
           </div>
 
           {/* Image with Glow */}
-          <div className="relative z-0 pt-12 w-full animate-fade-in delay-700 pointer-events-none">
+          <div className="relative -z-10 pt-12 w-full animate-fade-in delay-700 pointer-events-none">
             <Glow variant="top" className="animate-scale-in delay-1000" />
             <MockupFrame size="small" className="relative z-10">
               <Mockup type="responsive">
