@@ -24,10 +24,10 @@ const CTASection = () => {
             <a href="/contact">
               <Button
                 size="lg"
-                className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 text-lg px-8"
+                className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 text-lg px-8 group"
               >
                 Solicitar contato
-                <ArrowRight className="ml-2" size={20} />
+                <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" size={20} />
               </Button>
             </a>
           </div>
