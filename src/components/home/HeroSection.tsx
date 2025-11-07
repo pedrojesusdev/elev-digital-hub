@@ -67,7 +67,7 @@ const HeroSection = () => {
           </div>
 
           {/* Image with Glow */}
-          <div className="relative -z-10 pt-12 w-full animate-fade-in delay-700 pointer-events-none fade-bottom">
+          <div className="relative z-0 pt-12 w-full animate-fade-in delay-700 fade-bottom">
             <Glow variant="top" className="animate-scale-in delay-1000" />
             <MockupFrame size="small" className="relative z-10">
               <Mockup type="responsive">
