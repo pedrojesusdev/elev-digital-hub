@@ -37,11 +37,18 @@ const HeroSection = () => {
 
           {/* Actions */}
           <div className="relative z-10 flex animate-fade-in justify-center gap-4 delay-500">
-            <Button size="lg" asChild>
-              <a href="/contact" className="flex items-center gap-2 group">
-                Fale conosco
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </a>
+            <Button 
+              size="lg" 
+              onClick={() => {
+                const element = document.getElementById('contato');
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className="flex items-center gap-2 group"
+            >
+              Fale conosco
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
             <Button size="lg" variant="outline" asChild>
               <a href="/servicos">

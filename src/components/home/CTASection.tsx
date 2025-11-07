@@ -21,15 +21,19 @@ const CTASection = () => {
             <p className="text-xl mb-10 opacity-90">
               Comece sua transformação digital agora
             </p>
-            <a href="/contact">
-              <Button
-                size="lg"
-                className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 text-lg px-8 group"
-              >
-                Solicitar contato
-                <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" size={20} />
-              </Button>
-            </a>
+            <Button
+              size="lg"
+              onClick={() => {
+                const element = document.getElementById('contato');
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 hover:scale-105 text-lg px-8 group transition-all duration-300"
+            >
+              Solicitar contato
+              <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" size={20} />
+            </Button>
           </div>
         </div>
       </div>

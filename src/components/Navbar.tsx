@@ -7,10 +7,10 @@ import { Home, Briefcase, Mail, User } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navItems = [
-  { name: "Início", url: "/", icon: Home },
+  { name: "Home", url: "/", icon: Home },
+  { name: "Sobre Nós", url: "/#sobre", icon: User },
   { name: "Serviços", url: "/servicos", icon: Briefcase },
-  { name: "Contato", url: "/contact", icon: Mail },
-  { name: "Admin", url: "/login", icon: User },
+  { name: "Contato", url: "/#contato", icon: Mail },
 ];
 
 const Navbar = () => {
@@ -26,11 +26,18 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    const currentItem = navItems.find(item => item.url === location.pathname);
+    const currentItem = navItems.find(item => {
+      if (item.url.includes('#')) {
+        return location.pathname === '/' && location.hash === item.url.substring(1);
+      }
+      return item.url === location.pathname;
+    });
     if (currentItem) {
       setActiveTab(currentItem.name);
+    } else if (location.pathname === '/') {
+      setActiveTab('Home');
     }
-  }, [location.pathname]);
+  }, [location.pathname, location.hash]);
 
   return (
     <div className="fixed bottom-6 sm:top-6 left-1/2 -translate-x-1/2 z-50">
@@ -42,10 +49,20 @@ const Navbar = () => {
             <Link
               key={item.name}
               to={item.url}
-              onClick={() => setActiveTab(item.name)}
+              onClick={(e) => {
+                setActiveTab(item.name);
+                if (item.url.includes('#')) {
+                  e.preventDefault();
+                  const hash = item.url.split('#')[1];
+                  const element = document.getElementById(hash);
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }
+              }}
               className={cn(
-                "relative cursor-pointer text-sm font-semibold px-6 py-2 rounded-full transition-colors",
-                "text-foreground/80 hover:text-primary",
+                "relative cursor-pointer text-sm font-semibold px-6 py-2 rounded-full transition-all duration-300",
+                "text-foreground/80 hover:text-primary hover:scale-105",
                 isActive && "bg-muted text-primary",
               )}
             >

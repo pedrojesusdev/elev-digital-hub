@@ -1,10 +1,12 @@
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { SplineScene } from "@/components/ui/spline-scene";
 import { Spotlight } from "@/components/ui/spotlight";
-import { TrendingUp, Bot, FileText, Target, Globe } from "lucide-react";
+import { TrendingUp, Bot, FileText, Target, Globe, ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useNavigate } from "react-router-dom";
 
 const services = [
   {
@@ -65,6 +67,18 @@ const services = [
 ];
 
 const Services = () => {
+  const navigate = useNavigate();
+
+  const handleContactClick = () => {
+    navigate('/#contato');
+    setTimeout(() => {
+      const element = document.getElementById('contato');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  };
+
   return (
     <div className="min-h-screen relative">
       <Navbar />
@@ -115,7 +129,7 @@ const Services = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <Card className="p-8 h-full bg-background/50 backdrop-blur-md border-border/50 hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group">
+                <Card className="p-8 h-full bg-background/50 backdrop-blur-md border-border/50 hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group flex flex-col">
                   <div className="w-16 h-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <service.icon size={32} strokeWidth={1.5} />
                   </div>
@@ -128,7 +142,7 @@ const Services = () => {
                     {service.description}
                   </p>
                   
-                  <ul className="space-y-2">
+                  <ul className="space-y-2 mb-6">
                     {service.features.map((feature, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                         <span className="text-primary mt-1">•</span>
@@ -136,6 +150,14 @@ const Services = () => {
                       </li>
                     ))}
                   </ul>
+                  
+                  <Button 
+                    onClick={handleContactClick}
+                    className="w-full group mt-auto"
+                  >
+                    Entrar em Contato
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Button>
                 </Card>
               </motion.div>
             ))}

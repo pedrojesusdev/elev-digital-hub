@@ -46,6 +46,10 @@ export function MultiStepContactForm({ onClose }: { onClose: () => void }) {
   const progress = ((currentStep + 1) / totalSteps) * 100;
 
   const handleNext = () => {
+    if (!validateCurrentStep()) {
+      return;
+    }
+    
     if (currentStep < totalSteps - 1) {
       setCurrentStep(currentStep + 1);
     } else {
@@ -59,9 +63,37 @@ export function MultiStepContactForm({ onClose }: { onClose: () => void }) {
     }
   };
 
+  const validateCurrentStep = () => {
+    const currentFields = steps[currentStep].fields;
+    
+    for (const field of currentFields) {
+      const value = formData[field as keyof typeof formData];
+      if (!value || (typeof value === 'string' && value.trim() === '')) {
+        if (field !== 'instagram') { // Instagram é opcional
+          toast.error(`Por favor, preencha o campo ${field === 'name' ? 'Nome' : 
+                       field === 'email' ? 'E-mail' : 
+                       field === 'company' ? 'Empresa' : 
+                       field === 'phone' ? 'Telefone' : 
+                       field === 'location' ? 'Localização' : 
+                       field === 'message' ? 'Mensagem' : field}`);
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true);
+      
+      // Validar todos os campos obrigatórios
+      if (!formData.name?.trim() || !formData.company?.trim() || 
+          !formData.email?.trim() || !formData.phone?.trim() || 
+          !formData.location?.trim() || !formData.message?.trim()) {
+        toast.error("Por favor, preencha todos os campos obrigatórios");
+        return;
+      }
       
       const validatedData = contactFormSchema.parse(formData);
 
@@ -224,13 +256,23 @@ export function MultiStepContactForm({ onClose }: { onClose: () => void }) {
         />
       </div>
 
-      {/* Close Button */}
-      <button
-        onClick={onClose}
-        className="fixed top-6 right-6 text-muted-foreground hover:text-foreground transition-colors"
-      >
-        ✕
-      </button>
+      {/* Header with Close and Home buttons */}
+      <div className="fixed top-6 right-6 flex gap-4 z-50">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => window.location.href = '/'}
+          className="hover:scale-105 transition-all duration-300"
+        >
+          Voltar para a Home
+        </Button>
+        <button
+          onClick={onClose}
+          className="text-muted-foreground hover:text-foreground transition-colors text-2xl"
+        >
+          ✕
+        </button>
+      </div>
 
       {/* Content */}
       <div className="flex-1 flex items-center justify-center p-6">
