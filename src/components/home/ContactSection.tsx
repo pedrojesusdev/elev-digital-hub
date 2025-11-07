@@ -4,8 +4,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -23,7 +21,6 @@ const contactFormSchema = z.object({
 });
 
 const ContactSection = () => {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -215,17 +212,6 @@ const ContactSection = () => {
               </Button>
             </form>
           </Card>
-
-          <div className="text-center mt-8">
-            <Button
-              variant="outline"
-              onClick={() => navigate("/")}
-              className="border-border hover:bg-muted transition-all duration-300"
-            >
-              <ArrowLeft className="mr-2" size={16} />
-              Voltar ao Início
-            </Button>
-          </div>
         </div>
       </div>
     </section>
