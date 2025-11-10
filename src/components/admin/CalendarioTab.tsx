@@ -37,9 +37,9 @@ const CalendarioTab = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [formData, setFormData] = useState({
     titulo: "",
-    dataInicio: format(new Date(), "yyyy-MM-dd"),
+    dataInicio: format(new Date(), "dd/MM/yyyy"),
     horaInicio: "09:00",
-    dataFim: format(new Date(), "yyyy-MM-dd"),
+    dataFim: format(new Date(), "dd/MM/yyyy"),
     horaFim: "10:00",
     descricao: "",
     empresa: "",
@@ -47,6 +47,30 @@ const CalendarioTab = () => {
     categoriaServicos: "" as "reuniao_diagnostico" | "reuniao_fechamento" | "followup" | "relacionamento" | "",
     categoriaEmpresa: "" as "all_hands" | "comunicacao" | "magic_number" | "tecnologia" | "marketing" | "comercial" | "estrategia" | "diretoria" | "analise_metas" | "",
   });
+
+  // Funções auxiliares para conversão de data
+  const formatDateBR = (isoDate: string): string => {
+    if (!isoDate || isoDate.length !== 10) return "";
+    const [year, month, day] = isoDate.split("-");
+    return `${day}/${month}/${year}`;
+  };
+
+  const formatDateISO = (brDate: string): string => {
+    if (!brDate) return "";
+    const cleanDate = brDate.replace(/\D/g, "");
+    if (cleanDate.length !== 8) return "";
+    const day = cleanDate.substring(0, 2);
+    const month = cleanDate.substring(2, 4);
+    const year = cleanDate.substring(4, 8);
+    return `${year}-${month}-${day}`;
+  };
+
+  const applyDateMask = (value: string): string => {
+    const cleaned = value.replace(/\D/g, "");
+    if (cleaned.length <= 2) return cleaned;
+    if (cleaned.length <= 4) return `${cleaned.slice(0, 2)}/${cleaned.slice(2)}`;
+    return `${cleaned.slice(0, 2)}/${cleaned.slice(2, 4)}/${cleaned.slice(4, 8)}`;
+  };
 
   const categoriasServicos = [
     { value: "reuniao_diagnostico", label: "Reunião de diagnóstico", color: "bg-green-500" },
@@ -106,9 +130,9 @@ const CalendarioTab = () => {
     
     const eventData = {
       titulo: formData.titulo,
-      data_inicio: formData.dataInicio,
+      data_inicio: formatDateISO(formData.dataInicio),
       hora_inicio: formData.horaInicio,
-      data_fim: formData.dataFim,
+      data_fim: formatDateISO(formData.dataFim),
       hora_fim: formData.horaFim,
       descricao: formData.descricao || null,
       empresa: formData.empresa || null,
@@ -145,9 +169,9 @@ const CalendarioTab = () => {
     
     setFormData({
       titulo: "",
-      dataInicio: format(new Date(), "yyyy-MM-dd"),
+      dataInicio: format(new Date(), "dd/MM/yyyy"),
       horaInicio: "09:00",
-      dataFim: format(new Date(), "yyyy-MM-dd"),
+      dataFim: format(new Date(), "dd/MM/yyyy"),
       horaFim: "10:00",
       descricao: "",
       empresa: "",
@@ -161,9 +185,9 @@ const CalendarioTab = () => {
     setEditingId(event.id);
     setFormData({
       titulo: event.titulo,
-      dataInicio: event.data_inicio,
+      dataInicio: formatDateBR(event.data_inicio),
       horaInicio: event.hora_inicio,
-      dataFim: event.data_fim,
+      dataFim: formatDateBR(event.data_fim),
       horaFim: event.hora_fim,
       descricao: event.descricao || "",
       empresa: event.empresa || "",
@@ -450,9 +474,11 @@ const CalendarioTab = () => {
               <Label htmlFor="dataInicio">Data de Início *</Label>
               <Input
                 id="dataInicio"
-                type="date"
+                type="text"
+                placeholder="dd/mm/aaaa"
                 value={formData.dataInicio}
-                onChange={(e) => setFormData({ ...formData, dataInicio: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, dataInicio: applyDateMask(e.target.value) })}
+                maxLength={10}
                 required
               />
             </div>
@@ -474,9 +500,11 @@ const CalendarioTab = () => {
               <Label htmlFor="dataFim">Data de Término *</Label>
               <Input
                 id="dataFim"
-                type="date"
+                type="text"
+                placeholder="dd/mm/aaaa"
                 value={formData.dataFim}
-                onChange={(e) => setFormData({ ...formData, dataFim: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, dataFim: applyDateMask(e.target.value) })}
+                maxLength={10}
                 required
               />
             </div>
@@ -515,9 +543,9 @@ const CalendarioTab = () => {
                   setEditingId(null);
                   setFormData({
                     titulo: "",
-                    dataInicio: format(new Date(), "yyyy-MM-dd"),
+                    dataInicio: format(new Date(), "dd/MM/yyyy"),
                     horaInicio: "09:00",
-                    dataFim: format(new Date(), "yyyy-MM-dd"),
+                    dataFim: format(new Date(), "dd/MM/yyyy"),
                     horaFim: "10:00",
                     descricao: "",
                     empresa: "",
