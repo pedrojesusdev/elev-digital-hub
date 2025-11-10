@@ -16,6 +16,8 @@ const contactFormSchema = z.object({
   phone: z.string().min(10, "Telefone inválido").max(20),
   location: z.string().min(2).max(100),
   instagram: z.string().max(100).optional(),
+  faturamentoMensal: z.string().max(100).optional(),
+  alcanceInstagram: z.string().max(100).optional(),
   message: z.string().min(10, "Mensagem muito curta").max(1000),
   hasWebsite: z.enum(["sim", "nao"]),
 });
@@ -23,9 +25,10 @@ const contactFormSchema = z.object({
 const steps = [
   { id: 1, title: "Informações Pessoais", fields: ["name", "email"] },
   { id: 2, title: "Empresa", fields: ["company", "phone"] },
-  { id: 3, title: "Localização & Redes", fields: ["location", "instagram"] },
-  { id: 4, title: "Website", fields: ["hasWebsite"] },
-  { id: 5, title: "Mensagem", fields: ["message"] },
+  { id: 3, title: "Informações Adicionais", fields: ["faturamentoMensal", "alcanceInstagram"] },
+  { id: 4, title: "Localização & Redes", fields: ["location", "instagram"] },
+  { id: 5, title: "Website", fields: ["hasWebsite"] },
+  { id: 6, title: "Mensagem", fields: ["message"] },
 ];
 
 export function MultiStepContactForm({ onClose }: { onClose: () => void }) {
@@ -38,6 +41,8 @@ export function MultiStepContactForm({ onClose }: { onClose: () => void }) {
     phone: "",
     location: "",
     instagram: "",
+    faturamentoMensal: "",
+    alcanceInstagram: "",
     message: "",
     hasWebsite: "sim" as "sim" | "nao",
   });
@@ -68,8 +73,10 @@ export function MultiStepContactForm({ onClose }: { onClose: () => void }) {
     
     for (const field of currentFields) {
       const value = formData[field as keyof typeof formData];
+      const optionalFields = ['instagram', 'faturamentoMensal', 'alcanceInstagram'];
+      
       if (!value || (typeof value === 'string' && value.trim() === '')) {
-        if (field !== 'instagram') { // Instagram é opcional
+        if (!optionalFields.includes(field)) {
           toast.error(`Por favor, preencha o campo ${field === 'name' ? 'Nome' : 
                        field === 'email' ? 'E-mail' : 
                        field === 'company' ? 'Empresa' : 
@@ -107,6 +114,8 @@ export function MultiStepContactForm({ onClose }: { onClose: () => void }) {
           email: validatedData.email,
           observacoes: validatedData.message,
           tem_site: validatedData.hasWebsite === "sim",
+          faturamento_mensal: validatedData.faturamentoMensal || null,
+          alcance_instagram: validatedData.alcanceInstagram || null,
         },
       });
 
@@ -186,6 +195,30 @@ export function MultiStepContactForm({ onClose }: { onClose: () => void }) {
         return (
           <div className="space-y-6">
             <div>
+              <label className="text-sm text-muted-foreground mb-2 block">Faturamento Mensal (opcional)</label>
+              <Input
+                value={formData.faturamentoMensal}
+                onChange={(e) => setFormData({ ...formData, faturamentoMensal: e.target.value })}
+                placeholder="Ex: R$ 50.000"
+                className="text-2xl h-14 bg-background/50 border-border/50 backdrop-blur-sm"
+              />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground mb-2 block">Alcance Instagram / Seguidores (opcional)</label>
+              <Input
+                value={formData.alcanceInstagram}
+                onChange={(e) => setFormData({ ...formData, alcanceInstagram: e.target.value })}
+                placeholder="Ex: 10.000 seguidores"
+                className="text-2xl h-14 bg-background/50 border-border/50 backdrop-blur-sm"
+              />
+            </div>
+          </div>
+        );
+
+      case 3:
+        return (
+          <div className="space-y-6">
+            <div>
               <label className="text-sm text-muted-foreground mb-2 block">Localização</label>
               <Input
                 value={formData.location}
@@ -206,7 +239,7 @@ export function MultiStepContactForm({ onClose }: { onClose: () => void }) {
           </div>
         );
 
-      case 3:
+      case 4:
         return (
           <div className="space-y-6">
             <label className="text-sm text-muted-foreground mb-2 block">Sua empresa possui site?</label>
@@ -225,7 +258,7 @@ export function MultiStepContactForm({ onClose }: { onClose: () => void }) {
           </div>
         );
 
-      case 4:
+      case 5:
         return (
           <div className="space-y-6">
             <label className="text-sm text-muted-foreground mb-2 block">Deixe sua mensagem</label>
