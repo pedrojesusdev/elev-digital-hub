@@ -22,6 +22,8 @@ interface LeadSubmission {
   email?: string;
   observacoes?: string;
   tem_site?: boolean;
+  faturamento_mensal?: string;
+  alcance_instagram?: string;
 }
 
 serve(async (req) => {
@@ -95,6 +97,8 @@ serve(async (req) => {
           email: leadData.email?.trim() || null,
           observacoes: observacoesCompletas?.trim() || null,
           tem_site: leadData.tem_site ?? false,
+          faturamento_mensal: leadData.faturamento_mensal?.trim() || null,
+          alcance_instagram: leadData.alcance_instagram?.trim() || null,
           status_contato: 'Não contatado',
           origem: 'formulario',
           tipo: 'lead',

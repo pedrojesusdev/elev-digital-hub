@@ -137,10 +137,12 @@ export type Database = {
       leads: {
         Row: {
           alcance_estimado: string | null
+          alcance_instagram: string | null
           created_at: string
           email: string | null
           empresa: string
           faturamento_estimado: string | null
+          faturamento_mensal: string | null
           id: string
           instagram: string | null
           localidade: string
@@ -155,10 +157,12 @@ export type Database = {
         }
         Insert: {
           alcance_estimado?: string | null
+          alcance_instagram?: string | null
           created_at?: string
           email?: string | null
           empresa: string
           faturamento_estimado?: string | null
+          faturamento_mensal?: string | null
           id?: string
           instagram?: string | null
           localidade: string
@@ -173,10 +177,12 @@ export type Database = {
         }
         Update: {
           alcance_estimado?: string | null
+          alcance_instagram?: string | null
           created_at?: string
           email?: string | null
           empresa?: string
           faturamento_estimado?: string | null
+          faturamento_mensal?: string | null
           id?: string
           instagram?: string | null
           localidade?: string

@@ -22,8 +22,11 @@ interface Lead {
   nota: "quente" | "medio" | "frio" | null;
   faturamento_estimado: string | null;
   alcance_estimado: string | null;
+  faturamento_mensal: string | null;
+  alcance_instagram: string | null;
   observacoes: string | null;
   tipo: "prospecto" | "lead" | "cliente";
+  created_at: string;
 }
 
 const chartConfig = {
@@ -37,14 +40,7 @@ const LeadsTab = () => {
   const navigate = useNavigate();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
-    empresa: "",
-    nota: "Médio" as "Quente" | "Médio" | "Frio",
-    faturamento: "",
-    alcance: "",
-    relatorio: "",
-  });
+  const [monthlyLeadsCount, setMonthlyLeadsCount] = useState(0);
 
   const fetchLeads = async () => {
     const { data, error } = await supabase
@@ -62,8 +58,27 @@ const LeadsTab = () => {
     setLoading(false);
   };
 
+  const fetchMonthlyLeads = async () => {
+    const now = new Date();
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+    const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).toISOString();
+
+    const { data, error } = await supabase
+      .from('leads')
+      .select('id, created_at')
+      .gte('created_at', firstDayOfMonth)
+      .lte('created_at', lastDayOfMonth);
+
+    if (error) {
+      console.error("Erro ao carregar leads do mês:", error);
+    } else {
+      setMonthlyLeadsCount(data?.length || 0);
+    }
+  };
+
   useEffect(() => {
     fetchLeads();
+    fetchMonthlyLeads();
 
     const channel = supabase
       .channel('leads_changes')
@@ -72,6 +87,7 @@ const LeadsTab = () => {
         { event: '*', schema: 'public', table: 'leads' },
         () => {
           fetchLeads();
+          fetchMonthlyLeads();
         }
       )
       .subscribe();
@@ -81,13 +97,12 @@ const LeadsTab = () => {
     };
   }, []);
 
+  const currentMonthName = new Date().toLocaleDateString('pt-BR', { month: 'short' })
+    .replace('.', '')
+    .charAt(0).toUpperCase() + new Date().toLocaleDateString('pt-BR', { month: 'short' }).slice(1, 3);
+
   const chartData = [
-    { mes: "Jan", leads: 0 },
-    { mes: "Fev", leads: 0 },
-    { mes: "Mar", leads: 0 },
-    { mes: "Abr", leads: 0 },
-    { mes: "Mai", leads: 0 },
-    { mes: "Jun", leads: 0 },
+    { mes: currentMonthName, leads: monthlyLeadsCount },
   ];
 
   const handleConvertToClient = async (id: string) => {
@@ -208,9 +223,15 @@ const LeadsTab = () => {
         </Table>
       </Card>
 
-      {/* Gráfico de Evolução */}
+      {/* Gráfico de Leads do Mês */}
       <Card className="p-6 bg-card border-border hover-glow">
-        <h3 className="text-xl font-semibold mb-4">Evolução de Leads</h3>
+        <h3 className="text-xl font-semibold mb-4">Leads Recebidos Este Mês</h3>
+        <div className="mb-4">
+          <p className="text-3xl font-bold text-primary">{monthlyLeadsCount}</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Novos leads em {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+          </p>
+        </div>
         <div className="w-full h-[300px]">
           <ChartContainer config={chartConfig} className="w-full h-full">
             <ResponsiveContainer width="100%" height="100%">
