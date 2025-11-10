@@ -9,9 +9,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Pencil, Trash2, Plus, User, CheckCircle2, Clock, TrendingUp } from "lucide-react";
+import { Pencil, Trash2, Plus, User, CheckCircle2, Clock, TrendingUp, Eye, AlertCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 
 interface Funcionario {
   id: string;
@@ -27,6 +29,7 @@ interface Task {
   status: 'pendente' | 'concluida';
   funcionario_id: string | null;
   data_conclusao: string | null;
+  data_prazo: string | null;
 }
 
 const TasksTab = () => {
@@ -44,7 +47,10 @@ const TasksTab = () => {
     tipo: "diaria" as 'diaria' | 'semanal' | 'mensal',
     status: "pendente" as 'pendente' | 'concluida',
     funcionario_id: "" as string | null,
+    data_prazo: "",
   });
+
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   // Estados para Funcionários
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
@@ -57,6 +63,50 @@ const TasksTab = () => {
   const [selectedFuncionario, setSelectedFuncionario] = useState<string | null>(null);
   const [loadingTasks, setLoadingTasks] = useState(true);
   const [loadingFunc, setLoadingFunc] = useState(true);
+
+  // Funções auxiliares para conversão de data
+  const formatDateBR = (isoDate: string | null): string => {
+    if (!isoDate) return "";
+    const [year, month, day] = isoDate.split("-");
+    return `${day}/${month}/${year}`;
+  };
+
+  const formatDateISO = (brDate: string): string => {
+    if (!brDate) return "";
+    const cleanDate = brDate.replace(/\D/g, "");
+    if (cleanDate.length !== 8) return "";
+    const day = cleanDate.substring(0, 2);
+    const month = cleanDate.substring(2, 4);
+    const year = cleanDate.substring(4, 8);
+    return `${year}-${month}-${day}`;
+  };
+
+  const applyDateMask = (value: string): string => {
+    const cleaned = value.replace(/\D/g, "");
+    if (cleaned.length <= 2) return cleaned;
+    if (cleaned.length <= 4) return `${cleaned.slice(0, 2)}/${cleaned.slice(2)}`;
+    return `${cleaned.slice(0, 2)}/${cleaned.slice(2, 4)}/${cleaned.slice(4, 8)}`;
+  };
+
+  const isPrazoExpirado = (dataPrazo: string | null, status: string): boolean => {
+    if (!dataPrazo || status === 'concluida') return false;
+    const prazo = new Date(dataPrazo);
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    return prazo < hoje;
+  };
+
+  const getTaskStatusLabel = (task: Task): string => {
+    if (task.status === 'concluida') return 'Concluída';
+    if (isPrazoExpirado(task.data_prazo, task.status)) return 'Não Cumprida';
+    return 'Pendente';
+  };
+
+  const getTaskStatusColor = (task: Task): string => {
+    if (task.status === 'concluida') return 'text-green-600';
+    if (isPrazoExpirado(task.data_prazo, task.status)) return 'text-red-600';
+    return 'text-yellow-600';
+  };
 
   useEffect(() => {
     fetchTasks();
@@ -134,6 +184,7 @@ const TasksTab = () => {
         tipo: taskFormData.tipo,
         status: taskFormData.status,
         funcionario_id: taskFormData.funcionario_id || null,
+        data_prazo: taskFormData.data_prazo ? formatDateISO(taskFormData.data_prazo) : null,
         empresa: profileData?.user_company || '',
       };
 
@@ -160,6 +211,7 @@ const TasksTab = () => {
         tipo: "diaria",
         status: "pendente",
         funcionario_id: null,
+        data_prazo: "",
       });
       setEditingTaskId(null);
     } catch (error: any) {
@@ -347,6 +399,18 @@ const TasksTab = () => {
                   />
                 </div>
 
+                <div>
+                  <Label htmlFor="data_prazo">Prazo (dd/mm/aaaa)</Label>
+                  <Input
+                    id="data_prazo"
+                    type="text"
+                    placeholder="dd/mm/aaaa"
+                    value={taskFormData.data_prazo}
+                    onChange={(e) => setTaskFormData({ ...taskFormData, data_prazo: applyDateMask(e.target.value) })}
+                    maxLength={10}
+                  />
+                </div>
+
                 <div className="flex gap-2">
                   <Button type="submit">
                     {editingTaskId ? "Atualizar" : "Adicionar"}
@@ -363,6 +427,7 @@ const TasksTab = () => {
                           tipo: "diaria",
                           status: "pendente",
                           funcionario_id: null,
+                          data_prazo: "",
                         });
                       }}
                     >
@@ -399,51 +464,131 @@ const TasksTab = () => {
                       <TableHead>Título</TableHead>
                       <TableHead>Tipo</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead>Prazo</TableHead>
                       <TableHead>Funcionário</TableHead>
                       <TableHead>Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {tasksFiltradas.map((task) => (
-                      <TableRow key={task.id}>
-                        <TableCell>{task.titulo}</TableCell>
-                        <TableCell className="capitalize">{task.tipo}</TableCell>
-                        <TableCell className="capitalize">{task.status}</TableCell>
-                        <TableCell>
-                          {task.funcionario_id 
-                            ? funcionarios.find(f => f.id === task.funcionario_id)?.nome || '-'
-                            : '-'
-                          }
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                setEditingTaskId(task.id);
-                                setTaskFormData({
-                                  titulo: task.titulo,
-                                  descricao: task.descricao || "",
-                                  tipo: task.tipo,
-                                  status: task.status,
-                                  funcionario_id: task.funcionario_id,
-                                });
-                              }}
-                            >
-                              <Pencil size={16} />
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => handleDeleteTask(task.id)}
-                            >
-                              <Trash2 size={16} />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {tasksFiltradas.map((task) => {
+                      const funcionarioNome = task.funcionario_id 
+                        ? funcionarios.find(f => f.id === task.funcionario_id)?.nome || '-'
+                        : '-';
+                      
+                      return (
+                        <TableRow key={task.id}>
+                          <TableCell>{task.titulo}</TableCell>
+                          <TableCell className="capitalize">{task.tipo}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <span className={getTaskStatusColor(task)}>
+                                {getTaskStatusLabel(task)}
+                              </span>
+                              {isPrazoExpirado(task.data_prazo, task.status) && (
+                                <AlertCircle className="w-4 h-4 text-red-600" />
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {task.data_prazo ? (
+                              <span className={isPrazoExpirado(task.data_prazo, task.status) ? 'text-red-600 font-semibold' : ''}>
+                                {formatDateBR(task.data_prazo)}
+                              </span>
+                            ) : (
+                              '-'
+                            )}
+                          </TableCell>
+                          <TableCell>{funcionarioNome}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setSelectedTask(task)}
+                                  >
+                                    <Eye size={16} />
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-2xl">
+                                  <DialogHeader>
+                                    <DialogTitle>Detalhes da Task</DialogTitle>
+                                  </DialogHeader>
+                                  <div className="space-y-4">
+                                    <div>
+                                      <Label className="text-muted-foreground">Título</Label>
+                                      <p className="text-lg font-semibold">{task.titulo}</p>
+                                    </div>
+                                    <div>
+                                      <Label className="text-muted-foreground">Descrição</Label>
+                                      <p className="text-foreground whitespace-pre-wrap">{task.descricao || 'Sem descrição'}</p>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                      <div>
+                                        <Label className="text-muted-foreground">Tipo</Label>
+                                        <p className="capitalize">{task.tipo}</p>
+                                      </div>
+                                      <div>
+                                        <Label className="text-muted-foreground">Status</Label>
+                                        <Badge className={getTaskStatusColor(task)}>
+                                          {getTaskStatusLabel(task)}
+                                        </Badge>
+                                      </div>
+                                      <div>
+                                        <Label className="text-muted-foreground">Prazo</Label>
+                                        <p className={isPrazoExpirado(task.data_prazo, task.status) ? 'text-red-600 font-semibold' : ''}>
+                                          {task.data_prazo ? formatDateBR(task.data_prazo) : 'Sem prazo definido'}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <Label className="text-muted-foreground">Funcionário</Label>
+                                        <p>{funcionarioNome}</p>
+                                      </div>
+                                    </div>
+                                    {isPrazoExpirado(task.data_prazo, task.status) && (
+                                      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                                        <div className="flex items-center gap-2 text-red-600">
+                                          <AlertCircle className="w-5 h-5" />
+                                          <span className="font-semibold">Prazo Ultrapassado</span>
+                                        </div>
+                                        <p className="text-sm text-red-600 mt-1">
+                                          Esta task não foi cumprida dentro do prazo estabelecido.
+                                        </p>
+                                      </div>
+                                    )}
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setEditingTaskId(task.id);
+                                  setTaskFormData({
+                                    titulo: task.titulo,
+                                    descricao: task.descricao || "",
+                                    tipo: task.tipo,
+                                    status: task.status,
+                                    funcionario_id: task.funcionario_id,
+                                    data_prazo: task.data_prazo ? formatDateBR(task.data_prazo) : "",
+                                  });
+                                }}
+                              >
+                                <Pencil size={16} />
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => handleDeleteTask(task.id)}
+                              >
+                                <Trash2 size={16} />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               )}

@@ -378,6 +378,7 @@ export type Database = {
         Row: {
           created_at: string
           data_conclusao: string | null
+          data_prazo: string | null
           descricao: string | null
           empresa: string
           funcionario_id: string | null
@@ -390,6 +391,7 @@ export type Database = {
         Insert: {
           created_at?: string
           data_conclusao?: string | null
+          data_prazo?: string | null
           descricao?: string | null
           empresa: string
           funcionario_id?: string | null
@@ -402,6 +404,7 @@ export type Database = {
         Update: {
           created_at?: string
           data_conclusao?: string | null
+          data_prazo?: string | null
           descricao?: string | null
           empresa?: string
           funcionario_id?: string | null
