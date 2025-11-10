@@ -39,6 +39,7 @@ const TasksTab = () => {
   // Estados para Tasks
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filtroTipo, setFiltroTipo] = useState<'todas' | 'diaria' | 'semanal' | 'mensal'>('todas');
+  const [filtroFuncionario, setFiltroFuncionario] = useState<string>('todos');
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [taskFormData, setTaskFormData] = useState({
     titulo: "",
@@ -298,9 +299,11 @@ const TasksTab = () => {
     }
   };
 
-  const tasksFiltradas = tasks.filter(t => 
-    filtroTipo === 'todas' ? true : t.tipo === filtroTipo
-  );
+  const tasksFiltradas = tasks.filter(t => {
+    const matchTipo = filtroTipo === 'todas' ? true : t.tipo === filtroTipo;
+    const matchFunc = filtroFuncionario === 'todos' ? true : t.funcionario_id === filtroFuncionario;
+    return matchTipo && matchFunc;
+  });
 
   const getFuncionarioStats = (funcId: string) => {
     const funcTasks = tasks.filter(t => t.funcionario_id === funcId);
@@ -325,274 +328,304 @@ const TasksTab = () => {
         </TabsList>
 
         <TabsContent value="tasks" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>{editingTaskId ? "Editar Task" : "Nova Task"}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleTaskSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="titulo">Título</Label>
-                    <Input
-                      id="titulo"
-                      value={taskFormData.titulo}
-                      onChange={(e) => setTaskFormData({ ...taskFormData, titulo: e.target.value })}
-                      required
-                    />
+          <Tabs defaultValue="lista" className="w-full">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+              <TabsTrigger value="lista">Lista de Tasks</TabsTrigger>
+              <TabsTrigger value="adicionar">Adicionar Nova Task</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="lista" className="space-y-4 mt-6">
+              <Card>
+                <CardHeader className="space-y-4">
+                  <CardTitle>Lista de Tasks</CardTitle>
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <Label className="text-sm mb-2 block">Filtrar por Tipo</Label>
+                      <Select value={filtroTipo} onValueChange={(value: any) => setFiltroTipo(value)}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todas">Todas</SelectItem>
+                          <SelectItem value="diaria">Diárias</SelectItem>
+                          <SelectItem value="semanal">Semanais</SelectItem>
+                          <SelectItem value="mensal">Mensais</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex-1">
+                      <Label className="text-sm mb-2 block">Filtrar por Funcionário</Label>
+                      <Select value={filtroFuncionario} onValueChange={setFiltroFuncionario}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todos">Todos</SelectItem>
+                          {funcionarios.map(f => (
+                            <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-
-                  <div>
-                    <Label htmlFor="tipo">Tipo</Label>
-                    <Select value={taskFormData.tipo} onValueChange={(value: any) => setTaskFormData({ ...taskFormData, tipo: value })}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="diaria">Diária</SelectItem>
-                        <SelectItem value="semanal">Semanal</SelectItem>
-                        <SelectItem value="mensal">Mensal</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="status">Status</Label>
-                    <Select value={taskFormData.status} onValueChange={(value: any) => setTaskFormData({ ...taskFormData, status: value })}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="pendente">Pendente</SelectItem>
-                        <SelectItem value="concluida">Concluída</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="funcionario">Funcionário</Label>
-                    <Select 
-                      value={taskFormData.funcionario_id || "nenhum"} 
-                      onValueChange={(value) => setTaskFormData({ ...taskFormData, funcionario_id: value === "nenhum" ? null : value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="nenhum">Nenhum</SelectItem>
-                        {funcionarios.map(f => (
-                          <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="descricao">Descrição</Label>
-                  <Textarea
-                    id="descricao"
-                    value={taskFormData.descricao}
-                    onChange={(e) => setTaskFormData({ ...taskFormData, descricao: e.target.value })}
-                    rows={3}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="data_prazo">Prazo (dd/mm/aaaa)</Label>
-                  <Input
-                    id="data_prazo"
-                    type="text"
-                    placeholder="dd/mm/aaaa"
-                    value={taskFormData.data_prazo}
-                    onChange={(e) => setTaskFormData({ ...taskFormData, data_prazo: applyDateMask(e.target.value) })}
-                    maxLength={10}
-                  />
-                </div>
-
-                <div className="flex gap-2">
-                  <Button type="submit">
-                    {editingTaskId ? "Atualizar" : "Adicionar"}
-                  </Button>
-                  {editingTaskId && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setEditingTaskId(null);
-                        setTaskFormData({
-                          titulo: "",
-                          descricao: "",
-                          tipo: "diaria",
-                          status: "pendente",
-                          funcionario_id: null,
-                          data_prazo: "",
-                        });
-                      }}
-                    >
-                      Cancelar
-                    </Button>
-                  )}
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Lista de Tasks</CardTitle>
-              <Select value={filtroTipo} onValueChange={(value: any) => setFiltroTipo(value)}>
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todas">Todas</SelectItem>
-                  <SelectItem value="diaria">Diárias</SelectItem>
-                  <SelectItem value="semanal">Semanais</SelectItem>
-                  <SelectItem value="mensal">Mensais</SelectItem>
-                </SelectContent>
-              </Select>
-            </CardHeader>
-            <CardContent>
-              {loadingTasks ? (
-                <p>Carregando...</p>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Título</TableHead>
-                      <TableHead>Tipo</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Prazo</TableHead>
-                      <TableHead>Funcionário</TableHead>
-                      <TableHead>Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {tasksFiltradas.map((task) => {
-                      const funcionarioNome = task.funcionario_id 
-                        ? funcionarios.find(f => f.id === task.funcionario_id)?.nome || '-'
-                        : '-';
-                      
-                      return (
-                        <TableRow key={task.id}>
-                          <TableCell>{task.titulo}</TableCell>
-                          <TableCell className="capitalize">{task.tipo}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <span className={getTaskStatusColor(task)}>
-                                {getTaskStatusLabel(task)}
-                              </span>
-                              {isPrazoExpirado(task.data_prazo, task.status) && (
-                                <AlertCircle className="w-4 h-4 text-red-600" />
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            {task.data_prazo ? (
-                              <span className={isPrazoExpirado(task.data_prazo, task.status) ? 'text-red-600 font-semibold' : ''}>
-                                {formatDateBR(task.data_prazo)}
-                              </span>
-                            ) : (
-                              '-'
-                            )}
-                          </TableCell>
-                          <TableCell>{funcionarioNome}</TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
-                              <Dialog>
-                                <DialogTrigger asChild>
+                </CardHeader>
+                <CardContent>
+                  {loadingTasks ? (
+                    <p>Carregando...</p>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Título</TableHead>
+                          <TableHead>Tipo</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Prazo</TableHead>
+                          <TableHead>Funcionário</TableHead>
+                          <TableHead>Ações</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {tasksFiltradas.map((task) => {
+                          const funcionarioNome = task.funcionario_id 
+                            ? funcionarios.find(f => f.id === task.funcionario_id)?.nome || '-'
+                            : '-';
+                          
+                          return (
+                            <TableRow key={task.id}>
+                              <TableCell>{task.titulo}</TableCell>
+                              <TableCell className="capitalize">{task.tipo}</TableCell>
+                              <TableCell>
+                                <div className="flex items-center gap-2">
+                                  <span className={getTaskStatusColor(task)}>
+                                    {getTaskStatusLabel(task)}
+                                  </span>
+                                  {isPrazoExpirado(task.data_prazo, task.status) && (
+                                    <AlertCircle className="w-4 h-4 text-red-600" />
+                                  )}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                {task.data_prazo ? (
+                                  <span className={isPrazoExpirado(task.data_prazo, task.status) ? 'text-red-600 font-semibold' : ''}>
+                                    {formatDateBR(task.data_prazo)}
+                                  </span>
+                                ) : (
+                                  '-'
+                                )}
+                              </TableCell>
+                              <TableCell>{funcionarioNome}</TableCell>
+                              <TableCell>
+                                <div className="flex gap-2">
+                                  <Dialog>
+                                    <DialogTrigger asChild>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setSelectedTask(task)}
+                                      >
+                                        <Eye size={16} />
+                                      </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="max-w-2xl">
+                                      <DialogHeader>
+                                        <DialogTitle>Detalhes da Task</DialogTitle>
+                                      </DialogHeader>
+                                      <div className="space-y-4">
+                                        <div>
+                                          <Label className="text-muted-foreground">Título</Label>
+                                          <p className="text-lg font-semibold">{task.titulo}</p>
+                                        </div>
+                                        <div>
+                                          <Label className="text-muted-foreground">Descrição</Label>
+                                          <p className="text-foreground whitespace-pre-wrap">{task.descricao || 'Sem descrição'}</p>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                          <div>
+                                            <Label className="text-muted-foreground">Tipo</Label>
+                                            <p className="capitalize">{task.tipo}</p>
+                                          </div>
+                                          <div>
+                                            <Label className="text-muted-foreground">Status</Label>
+                                            <p className={getTaskStatusColor(task) + " font-semibold"}>
+                                              {getTaskStatusLabel(task)}
+                                            </p>
+                                          </div>
+                                          <div>
+                                            <Label className="text-muted-foreground">Prazo</Label>
+                                            <p className={isPrazoExpirado(task.data_prazo, task.status) ? 'text-red-600 font-semibold' : ''}>
+                                              {task.data_prazo ? formatDateBR(task.data_prazo) : 'Sem prazo definido'}
+                                            </p>
+                                          </div>
+                                          <div>
+                                            <Label className="text-muted-foreground">Funcionário</Label>
+                                            <p>{funcionarioNome}</p>
+                                          </div>
+                                        </div>
+                                        {isPrazoExpirado(task.data_prazo, task.status) && (
+                                          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                                            <div className="flex items-center gap-2 text-red-600">
+                                              <AlertCircle className="w-5 h-5" />
+                                              <span className="font-semibold">Prazo Ultrapassado</span>
+                                            </div>
+                                            <p className="text-sm text-red-600 mt-1">
+                                              Esta task não foi cumprida dentro do prazo estabelecido.
+                                            </p>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </DialogContent>
+                                  </Dialog>
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => setSelectedTask(task)}
+                                    onClick={() => {
+                                      setEditingTaskId(task.id);
+                                      setTaskFormData({
+                                        titulo: task.titulo,
+                                        descricao: task.descricao || "",
+                                        tipo: task.tipo,
+                                        status: task.status,
+                                        funcionario_id: task.funcionario_id,
+                                        data_prazo: task.data_prazo ? formatDateBR(task.data_prazo) : "",
+                                      });
+                                    }}
                                   >
-                                    <Eye size={16} />
+                                    <Pencil size={16} />
                                   </Button>
-                                </DialogTrigger>
-                                <DialogContent className="max-w-2xl">
-                                  <DialogHeader>
-                                    <DialogTitle>Detalhes da Task</DialogTitle>
-                                  </DialogHeader>
-                                  <div className="space-y-4">
-                                    <div>
-                                      <Label className="text-muted-foreground">Título</Label>
-                                      <p className="text-lg font-semibold">{task.titulo}</p>
-                                    </div>
-                                    <div>
-                                      <Label className="text-muted-foreground">Descrição</Label>
-                                      <p className="text-foreground whitespace-pre-wrap">{task.descricao || 'Sem descrição'}</p>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                      <div>
-                                        <Label className="text-muted-foreground">Tipo</Label>
-                                        <p className="capitalize">{task.tipo}</p>
-                                      </div>
-                                      <div>
-                                        <Label className="text-muted-foreground">Status</Label>
-                                        <p className={getTaskStatusColor(task) + " font-semibold"}>
-                                          {getTaskStatusLabel(task)}
-                                        </p>
-                                      </div>
-                                      <div>
-                                        <Label className="text-muted-foreground">Prazo</Label>
-                                        <p className={isPrazoExpirado(task.data_prazo, task.status) ? 'text-red-600 font-semibold' : ''}>
-                                          {task.data_prazo ? formatDateBR(task.data_prazo) : 'Sem prazo definido'}
-                                        </p>
-                                      </div>
-                                      <div>
-                                        <Label className="text-muted-foreground">Funcionário</Label>
-                                        <p>{funcionarioNome}</p>
-                                      </div>
-                                    </div>
-                                    {isPrazoExpirado(task.data_prazo, task.status) && (
-                                      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                                        <div className="flex items-center gap-2 text-red-600">
-                                          <AlertCircle className="w-5 h-5" />
-                                          <span className="font-semibold">Prazo Ultrapassado</span>
-                                        </div>
-                                        <p className="text-sm text-red-600 mt-1">
-                                          Esta task não foi cumprida dentro do prazo estabelecido.
-                                        </p>
-                                      </div>
-                                    )}
-                                  </div>
-                                </DialogContent>
-                              </Dialog>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  setEditingTaskId(task.id);
-                                  setTaskFormData({
-                                    titulo: task.titulo,
-                                    descricao: task.descricao || "",
-                                    tipo: task.tipo,
-                                    status: task.status,
-                                    funcionario_id: task.funcionario_id,
-                                    data_prazo: task.data_prazo ? formatDateBR(task.data_prazo) : "",
-                                  });
-                                }}
-                              >
-                                <Pencil size={16} />
-                              </Button>
-                              <Button
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => handleDeleteTask(task.id)}
-                              >
-                                <Trash2 size={16} />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => handleDeleteTask(task.id)}
+                                  >
+                                    <Trash2 size={16} />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="adicionar" className="space-y-4 mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{editingTaskId ? "Editar Task" : "Nova Task"}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleTaskSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="titulo">Título</Label>
+                        <Input
+                          id="titulo"
+                          value={taskFormData.titulo}
+                          onChange={(e) => setTaskFormData({ ...taskFormData, titulo: e.target.value })}
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="tipo">Tipo</Label>
+                        <Select value={taskFormData.tipo} onValueChange={(value: any) => setTaskFormData({ ...taskFormData, tipo: value })}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="diaria">Diária</SelectItem>
+                            <SelectItem value="semanal">Semanal</SelectItem>
+                            <SelectItem value="mensal">Mensal</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="status">Status</Label>
+                        <Select value={taskFormData.status} onValueChange={(value: any) => setTaskFormData({ ...taskFormData, status: value })}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pendente">Pendente</SelectItem>
+                            <SelectItem value="concluida">Concluída</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="funcionario">Funcionário</Label>
+                        <Select 
+                          value={taskFormData.funcionario_id || "nenhum"} 
+                          onValueChange={(value) => setTaskFormData({ ...taskFormData, funcionario_id: value === "nenhum" ? null : value })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="nenhum">Nenhum</SelectItem>
+                            {funcionarios.map(f => (
+                              <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="descricao">Descrição</Label>
+                      <Textarea
+                        id="descricao"
+                        value={taskFormData.descricao}
+                        onChange={(e) => setTaskFormData({ ...taskFormData, descricao: e.target.value })}
+                        rows={3}
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="data_prazo">Prazo (dd/mm/aaaa)</Label>
+                      <Input
+                        id="data_prazo"
+                        type="text"
+                        placeholder="dd/mm/aaaa"
+                        value={taskFormData.data_prazo}
+                        onChange={(e) => setTaskFormData({ ...taskFormData, data_prazo: applyDateMask(e.target.value) })}
+                        maxLength={10}
+                      />
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button type="submit">
+                        {editingTaskId ? "Atualizar" : "Adicionar"}
+                      </Button>
+                      {editingTaskId && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            setEditingTaskId(null);
+                            setTaskFormData({
+                              titulo: "",
+                              descricao: "",
+                              tipo: "diaria",
+                              status: "pendente",
+                              funcionario_id: null,
+                              data_prazo: "",
+                            });
+                          }}
+                        >
+                          Cancelar
+                        </Button>
+                      )}
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </TabsContent>
 
         <TabsContent value="funcionarios" className="space-y-6">
@@ -773,10 +806,22 @@ const TasksTab = () => {
                   <CardTitle>Progresso Geral</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Progress value={stats.taxa} className="h-4" />
-                  <p className="text-sm text-muted-foreground mt-2">
-                    {stats.concluidas} de {stats.total} tasks concluídas
-                  </p>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium">
+                        {stats.concluidas} de {stats.total} tasks concluídas
+                      </span>
+                      <span className="text-2xl font-bold text-green-600">{stats.taxa}%</span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-6 overflow-hidden">
+                      <div 
+                        className="h-full bg-green-500 transition-all duration-500 flex items-center justify-center text-white text-xs font-semibold"
+                        style={{ width: `${stats.taxa}%` }}
+                      >
+                        {stats.taxa > 10 && `${stats.taxa}%`}
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </div>
