@@ -13,7 +13,6 @@ import { Pencil, Trash2, Plus, User, CheckCircle2, Clock, TrendingUp, Eye, Alert
 import { useAuth } from "@/contexts/AuthContext";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 
 interface Funcionario {
   id: string;
@@ -531,9 +530,9 @@ const TasksTab = () => {
                                       </div>
                                       <div>
                                         <Label className="text-muted-foreground">Status</Label>
-                                        <Badge className={getTaskStatusColor(task)}>
+                                        <p className={getTaskStatusColor(task) + " font-semibold"}>
                                           {getTaskStatusLabel(task)}
-                                        </Badge>
+                                        </p>
                                       </div>
                                       <div>
                                         <Label className="text-muted-foreground">Prazo</Label>
