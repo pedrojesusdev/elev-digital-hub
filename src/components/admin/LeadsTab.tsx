@@ -17,13 +17,14 @@ interface Lead {
   empresa: string;
   telefone: string;
   localidade: string;
-  nota: "quente" | "medio" | "frio" | null;
+  nota: "quente" | "medio" | "frio" | "nao_qualificado" | null;
   faturamento_estimado: string | null;
   alcance_estimado: string | null;
   faturamento_mensal: string | null;
   alcance_instagram: string | null;
   observacoes: string | null;
-  tipo: "prospecto" | "lead" | "cliente" | "nao_qualificado";
+  ticket_medio: string | null;
+  quantidade_funcionarios: number | null;
   status_contato: "Leads" | "Conseguiu contato" | "Marcou reunião" | "Proposta enviada" | "Aguardando fechamento" | "Fechado" | "Recusado";
   email: string | null;
   instagram: string | null;
@@ -125,6 +126,21 @@ const LeadsTab = () => {
     }
   };
 
+  const handleStatusChange = async (id: string, newStatus: Lead["status_contato"]) => {
+    const { error } = await supabase
+      .from('leads')
+      .update({ status_contato: newStatus })
+      .eq('id', id);
+
+    if (error) {
+      toast.error("Erro ao atualizar status");
+      console.error(error);
+    } else {
+      toast.success("Status atualizado com sucesso!");
+      fetchLeads();
+    }
+  };
+
   const filteredLeads = leads.filter(lead => {
     if (filterStatus !== "all" && lead.status_contato !== filterStatus) return false;
     if (filterData === "month") {
@@ -151,13 +167,6 @@ const LeadsTab = () => {
     recusado: leads.filter(l => l.status_contato === "Recusado").length,
   };
 
-  const tipoCounts = {
-    prospecto: leads.filter(l => l.tipo === "prospecto").length,
-    lead: leads.filter(l => l.tipo === "lead").length,
-    cliente: leads.filter(l => l.tipo === "cliente").length,
-    nao_qualificado: leads.filter(l => l.tipo === "nao_qualificado").length,
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -170,33 +179,8 @@ const LeadsTab = () => {
     <div className="space-y-8 animate-fade-in">
       <h2 className="text-2xl font-bold">Dashboard de Leads</h2>
       
-      {/* Estatísticas por Tipo */}
-      <div>
-        <h3 className="text-lg font-semibold mb-4">Classificação por Tipo</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="p-4 bg-card border-border hover-glow">
-            <p className="text-sm text-muted-foreground mb-1">Prospectos</p>
-            <p className="text-2xl font-bold text-blue-600">{tipoCounts.prospecto}</p>
-          </Card>
-          <Card className="p-4 bg-card border-border hover-glow">
-            <p className="text-sm text-muted-foreground mb-1">Leads</p>
-            <p className="text-2xl font-bold text-green-600">{tipoCounts.lead}</p>
-          </Card>
-          <Card className="p-4 bg-card border-border hover-glow">
-            <p className="text-sm text-muted-foreground mb-1">Clientes</p>
-            <p className="text-2xl font-bold text-purple-600">{tipoCounts.cliente}</p>
-          </Card>
-          <Card className="p-4 bg-card border-border hover-glow">
-            <p className="text-sm text-muted-foreground mb-1">Não Qualificados</p>
-            <p className="text-2xl font-bold text-gray-500">{tipoCounts.nao_qualificado}</p>
-          </Card>
-        </div>
-      </div>
-      
       {/* Estatísticas por Status */}
-      <div>
-        <h3 className="text-lg font-semibold mb-4">Status do Contato</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
         <Card className="p-4 bg-card border-border hover-glow">
           <p className="text-sm text-muted-foreground mb-1">Total</p>
           <p className="text-2xl font-bold">{statusCounts.total}</p>
@@ -229,7 +213,6 @@ const LeadsTab = () => {
           <p className="text-sm text-muted-foreground mb-1">Recusado</p>
           <p className="text-2xl font-bold text-red-600">{statusCounts.recusado}</p>
         </Card>
-        </div>
       </div>
 
       {/* Filtros */}
@@ -297,21 +280,23 @@ const LeadsTab = () => {
                   </TableCell>
                   <TableCell>{lead.localidade}</TableCell>
                   <TableCell>
-                    <Badge 
-                      variant="outline" 
-                      className={`whitespace-nowrap ${
-                        lead.status_contato === "Leads" ? "bg-slate-500 text-white border-slate-500" :
-                        lead.status_contato === "Conseguiu contato" ? "bg-blue-500 text-white border-blue-500" :
-                        lead.status_contato === "Marcou reunião" ? "bg-purple-500 text-white border-purple-500" :
-                        lead.status_contato === "Proposta enviada" ? "bg-orange-500 text-white border-orange-500" :
-                        lead.status_contato === "Aguardando fechamento" ? "bg-amber-500 text-white border-amber-500" :
-                        lead.status_contato === "Fechado" ? "bg-green-500 text-white border-green-500" :
-                        lead.status_contato === "Recusado" ? "bg-red-500 text-white border-red-500" :
-                        ""
-                      }`}
+                    <Select 
+                      value={lead.status_contato} 
+                      onValueChange={(value: Lead["status_contato"]) => handleStatusChange(lead.id, value)}
                     >
-                      {lead.status_contato}
-                    </Badge>
+                      <SelectTrigger className="w-[180px] bg-input border-border">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Leads">Leads</SelectItem>
+                        <SelectItem value="Conseguiu contato">Conseguiu contato</SelectItem>
+                        <SelectItem value="Marcou reunião">Marcou reunião</SelectItem>
+                        <SelectItem value="Proposta enviada">Proposta enviada</SelectItem>
+                        <SelectItem value="Aguardando fechamento">Aguardando fechamento</SelectItem>
+                        <SelectItem value="Fechado">Fechado</SelectItem>
+                        <SelectItem value="Recusado">Recusado</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </TableCell>
                   <TableCell>
                     {lead.nota && (
@@ -322,10 +307,15 @@ const LeadsTab = () => {
                             ? "bg-green-500 text-white"
                             : lead.nota === "medio"
                             ? "bg-yellow-500 text-white"
-                            : "bg-blue-400 text-white"
+                            : lead.nota === "frio"
+                            ? "bg-blue-400 text-white"
+                            : "bg-gray-500 text-white"
                         }
                       >
-                        {lead.nota === "quente" ? "Quente" : lead.nota === "medio" ? "Médio" : "Frio"}
+                        {lead.nota === "quente" ? "Quente" : 
+                         lead.nota === "medio" ? "Médio" : 
+                         lead.nota === "frio" ? "Frio" : 
+                         "Não Qualificado"}
                       </Badge>
                     )}
                   </TableCell>

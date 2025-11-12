@@ -16,10 +16,11 @@ interface Lead {
   email: string | null;
   observacoes: string | null;
   tem_site: boolean | null;
-  tipo: "prospecto" | "lead" | "cliente" | "nao_qualificado";
-  nota: "quente" | "medio" | "frio" | null;
+  nota: "quente" | "medio" | "frio" | "nao_qualificado" | null;
   faturamento_estimado: string | null;
   alcance_estimado: string | null;
+  ticket_medio: string | null;
+  quantidade_funcionarios: number | null;
   origem: string;
   status_contato: string;
   created_at: string;
@@ -79,6 +80,7 @@ const LeadDetail = () => {
     if (nota === "quente") return "Quente";
     if (nota === "medio") return "Médio";
     if (nota === "frio") return "Frio";
+    if (nota === "nao_qualificado") return "Não Qualificado";
     return nota;
   };
 
@@ -86,6 +88,7 @@ const LeadDetail = () => {
     if (nota === "quente") return "bg-green-500 text-white";
     if (nota === "medio") return "bg-yellow-500 text-white";
     if (nota === "frio") return "bg-blue-400 text-white";
+    if (nota === "nao_qualificado") return "bg-gray-500 text-white";
     return "bg-muted text-foreground";
   };
 
@@ -118,17 +121,6 @@ const LeadDetail = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">Tipo</p>
-              <Badge className={
-                lead.tipo === "prospecto" ? "bg-blue-500 text-white" :
-                lead.tipo === "lead" ? "bg-green-500 text-white" :
-                lead.tipo === "cliente" ? "bg-purple-500 text-white" :
-                "bg-gray-500 text-white"
-              }>
-                {lead.tipo === "nao_qualificado" ? "Não Qualificado" : lead.tipo}
-              </Badge>
-            </div>
-            <div className="space-y-2">
               <p className="text-sm text-muted-foreground">Telefone</p>
               <p className="text-lg font-medium">{lead.telefone}</p>
             </div>
@@ -158,6 +150,18 @@ const LeadDetail = () => {
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">Alcance Estimado</p>
                 <p className="text-2xl font-bold">{lead.alcance_estimado}</p>
+              </div>
+            )}
+            {lead.ticket_medio && (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Ticket Médio</p>
+                <p className="text-2xl font-bold">{lead.ticket_medio}</p>
+              </div>
+            )}
+            {lead.quantidade_funcionarios && (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Quantidade de Funcionários</p>
+                <p className="text-2xl font-bold">{lead.quantidade_funcionarios}</p>
               </div>
             )}
             <div className="space-y-2">

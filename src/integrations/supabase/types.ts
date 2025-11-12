@@ -149,10 +149,12 @@ export type Database = {
           nota: Database["public"]["Enums"]["lead_nota"] | null
           observacoes: string | null
           origem: string
+          quantidade_funcionarios: number | null
           status_contato: string
           telefone: string
           tem_site: boolean | null
-          tipo: Database["public"]["Enums"]["lead_tipo"]
+          ticket_medio: string | null
+          tipo: Database["public"]["Enums"]["lead_tipo"] | null
           updated_at: string
         }
         Insert: {
@@ -169,10 +171,12 @@ export type Database = {
           nota?: Database["public"]["Enums"]["lead_nota"] | null
           observacoes?: string | null
           origem?: string
+          quantidade_funcionarios?: number | null
           status_contato?: string
           telefone: string
           tem_site?: boolean | null
-          tipo?: Database["public"]["Enums"]["lead_tipo"]
+          ticket_medio?: string | null
+          tipo?: Database["public"]["Enums"]["lead_tipo"] | null
           updated_at?: string
         }
         Update: {
@@ -189,10 +193,12 @@ export type Database = {
           nota?: Database["public"]["Enums"]["lead_nota"] | null
           observacoes?: string | null
           origem?: string
+          quantidade_funcionarios?: number | null
           status_contato?: string
           telefone?: string
           tem_site?: boolean | null
-          tipo?: Database["public"]["Enums"]["lead_tipo"]
+          ticket_medio?: string | null
+          tipo?: Database["public"]["Enums"]["lead_tipo"] | null
           updated_at?: string
         }
         Relationships: []
@@ -526,7 +532,7 @@ export type Database = {
         | "followup"
         | "relacionamento"
       evento_tipo: "servicos" | "empresa"
-      lead_nota: "quente" | "medio" | "frio"
+      lead_nota: "quente" | "medio" | "frio" | "nao_qualificado"
       lead_tipo: "prospecto" | "lead" | "cliente" | "nao_qualificado"
       task_status: "pendente" | "concluida"
       task_tipo: "diaria" | "semanal" | "mensal"
@@ -676,7 +682,7 @@ export const Constants = {
         "relacionamento",
       ],
       evento_tipo: ["servicos", "empresa"],
-      lead_nota: ["quente", "medio", "frio"],
+      lead_nota: ["quente", "medio", "frio", "nao_qualificado"],
       lead_tipo: ["prospecto", "lead", "cliente", "nao_qualificado"],
       task_status: ["pendente", "concluida"],
       task_tipo: ["diaria", "semanal", "mensal"],

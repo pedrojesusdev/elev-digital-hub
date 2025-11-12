@@ -22,10 +22,11 @@ interface ProspeccaoLead {
   observacoes: string | null;
   tem_site: boolean | null;
   status_contato: "Leads" | "Conseguiu contato" | "Marcou reunião" | "Proposta enviada" | "Aguardando fechamento" | "Fechado" | "Recusado";
-  tipo: "prospecto" | "lead" | "cliente" | "nao_qualificado";
-  nota: "quente" | "medio" | "frio" | null;
+  nota: "quente" | "medio" | "frio" | "nao_qualificado" | null;
   faturamento_estimado: string | null;
   alcance_estimado: string | null;
+  ticket_medio: string | null;
+  quantidade_funcionarios: number | null;
   origem: string;
   created_at: string;
 }
@@ -45,8 +46,9 @@ const ProspeccaoTab = () => {
     nota: null as ProspeccaoLead["nota"],
     faturamento_estimado: "",
     alcance_estimado: "",
+    ticket_medio: "",
+    quantidade_funcionarios: "",
     status_contato: "Leads" as ProspeccaoLead["status_contato"],
-    tipo: "lead" as ProspeccaoLead["tipo"],
   });
 
   // Fetch leads from database
@@ -123,8 +125,9 @@ const ProspeccaoTab = () => {
             nota: formData.nota,
             faturamento_estimado: formData.faturamento_estimado || null,
             alcance_estimado: formData.alcance_estimado || null,
+            ticket_medio: formData.ticket_medio || null,
+            quantidade_funcionarios: formData.quantidade_funcionarios ? parseInt(formData.quantidade_funcionarios) : null,
             status_contato: formData.status_contato,
-            tipo: formData.tipo,
           })
           .eq("id", editingId);
 
@@ -144,10 +147,11 @@ const ProspeccaoTab = () => {
           email: formData.email || null,
           observacoes: formData.observacoes || null,
           tem_site: formData.tem_site === "true",
-          tipo: formData.tipo,
           nota: formData.nota,
           faturamento_estimado: formData.faturamento_estimado || null,
           alcance_estimado: formData.alcance_estimado || null,
+          ticket_medio: formData.ticket_medio || null,
+          quantidade_funcionarios: formData.quantidade_funcionarios ? parseInt(formData.quantidade_funcionarios) : null,
           origem: "manual",
           status_contato: formData.status_contato,
         });
@@ -171,8 +175,9 @@ const ProspeccaoTab = () => {
         nota: null,
         faturamento_estimado: "",
         alcance_estimado: "",
+        ticket_medio: "",
+        quantidade_funcionarios: "",
         status_contato: "Leads",
-        tipo: "lead",
       });
 
       fetchLeads();
@@ -199,8 +204,9 @@ const ProspeccaoTab = () => {
       nota: lead.nota,
       faturamento_estimado: lead.faturamento_estimado || "",
       alcance_estimado: lead.alcance_estimado || "",
+      ticket_medio: lead.ticket_medio || "",
+      quantidade_funcionarios: lead.quantidade_funcionarios?.toString() || "",
       status_contato: lead.status_contato,
-      tipo: lead.tipo,
     });
   };
 
@@ -234,6 +240,7 @@ const ProspeccaoTab = () => {
       "quente": "bg-green-500 text-white border-green-500",
       "medio": "bg-yellow-500 text-white border-yellow-500",
       "frio": "bg-blue-400 text-white border-blue-400",
+      "nao_qualificado": "bg-gray-500 text-white border-gray-500",
     };
     return styles[nota] || "";
   };
@@ -283,8 +290,10 @@ const ProspeccaoTab = () => {
           </p>
         </Card>
         <Card className="p-4 bg-card border-border hover-glow">
-          <p className="text-sm text-muted-foreground mb-1">Total Cadastrados</p>
-          <p className="text-2xl font-bold">{leads.length}</p>
+          <p className="text-sm text-muted-foreground mb-1">Não Qualificados</p>
+          <p className="text-2xl font-bold text-gray-600">
+            {leads.filter(l => l.nota === "nao_qualificado").length}
+          </p>
         </Card>
       </div>
 
@@ -410,24 +419,6 @@ const ProspeccaoTab = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="tipo">Tipo de Lead *</Label>
-                  <Select 
-                    value={formData.tipo} 
-                    onValueChange={(value: ProspeccaoLead["tipo"]) => setFormData({ ...formData, tipo: value })}
-                  >
-                    <SelectTrigger className="bg-input border-border">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="prospecto">Prospecto</SelectItem>
-                      <SelectItem value="lead">Lead</SelectItem>
-                      <SelectItem value="cliente">Cliente</SelectItem>
-                      <SelectItem value="nao_qualificado">Não Qualificado</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
                   <Label htmlFor="nota">Classificação do Lead *</Label>
                   <Select 
                     value={formData.nota || ""} 
@@ -440,6 +431,7 @@ const ProspeccaoTab = () => {
                       <SelectItem value="quente">🔥 Quente</SelectItem>
                       <SelectItem value="medio">🌤️ Médio</SelectItem>
                       <SelectItem value="frio">❄️ Frio</SelectItem>
+                      <SelectItem value="nao_qualificado">❌ Não Qualificado</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -464,6 +456,31 @@ const ProspeccaoTab = () => {
                     value={formData.alcance_estimado}
                     onChange={(e) => setFormData({ ...formData, alcance_estimado: e.target.value })}
                     placeholder="Ex: 10k seguidores"
+                    className="bg-input border-border"
+                  />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="ticket_medio">Ticket Médio (Opcional)</Label>
+                  <Input
+                    id="ticket_medio"
+                    value={formData.ticket_medio}
+                    onChange={(e) => setFormData({ ...formData, ticket_medio: e.target.value })}
+                    placeholder="Ex: R$ 2.500,00"
+                    className="bg-input border-border"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="quantidade_funcionarios">Quantidade de Funcionários (Opcional)</Label>
+                  <Input
+                    id="quantidade_funcionarios"
+                    type="number"
+                    value={formData.quantidade_funcionarios}
+                    onChange={(e) => setFormData({ ...formData, quantidade_funcionarios: e.target.value })}
+                    placeholder="Ex: 50"
                     className="bg-input border-border"
                   />
                 </div>
@@ -518,8 +535,9 @@ const ProspeccaoTab = () => {
                         nota: null,
                         faturamento_estimado: "",
                         alcance_estimado: "",
+                        ticket_medio: "",
+                        quantidade_funcionarios: "",
                         status_contato: "Leads",
-                        tipo: "lead",
                       });
                     }}
                     className="border-border"
