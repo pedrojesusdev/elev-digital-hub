@@ -68,7 +68,20 @@ const UsersTab = () => {
   };
 
   useEffect(() => {
-    fetchUsers();
+    const channel = supabase
+      .channel('users_changes')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'profiles' },
+        () => {
+          fetchUsers();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const updateUserRole = async (userId: string, newRole: string) => {
@@ -166,11 +179,23 @@ const UsersTab = () => {
 
   return (
     <Card className="p-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-2">Gerenciamento de Usuários</h2>
-        <p className="text-muted-foreground">
-          Gerencie permissões e acesso dos usuários do painel
-        </p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-2xl font-bold mb-2">Gerenciamento de Usuários</h2>
+          <p className="text-muted-foreground">
+            Gerencie permissões e acesso dos usuários do painel
+          </p>
+        </div>
+        <Button 
+          onClick={() => {
+            setLoading(true);
+            fetchUsers();
+          }}
+          variant="outline"
+          className="border-border hover:bg-muted"
+        >
+          Atualizar Dados
+        </Button>
       </div>
 
       <Table>

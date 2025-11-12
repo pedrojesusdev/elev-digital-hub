@@ -46,13 +46,11 @@ const AutomationsTab = () => {
   };
 
   useEffect(() => {
-    fetchAutomations();
-
     const channel = supabase
       .channel('automations_changes')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'automations' },
+        { event: 'INSERT', schema: 'public', table: 'automations' },
         () => {
           fetchAutomations();
         }
@@ -152,14 +150,26 @@ const AutomationsTab = () => {
     <div className="space-y-8 animate-fade-in">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Gerenciamento de Automatizações</h2>
-        <Button
-          variant="outline"
-          className="border-border hover:bg-muted"
-          onClick={() => window.open("https://n8n.io", "_blank")}
-        >
-          <ExternalLink className="mr-2" size={16} />
-          Abrir n8n
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            className="border-border hover:bg-muted"
+            onClick={() => {
+              setLoading(true);
+              fetchAutomations();
+            }}
+          >
+            Atualizar Dados
+          </Button>
+          <Button
+            variant="outline"
+            className="border-border hover:bg-muted"
+            onClick={() => window.open("https://n8n.io", "_blank")}
+          >
+            <ExternalLink className="mr-2" size={16} />
+            Abrir n8n
+          </Button>
+        </div>
       </div>
 
       {/* Formulário CRUD */}

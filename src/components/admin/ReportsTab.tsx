@@ -58,13 +58,11 @@ const ReportsTab = () => {
   };
 
   useEffect(() => {
-    fetchData();
-
     const channel = supabase
       .channel('monthly_reports_changes')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'monthly_reports' },
+        { event: 'INSERT', schema: 'public', table: 'monthly_reports' },
         () => {
           fetchData();
         }
@@ -160,7 +158,19 @@ const ReportsTab = () => {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <h2 className="text-2xl font-bold">Relatórios e Análises</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold">Relatórios e Análises</h2>
+        <Button 
+          onClick={() => {
+            setLoading(true);
+            fetchData();
+          }}
+          variant="outline"
+          className="border-border hover:bg-muted"
+        >
+          Atualizar Dados
+        </Button>
+      </div>
 
       <Card className="p-6 bg-card border-border hover-glow">
         <h3 className="text-lg font-semibold mb-4">Adicionar Dados e Análise Mensal</h3>

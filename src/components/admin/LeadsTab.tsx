@@ -81,9 +81,6 @@ const LeadsTab = () => {
   };
 
   useEffect(() => {
-    fetchLeads();
-    fetchMonthlyLeads();
-
     // Realtime updates apenas para novos leads (INSERT), não para edições
     const channel = supabase
       .channel('leads_changes')
@@ -178,7 +175,20 @@ const LeadsTab = () => {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <h2 className="text-2xl font-bold">Dashboard de Leads</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold">Dashboard de Leads</h2>
+        <Button 
+          onClick={() => {
+            setLoading(true);
+            fetchLeads();
+            fetchMonthlyLeads();
+          }}
+          variant="outline"
+          className="border-border hover:bg-muted"
+        >
+          Atualizar Dados
+        </Button>
+      </div>
       
       {/* Estatísticas por Status */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-9 gap-4">

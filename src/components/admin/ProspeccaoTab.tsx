@@ -73,8 +73,6 @@ const ProspeccaoTab = () => {
   };
 
   useEffect(() => {
-    fetchLeads();
-
     // Setup realtime subscription apenas para novos leads de formulário
     const channel = supabase
       .channel("leads-changes")
@@ -266,6 +264,16 @@ const ProspeccaoTab = () => {
     <div className="space-y-8 animate-fade-in">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Prospecção de Leads</h2>
+        <Button 
+          onClick={() => {
+            setLoading(true);
+            fetchLeads();
+          }}
+          variant="outline"
+          className="border-border hover:bg-muted"
+        >
+          Atualizar Dados
+        </Button>
       </div>
 
       {/* Estatísticas */}

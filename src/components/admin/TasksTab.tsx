@@ -109,17 +109,14 @@ const TasksTab = () => {
   };
 
   useEffect(() => {
-    fetchTasks();
-    fetchFuncionarios();
-
     const tasksChannel = supabase
       .channel('tasks-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, fetchTasks)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'tasks' }, fetchTasks)
       .subscribe();
 
     const funcChannel = supabase
       .channel('funcionarios-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'funcionarios' }, fetchFuncionarios)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'funcionarios' }, fetchFuncionarios)
       .subscribe();
 
     return () => {
@@ -320,6 +317,21 @@ const TasksTab = () => {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold">Gerenciamento de Tasks</h2>
+        <Button 
+          onClick={() => {
+            setLoadingTasks(true);
+            setLoadingFunc(true);
+            fetchTasks();
+            fetchFuncionarios();
+          }}
+          variant="outline"
+          className="border-border hover:bg-muted"
+        >
+          Atualizar Dados
+        </Button>
+      </div>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full max-w-md mx-auto grid-cols-3">
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
