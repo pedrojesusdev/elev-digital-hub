@@ -93,7 +93,7 @@ const UsersTab = () => {
           .from("user_roles")
           .insert([{ 
             user_id: userId, 
-            role: newRole as "super_admin" | "admin" | "readonly"
+            role: newRole as "super_admin" | "readonly"
           }]);
 
         if (error) throw error;
@@ -128,17 +128,16 @@ const UsersTab = () => {
 
   const getRoleBadge = (role?: string) => {
     if (!role) {
-      return <Badge variant="secondary">Sem permissão</Badge>;
+      return <Badge variant="secondary">Não autorizado</Badge>;
     }
 
     const roleMap = {
       super_admin: { label: "Super Admin", variant: "default" as const },
-      admin: { label: "Admin", variant: "default" as const },
       readonly: { label: "Somente Leitura", variant: "secondary" as const },
     };
 
     const roleInfo = roleMap[role as keyof typeof roleMap];
-    return <Badge variant={roleInfo?.variant}>{roleInfo?.label}</Badge>;
+    return roleInfo ? <Badge variant={roleInfo.variant}>{roleInfo.label}</Badge> : <Badge variant="secondary">Não autorizado</Badge>;
   };
 
   if (!isSuperAdmin) {
@@ -203,9 +202,8 @@ const UsersTab = () => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">Sem permissão</SelectItem>
+                      <SelectItem value="none">Não autorizado</SelectItem>
                       <SelectItem value="readonly">Somente Leitura</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
                       <SelectItem value="super_admin">Super Admin</SelectItem>
                     </SelectContent>
                   </Select>

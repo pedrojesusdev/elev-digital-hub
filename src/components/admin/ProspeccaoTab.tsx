@@ -21,7 +21,7 @@ interface ProspeccaoLead {
   email: string | null;
   observacoes: string | null;
   tem_site: boolean | null;
-  status_contato: "Novo lead" | "Não contatado" | "Aguardando resposta" | "Recusado" | "Cliente";
+  status_contato: "Leads" | "Conseguiu contato" | "Marcou reunião" | "Proposta enviada" | "Aguardando fechamento" | "Fechado";
   tipo: "prospecto" | "lead" | "cliente";
   nota: "quente" | "medio" | "frio" | null;
   faturamento_estimado: string | null;
@@ -47,6 +47,7 @@ const ProspeccaoTab = () => {
     nota: null as ProspeccaoLead["nota"],
     faturamento_estimado: "",
     alcance_estimado: "",
+    status_contato: "Leads" as ProspeccaoLead["status_contato"],
   });
 
   // Fetch leads from database
@@ -124,6 +125,7 @@ const ProspeccaoTab = () => {
             nota: formData.nota,
             faturamento_estimado: formData.faturamento_estimado || null,
             alcance_estimado: formData.alcance_estimado || null,
+            status_contato: formData.status_contato,
           })
           .eq("id", editingId);
 
@@ -148,7 +150,7 @@ const ProspeccaoTab = () => {
           faturamento_estimado: formData.faturamento_estimado || null,
           alcance_estimado: formData.alcance_estimado || null,
           origem: "manual",
-          status_contato: "Não contatado",
+          status_contato: formData.status_contato,
         });
 
         if (error) throw error;
@@ -171,6 +173,7 @@ const ProspeccaoTab = () => {
         nota: null,
         faturamento_estimado: "",
         alcance_estimado: "",
+        status_contato: "Leads",
       });
 
       fetchLeads();
@@ -198,6 +201,7 @@ const ProspeccaoTab = () => {
       nota: lead.nota,
       faturamento_estimado: lead.faturamento_estimado || "",
       alcance_estimado: lead.alcance_estimado || "",
+      status_contato: lead.status_contato,
     });
   };
 
@@ -438,6 +442,26 @@ const ProspeccaoTab = () => {
                   </Select>
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="status_contato">Status do Contato *</Label>
+                  <Select 
+                    value={formData.status_contato} 
+                    onValueChange={(value: ProspeccaoLead["status_contato"]) => setFormData({ ...formData, status_contato: value })}
+                  >
+                    <SelectTrigger className="bg-input border-border">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Leads">Leads</SelectItem>
+                      <SelectItem value="Conseguiu contato">Conseguiu contato</SelectItem>
+                      <SelectItem value="Marcou reunião">Marcou reunião</SelectItem>
+                      <SelectItem value="Proposta enviada">Proposta enviada</SelectItem>
+                      <SelectItem value="Aguardando fechamento">Aguardando fechamento</SelectItem>
+                      <SelectItem value="Fechado">Fechado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 {formData.tipo === "lead" && (
                   <>
                     <div className="space-y-2">
@@ -534,6 +558,7 @@ const ProspeccaoTab = () => {
                         nota: null,
                         faturamento_estimado: "",
                         alcance_estimado: "",
+                        status_contato: "Leads",
                       });
                     }}
                     className="border-border"
@@ -572,7 +597,8 @@ const ProspeccaoTab = () => {
                     <TableHead>Empresa</TableHead>
                     <TableHead>Localidade</TableHead>
                     <TableHead>Contato</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead>Tipo</TableHead>
+                    <TableHead>Status do Contato</TableHead>
                     <TableHead>Data</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
@@ -608,6 +634,44 @@ const ProspeccaoTab = () => {
                         <Badge className={getTipoBadge(lead.tipo)}>
                           {lead.tipo}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Select
+                          value={lead.status_contato}
+                          onValueChange={async (value: ProspeccaoLead["status_contato"]) => {
+                            try {
+                              const { error } = await supabase
+                                .from("leads")
+                                .update({ status_contato: value })
+                                .eq("id", lead.id);
+                              if (error) throw error;
+                              toast({
+                                title: "Status atualizado!",
+                                description: "O status do contato foi atualizado com sucesso.",
+                              });
+                              fetchLeads();
+                            } catch (error) {
+                              console.error("Error updating status:", error);
+                              toast({
+                                title: "Erro ao atualizar",
+                                description: "Não foi possível atualizar o status.",
+                                variant: "destructive",
+                              });
+                            }
+                          }}
+                        >
+                          <SelectTrigger className="w-[180px] h-8 bg-input border-border">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Leads">Leads</SelectItem>
+                            <SelectItem value="Conseguiu contato">Conseguiu contato</SelectItem>
+                            <SelectItem value="Marcou reunião">Marcou reunião</SelectItem>
+                            <SelectItem value="Proposta enviada">Proposta enviada</SelectItem>
+                            <SelectItem value="Aguardando fechamento">Aguardando fechamento</SelectItem>
+                            <SelectItem value="Fechado">Fechado</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         {new Date(lead.created_at).toLocaleDateString('pt-BR')}
