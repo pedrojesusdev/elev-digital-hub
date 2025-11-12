@@ -16,7 +16,7 @@ interface Lead {
   email: string | null;
   observacoes: string | null;
   tem_site: boolean | null;
-  nota: "quente" | "medio" | "frio" | "nao_qualificado" | null;
+  nota: "quente" | "medio" | "frio" | null;
   faturamento_estimado: string | null;
   alcance_estimado: string | null;
   ticket_medio: string | null;
@@ -80,7 +80,6 @@ const LeadDetail = () => {
     if (nota === "quente") return "Quente";
     if (nota === "medio") return "Médio";
     if (nota === "frio") return "Frio";
-    if (nota === "nao_qualificado") return "Não Qualificado";
     return nota;
   };
 
@@ -88,7 +87,6 @@ const LeadDetail = () => {
     if (nota === "quente") return "bg-green-500 text-white";
     if (nota === "medio") return "bg-yellow-500 text-white";
     if (nota === "frio") return "bg-blue-400 text-white";
-    if (nota === "nao_qualificado") return "bg-gray-500 text-white";
     return "bg-muted text-foreground";
   };
 

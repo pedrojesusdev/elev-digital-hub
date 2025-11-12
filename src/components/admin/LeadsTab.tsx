@@ -17,7 +17,7 @@ interface Lead {
   empresa: string;
   telefone: string;
   localidade: string;
-  nota: "quente" | "medio" | "frio" | "nao_qualificado" | null;
+  nota: "quente" | "medio" | "frio" | null;
   faturamento_estimado: string | null;
   alcance_estimado: string | null;
   faturamento_mensal: string | null;
@@ -25,7 +25,7 @@ interface Lead {
   observacoes: string | null;
   ticket_medio: string | null;
   quantidade_funcionarios: number | null;
-  status_contato: "Leads" | "Conseguiu contato" | "Marcou reunião" | "Proposta enviada" | "Aguardando fechamento" | "Fechado" | "Recusado";
+  status_contato: "Leads" | "Conseguiu contato" | "Marcou reunião" | "Proposta enviada" | "Aguardando fechamento" | "Fechado" | "Recusado" | "Não qualificado";
   email: string | null;
   instagram: string | null;
   created_at: string;
@@ -165,6 +165,7 @@ const LeadsTab = () => {
     aguardando: leads.filter(l => l.status_contato === "Aguardando fechamento").length,
     fechado: leads.filter(l => l.status_contato === "Fechado").length,
     recusado: leads.filter(l => l.status_contato === "Recusado").length,
+    nao_qualificado: leads.filter(l => l.status_contato === "Não qualificado").length,
   };
 
   if (loading) {
@@ -180,7 +181,7 @@ const LeadsTab = () => {
       <h2 className="text-2xl font-bold">Dashboard de Leads</h2>
       
       {/* Estatísticas por Status */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-9 gap-4">
         <Card className="p-4 bg-card border-border hover-glow">
           <p className="text-sm text-muted-foreground mb-1">Total</p>
           <p className="text-2xl font-bold">{statusCounts.total}</p>
@@ -213,6 +214,10 @@ const LeadsTab = () => {
           <p className="text-sm text-muted-foreground mb-1">Recusado</p>
           <p className="text-2xl font-bold text-red-600">{statusCounts.recusado}</p>
         </Card>
+        <Card className="p-4 bg-card border-border hover-glow">
+          <p className="text-sm text-muted-foreground mb-1">Não Qualificado</p>
+          <p className="text-2xl font-bold text-gray-600">{statusCounts.nao_qualificado}</p>
+        </Card>
       </div>
 
       {/* Filtros */}
@@ -233,6 +238,7 @@ const LeadsTab = () => {
                 <SelectItem value="Aguardando fechamento">Aguardando fechamento</SelectItem>
                 <SelectItem value="Fechado">Fechado</SelectItem>
                 <SelectItem value="Recusado">Recusado</SelectItem>
+                <SelectItem value="Não qualificado">Não qualificado</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -295,6 +301,7 @@ const LeadsTab = () => {
                         <SelectItem value="Aguardando fechamento">Aguardando fechamento</SelectItem>
                         <SelectItem value="Fechado">Fechado</SelectItem>
                         <SelectItem value="Recusado">Recusado</SelectItem>
+                        <SelectItem value="Não qualificado">Não qualificado</SelectItem>
                       </SelectContent>
                     </Select>
                   </TableCell>
@@ -307,15 +314,12 @@ const LeadsTab = () => {
                             ? "bg-green-500 text-white"
                             : lead.nota === "medio"
                             ? "bg-yellow-500 text-white"
-                            : lead.nota === "frio"
-                            ? "bg-blue-400 text-white"
-                            : "bg-gray-500 text-white"
+                            : "bg-blue-400 text-white"
                         }
                       >
                         {lead.nota === "quente" ? "Quente" : 
                          lead.nota === "medio" ? "Médio" : 
-                         lead.nota === "frio" ? "Frio" : 
-                         "Não Qualificado"}
+                         "Frio"}
                       </Badge>
                     )}
                   </TableCell>

@@ -21,8 +21,8 @@ interface ProspeccaoLead {
   email: string | null;
   observacoes: string | null;
   tem_site: boolean | null;
-  status_contato: "Leads" | "Conseguiu contato" | "Marcou reunião" | "Proposta enviada" | "Aguardando fechamento" | "Fechado" | "Recusado";
-  nota: "quente" | "medio" | "frio" | "nao_qualificado" | null;
+  status_contato: "Leads" | "Conseguiu contato" | "Marcou reunião" | "Proposta enviada" | "Aguardando fechamento" | "Fechado" | "Recusado" | "Não qualificado";
+  nota: "quente" | "medio" | "frio" | null;
   faturamento_estimado: string | null;
   alcance_estimado: string | null;
   ticket_medio: string | null;
@@ -240,7 +240,6 @@ const ProspeccaoTab = () => {
       "quente": "bg-green-500 text-white border-green-500",
       "medio": "bg-yellow-500 text-white border-yellow-500",
       "frio": "bg-blue-400 text-white border-blue-400",
-      "nao_qualificado": "bg-gray-500 text-white border-gray-500",
     };
     return styles[nota] || "";
   };
@@ -270,7 +269,7 @@ const ProspeccaoTab = () => {
       </div>
 
       {/* Estatísticas */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <Card className="p-4 bg-card border-border hover-glow">
           <p className="text-sm text-muted-foreground mb-1">Leads Quentes</p>
           <p className="text-2xl font-bold text-green-600">
@@ -287,12 +286,6 @@ const ProspeccaoTab = () => {
           <p className="text-sm text-muted-foreground mb-1">Leads Frios</p>
           <p className="text-2xl font-bold text-blue-600">
             {leads.filter(l => l.nota === "frio").length}
-          </p>
-        </Card>
-        <Card className="p-4 bg-card border-border hover-glow">
-          <p className="text-sm text-muted-foreground mb-1">Não Qualificados</p>
-          <p className="text-2xl font-bold text-gray-600">
-            {leads.filter(l => l.nota === "nao_qualificado").length}
           </p>
         </Card>
       </div>
@@ -414,6 +407,7 @@ const ProspeccaoTab = () => {
                       <SelectItem value="Aguardando fechamento">Aguardando fechamento</SelectItem>
                       <SelectItem value="Fechado">Fechado</SelectItem>
                       <SelectItem value="Recusado">Recusado</SelectItem>
+                      <SelectItem value="Não qualificado">Não qualificado</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -431,7 +425,6 @@ const ProspeccaoTab = () => {
                       <SelectItem value="quente">🔥 Quente</SelectItem>
                       <SelectItem value="medio">🌤️ Médio</SelectItem>
                       <SelectItem value="frio">❄️ Frio</SelectItem>
-                      <SelectItem value="nao_qualificado">❌ Não Qualificado</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
