@@ -44,9 +44,11 @@ const TrafegoTab = () => {
   });
 
   useEffect(() => {
+    fetchTrafegos();
+
     const channel = supabase
       .channel('trafego-changes')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'trafego_pago' }, fetchTrafegos)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'trafego_pago' }, fetchTrafegos)
       .subscribe();
 
     return () => {
@@ -190,25 +192,14 @@ const TrafegoTab = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Gerenciamento de Tráfego Pago</h2>
-        <Button 
-          onClick={() => {
-            setLoading(true);
-            fetchTrafegos();
-          }}
-          variant="outline"
-          className="border-border hover:bg-muted"
-        >
-          Atualizar Dados
-        </Button>
-      </div>
-      <div className="flex items-center gap-3">
-        <Label className="text-sm">Filtrar métricas</Label>
-        <ToggleGroup type="single" value={metricFilter} onValueChange={(v) => v && setMetricFilter(v as any)}>
-          <ToggleGroupItem value="mensal" aria-label="Mensal">Mensal</ToggleGroupItem>
-          <ToggleGroupItem value="anual" aria-label="Anual">Anual</ToggleGroupItem>
-          <ToggleGroupItem value="geral" aria-label="Geral">Geral</ToggleGroupItem>
-        </ToggleGroup>
+        <div className="flex items-center gap-3">
+          <Label className="text-sm">Filtrar métricas</Label>
+          <ToggleGroup type="single" value={metricFilter} onValueChange={(v) => v && setMetricFilter(v as any)}>
+            <ToggleGroupItem value="mensal" aria-label="Mensal">Mensal</ToggleGroupItem>
+            <ToggleGroupItem value="anual" aria-label="Anual">Anual</ToggleGroupItem>
+            <ToggleGroupItem value="geral" aria-label="Geral">Geral</ToggleGroupItem>
+          </ToggleGroup>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

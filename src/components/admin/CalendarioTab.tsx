@@ -107,11 +107,13 @@ const CalendarioTab = () => {
   };
 
   useEffect(() => {
+    fetchEvents();
+
     const channel = supabase
       .channel('calendar_events_changes')
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'calendar_events' },
+        { event: '*', schema: 'public', table: 'calendar_events' },
         () => {
           fetchEvents();
         }
@@ -263,19 +265,7 @@ const CalendarioTab = () => {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Calendário de Reuniões</h2>
-        <Button 
-          onClick={() => {
-            setLoading(true);
-            fetchEvents();
-          }}
-          variant="outline"
-          className="border-border hover:bg-muted"
-        >
-          Atualizar Dados
-        </Button>
-      </div>
+      <h2 className="text-2xl font-bold">Calendário de Reuniões</h2>
 
       <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v as any); setSelectedCategory("all"); }}>
         <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">

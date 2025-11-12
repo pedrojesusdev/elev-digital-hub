@@ -86,11 +86,13 @@ const SocialMediaTab = () => {
   };
 
   useEffect(() => {
+    fetchServices();
+
     const channel = supabase
       .channel('social_media_services_changes')
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'social_media_services' },
+        { event: '*', schema: 'public', table: 'social_media_services' },
         () => {
           fetchServices();
         }
@@ -301,16 +303,6 @@ const SocialMediaTab = () => {
     <div className="space-y-8 animate-fade-in">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Gerenciamento de Social Media</h2>
-        <Button 
-          onClick={() => {
-            setLoading(true);
-            fetchServices();
-          }}
-          variant="outline"
-          className="border-border hover:bg-muted"
-        >
-          Atualizar Dados
-        </Button>
       </div>
 
       {/* Seletor de Empresa */}
