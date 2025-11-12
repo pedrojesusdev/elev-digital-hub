@@ -51,13 +51,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         
-        // Defer role fetching with setTimeout
+        // Defer role fetching with setTimeout and block until role resolves
         if (session?.user) {
+          setLoading(true);
           setTimeout(() => {
-            fetchUserRole(session.user.id).then(setUserRole);
+            fetchUserRole(session.user.id)
+              .then((role) => setUserRole(role))
+              .finally(() => setLoading(false));
           }, 0);
         } else {
           setUserRole(null);
+          setLoading(false);
         }
       }
     );
