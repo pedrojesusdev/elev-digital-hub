@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, Building2, MapPin, Phone, Instagram, Mail, Filter, Bell } from "lucide-react";
+import { Plus, Pencil, Trash2, Building2, MapPin, Phone, Instagram, Mail, Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -34,7 +34,6 @@ const ProspeccaoTab = () => {
   const [leads, setLeads] = useState<ProspeccaoLead[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [filterTipo, setFilterTipo] = useState<string>("all");
   const [formData, setFormData] = useState({
     empresa: "",
     localidade: "",
@@ -43,7 +42,6 @@ const ProspeccaoTab = () => {
     email: "",
     observacoes: "",
     tem_site: "false",
-    tipo: "prospecto" as ProspeccaoLead["tipo"],
     nota: null as ProspeccaoLead["nota"],
     faturamento_estimado: "",
     alcance_estimado: "",
@@ -121,7 +119,6 @@ const ProspeccaoTab = () => {
             email: formData.email || null,
             observacoes: formData.observacoes || null,
             tem_site: formData.tem_site === "true",
-            tipo: formData.tipo,
             nota: formData.nota,
             faturamento_estimado: formData.faturamento_estimado || null,
             alcance_estimado: formData.alcance_estimado || null,
@@ -145,7 +142,7 @@ const ProspeccaoTab = () => {
           email: formData.email || null,
           observacoes: formData.observacoes || null,
           tem_site: formData.tem_site === "true",
-          tipo: formData.tipo,
+          tipo: "lead",
           nota: formData.nota,
           faturamento_estimado: formData.faturamento_estimado || null,
           alcance_estimado: formData.alcance_estimado || null,
@@ -169,7 +166,6 @@ const ProspeccaoTab = () => {
         email: "",
         observacoes: "",
         tem_site: "false",
-        tipo: "prospecto",
         nota: null,
         faturamento_estimado: "",
         alcance_estimado: "",
@@ -197,7 +193,6 @@ const ProspeccaoTab = () => {
       email: lead.email || "",
       observacoes: lead.observacoes || "",
       tem_site: lead.tem_site ? "true" : "false",
-      tipo: lead.tipo,
       nota: lead.nota,
       faturamento_estimado: lead.faturamento_estimado || "",
       alcance_estimado: lead.alcance_estimado || "",
@@ -229,42 +224,15 @@ const ProspeccaoTab = () => {
     }
   };
 
-  const getTipoBadge = (tipo: ProspeccaoLead["tipo"]) => {
+  const getNotaBadge = (nota: ProspeccaoLead["nota"]) => {
+    if (!nota) return "";
     const styles = {
-      "prospecto": "bg-blue-500 text-white",
-      "lead": "bg-green-500 text-white",
-      "cliente": "bg-purple-500 text-white",
+      "quente": "bg-green-500 text-white border-green-500",
+      "medio": "bg-yellow-500 text-white border-yellow-500",
+      "frio": "bg-blue-400 text-white border-blue-400",
     };
-    return styles[tipo] || "";
+    return styles[nota] || "";
   };
-
-  const handleConvertToLead = async (lead: ProspeccaoLead) => {
-    try {
-      const { error } = await supabase
-        .from("leads")
-        .update({ tipo: "lead" })
-        .eq("id", lead.id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Prospecto convertido em lead!",
-        description: "Agora você pode editar os detalhes do lead.",
-      });
-      fetchLeads();
-    } catch (error) {
-      console.error("Error converting to lead:", error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível converter o prospecto.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const filteredLeads = filterTipo === "all" 
-    ? leads
-    : leads.filter(lead => lead.tipo === filterTipo);
 
   const formularioLeads = leads.filter(lead => lead.origem === "formulario");
 
@@ -291,32 +259,23 @@ const ProspeccaoTab = () => {
       </div>
 
       {/* Estatísticas */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="p-4 bg-card border-border hover-glow">
-          <p className="text-sm text-muted-foreground mb-1">Prospectos</p>
-          <p className="text-2xl font-bold">
-            {leads.filter(l => l.tipo === "prospecto").length}
+          <p className="text-sm text-muted-foreground mb-1">Leads Quentes</p>
+          <p className="text-2xl font-bold text-green-600">
+            {leads.filter(l => l.nota === "quente").length}
           </p>
         </Card>
         <Card className="p-4 bg-card border-border hover-glow">
-          <p className="text-sm text-muted-foreground mb-1">Leads</p>
-          <p className="text-2xl font-bold">
-            {leads.filter(l => l.tipo === "lead").length}
+          <p className="text-sm text-muted-foreground mb-1">Leads Médios</p>
+          <p className="text-2xl font-bold text-yellow-600">
+            {leads.filter(l => l.nota === "medio").length}
           </p>
         </Card>
         <Card className="p-4 bg-card border-border hover-glow">
-          <p className="text-sm text-muted-foreground mb-1">Clientes</p>
-          <p className="text-2xl font-bold">
-            {leads.filter(l => l.tipo === "cliente").length}
-          </p>
-        </Card>
-        <Card className="p-4 bg-card border-border hover-glow">
-          <p className="text-sm text-muted-foreground mb-1">Taxa de Conversão</p>
-          <p className="text-2xl font-bold">
-            {leads.length > 0 
-              ? `${Math.round((leads.filter(l => l.tipo === "cliente").length / leads.length) * 100)}%`
-              : "0%"
-            }
+          <p className="text-sm text-muted-foreground mb-1">Leads Frios</p>
+          <p className="text-2xl font-bold text-blue-600">
+            {leads.filter(l => l.nota === "frio").length}
           </p>
         </Card>
         <Card className="p-4 bg-card border-border hover-glow">
@@ -426,23 +385,6 @@ const ProspeccaoTab = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="tipo">Tipo *</Label>
-                  <Select 
-                    value={formData.tipo} 
-                    onValueChange={(value: ProspeccaoLead["tipo"]) => setFormData({ ...formData, tipo: value })}
-                  >
-                    <SelectTrigger className="bg-input border-border">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="prospecto">Prospecto</SelectItem>
-                      <SelectItem value="lead">Lead</SelectItem>
-                      <SelectItem value="cliente">Cliente</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
                   <Label htmlFor="status_contato">Status do Contato *</Label>
                   <Select 
                     value={formData.status_contato} 
@@ -462,50 +404,46 @@ const ProspeccaoTab = () => {
                   </Select>
                 </div>
 
-                {formData.tipo === "lead" && (
-                  <>
-                    <div className="space-y-2">
-                      <Label htmlFor="nota">Nota do Lead</Label>
-                      <Select 
-                        value={formData.nota || ""} 
-                        onValueChange={(value) => setFormData({ ...formData, nota: value as ProspeccaoLead["nota"] })}
-                      >
-                        <SelectTrigger className="bg-input border-border">
-                          <SelectValue placeholder="Selecione a nota" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="quente">Quente</SelectItem>
-                          <SelectItem value="medio">Médio</SelectItem>
-                          <SelectItem value="frio">Frio</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                <div className="space-y-2">
+                  <Label htmlFor="nota">Classificação do Lead *</Label>
+                  <Select 
+                    value={formData.nota || ""} 
+                    onValueChange={(value) => setFormData({ ...formData, nota: value as ProspeccaoLead["nota"] })}
+                  >
+                    <SelectTrigger className="bg-input border-border">
+                      <SelectValue placeholder="Selecione a classificação" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="quente">🔥 Quente</SelectItem>
+                      <SelectItem value="medio">🌤️ Médio</SelectItem>
+                      <SelectItem value="frio">❄️ Frio</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
 
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="faturamento_estimado">Faturamento Estimado</Label>
-                        <Input
-                          id="faturamento_estimado"
-                          value={formData.faturamento_estimado}
-                          onChange={(e) => setFormData({ ...formData, faturamento_estimado: e.target.value })}
-                          placeholder="Ex: R$ 50.000,00/mês"
-                          className="bg-input border-border"
-                        />
-                      </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="faturamento_estimado">Faturamento Estimado</Label>
+                  <Input
+                    id="faturamento_estimado"
+                    value={formData.faturamento_estimado}
+                    onChange={(e) => setFormData({ ...formData, faturamento_estimado: e.target.value })}
+                    placeholder="Ex: R$ 50.000,00/mês"
+                    className="bg-input border-border"
+                  />
+                </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="alcance_estimado">Alcance Estimado</Label>
-                        <Input
-                          id="alcance_estimado"
-                          value={formData.alcance_estimado}
-                          onChange={(e) => setFormData({ ...formData, alcance_estimado: e.target.value })}
-                          placeholder="Ex: 10k seguidores"
-                          className="bg-input border-border"
-                        />
-                      </div>
-                    </div>
-                  </>
-                )}
+                <div className="space-y-2">
+                  <Label htmlFor="alcance_estimado">Alcance Estimado</Label>
+                  <Input
+                    id="alcance_estimado"
+                    value={formData.alcance_estimado}
+                    onChange={(e) => setFormData({ ...formData, alcance_estimado: e.target.value })}
+                    placeholder="Ex: 10k seguidores"
+                    className="bg-input border-border"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -554,7 +492,6 @@ const ProspeccaoTab = () => {
                         email: "",
                         observacoes: "",
                         tem_site: "false",
-                        tipo: "prospecto",
                         nota: null,
                         faturamento_estimado: "",
                         alcance_estimado: "",
@@ -570,24 +507,10 @@ const ProspeccaoTab = () => {
             </form>
           </Card>
 
-          {/* Filtro e Lista */}
+          {/* Lista */}
           <Card className="p-6 bg-card border-border hover-glow">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Leads Cadastrados</h3>
-              <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-muted-foreground" />
-                <Select value={filterTipo} onValueChange={setFilterTipo}>
-                  <SelectTrigger className="w-[200px] bg-input border-border">
-                    <SelectValue placeholder="Filtrar por tipo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos os tipos</SelectItem>
-                    <SelectItem value="prospecto">Prospectos</SelectItem>
-                    <SelectItem value="lead">Leads</SelectItem>
-                    <SelectItem value="cliente">Clientes</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
 
             <div className="overflow-x-auto">
@@ -597,14 +520,14 @@ const ProspeccaoTab = () => {
                     <TableHead>Empresa</TableHead>
                     <TableHead>Localidade</TableHead>
                     <TableHead>Contato</TableHead>
-                    <TableHead>Tipo</TableHead>
+                    <TableHead>Classificação</TableHead>
                     <TableHead>Status do Contato</TableHead>
                     <TableHead>Data</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredLeads.map((lead) => (
+                  {leads.map((lead) => (
                     <TableRow key={lead.id} className="border-border hover:bg-muted/50">
                       <TableCell>
                         <div>
@@ -631,9 +554,13 @@ const ProspeccaoTab = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className={getTipoBadge(lead.tipo)}>
-                          {lead.tipo}
-                        </Badge>
+                        {lead.nota ? (
+                          <Badge variant="outline" className={getNotaBadge(lead.nota)}>
+                            {lead.nota === "quente" ? "🔥 Quente" : lead.nota === "medio" ? "🌤️ Médio" : "❄️ Frio"}
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground text-sm">Não classificado</span>
+                        )}
                       </TableCell>
                       <TableCell>
                         <Select
@@ -702,9 +629,9 @@ const ProspeccaoTab = () => {
               </Table>
             </div>
 
-            {filteredLeads.length === 0 && (
+            {leads.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
-                Nenhum lead encontrado com este filtro.
+                Nenhum lead cadastrado ainda.
               </div>
             )}
           </Card>
@@ -728,7 +655,7 @@ const ProspeccaoTab = () => {
                     <TableHead>Localidade</TableHead>
                     <TableHead>Contato</TableHead>
                     <TableHead>Mensagem</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead>Classificação</TableHead>
                     <TableHead>Data de Envio</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
@@ -763,9 +690,13 @@ const ProspeccaoTab = () => {
                         </p>
                       </TableCell>
                       <TableCell>
-                        <Badge className={getTipoBadge(lead.tipo)}>
-                          {lead.tipo}
-                        </Badge>
+                        {lead.nota ? (
+                          <Badge variant="outline" className={getNotaBadge(lead.nota)}>
+                            {lead.nota === "quente" ? "🔥 Quente" : lead.nota === "medio" ? "🌤️ Médio" : "❄️ Frio"}
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground text-sm">Não classificado</span>
+                        )}
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         {new Date(lead.created_at).toLocaleDateString('pt-BR')} às{" "}
