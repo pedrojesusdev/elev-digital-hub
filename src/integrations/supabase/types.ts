@@ -527,7 +527,7 @@ export type Database = {
         | "relacionamento"
       evento_tipo: "servicos" | "empresa"
       lead_nota: "quente" | "medio" | "frio"
-      lead_tipo: "prospecto" | "lead" | "cliente"
+      lead_tipo: "prospecto" | "lead" | "cliente" | "nao_qualificado"
       task_status: "pendente" | "concluida"
       task_tipo: "diaria" | "semanal" | "mensal"
     }
@@ -677,7 +677,7 @@ export const Constants = {
       ],
       evento_tipo: ["servicos", "empresa"],
       lead_nota: ["quente", "medio", "frio"],
-      lead_tipo: ["prospecto", "lead", "cliente"],
+      lead_tipo: ["prospecto", "lead", "cliente", "nao_qualificado"],
       task_status: ["pendente", "concluida"],
       task_tipo: ["diaria", "semanal", "mensal"],
     },

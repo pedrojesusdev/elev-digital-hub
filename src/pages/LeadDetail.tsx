@@ -16,7 +16,7 @@ interface Lead {
   email: string | null;
   observacoes: string | null;
   tem_site: boolean | null;
-  tipo: "prospecto" | "lead" | "cliente";
+  tipo: "prospecto" | "lead" | "cliente" | "nao_qualificado";
   nota: "quente" | "medio" | "frio" | null;
   faturamento_estimado: string | null;
   alcance_estimado: string | null;
@@ -122,9 +122,10 @@ const LeadDetail = () => {
               <Badge className={
                 lead.tipo === "prospecto" ? "bg-blue-500 text-white" :
                 lead.tipo === "lead" ? "bg-green-500 text-white" :
-                "bg-purple-500 text-white"
+                lead.tipo === "cliente" ? "bg-purple-500 text-white" :
+                "bg-gray-500 text-white"
               }>
-                {lead.tipo}
+                {lead.tipo === "nao_qualificado" ? "Não Qualificado" : lead.tipo}
               </Badge>
             </div>
             <div className="space-y-2">

@@ -410,6 +410,24 @@ const ProspeccaoTab = () => {
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="tipo">Tipo de Lead *</Label>
+                  <Select 
+                    value={formData.tipo} 
+                    onValueChange={(value: ProspeccaoLead["tipo"]) => setFormData({ ...formData, tipo: value })}
+                  >
+                    <SelectTrigger className="bg-input border-border">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="prospecto">Prospecto</SelectItem>
+                      <SelectItem value="lead">Lead</SelectItem>
+                      <SelectItem value="cliente">Cliente</SelectItem>
+                      <SelectItem value="nao_qualificado">Não Qualificado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="nota">Classificação do Lead *</Label>
                   <Select 
                     value={formData.nota || ""} 
@@ -501,6 +519,7 @@ const ProspeccaoTab = () => {
                         faturamento_estimado: "",
                         alcance_estimado: "",
                         status_contato: "Leads",
+                        tipo: "lead",
                       });
                     }}
                     className="border-border"
