@@ -21,7 +21,7 @@ interface ProspeccaoLead {
   email: string | null;
   observacoes: string | null;
   tem_site: boolean | null;
-  status_contato: "Leads" | "Conseguiu contato" | "Marcou reunião" | "Proposta enviada" | "Aguardando fechamento" | "Fechado";
+  status_contato: "Leads" | "Conseguiu contato" | "Marcou reunião" | "Proposta enviada" | "Aguardando fechamento" | "Fechado" | "Recusado";
   tipo: "prospecto" | "lead" | "cliente";
   nota: "quente" | "medio" | "frio" | null;
   faturamento_estimado: string | null;
@@ -400,6 +400,7 @@ const ProspeccaoTab = () => {
                       <SelectItem value="Proposta enviada">Proposta enviada</SelectItem>
                       <SelectItem value="Aguardando fechamento">Aguardando fechamento</SelectItem>
                       <SelectItem value="Fechado">Fechado</SelectItem>
+                      <SelectItem value="Recusado">Recusado</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

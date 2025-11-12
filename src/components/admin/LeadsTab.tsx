@@ -24,7 +24,7 @@ interface Lead {
   alcance_instagram: string | null;
   observacoes: string | null;
   tipo: "prospecto" | "lead" | "cliente";
-  status_contato: "Leads" | "Conseguiu contato" | "Marcou reunião" | "Proposta enviada" | "Aguardando fechamento" | "Fechado";
+  status_contato: "Leads" | "Conseguiu contato" | "Marcou reunião" | "Proposta enviada" | "Aguardando fechamento" | "Fechado" | "Recusado";
   email: string | null;
   instagram: string | null;
   created_at: string;
@@ -147,6 +147,7 @@ const LeadsTab = () => {
     proposta: leads.filter(l => l.status_contato === "Proposta enviada").length,
     aguardando: leads.filter(l => l.status_contato === "Aguardando fechamento").length,
     fechado: leads.filter(l => l.status_contato === "Fechado").length,
+    recusado: leads.filter(l => l.status_contato === "Recusado").length,
   };
 
   if (loading) {
@@ -162,7 +163,7 @@ const LeadsTab = () => {
       <h2 className="text-2xl font-bold">Dashboard de Leads</h2>
       
       {/* Estatísticas por Status */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
         <Card className="p-4 bg-card border-border hover-glow">
           <p className="text-sm text-muted-foreground mb-1">Total</p>
           <p className="text-2xl font-bold">{statusCounts.total}</p>
@@ -191,6 +192,10 @@ const LeadsTab = () => {
           <p className="text-sm text-muted-foreground mb-1">Fechado</p>
           <p className="text-2xl font-bold text-green-600">{statusCounts.fechado}</p>
         </Card>
+        <Card className="p-4 bg-card border-border hover-glow">
+          <p className="text-sm text-muted-foreground mb-1">Recusado</p>
+          <p className="text-2xl font-bold text-red-600">{statusCounts.recusado}</p>
+        </Card>
       </div>
 
       {/* Filtros */}
@@ -210,6 +215,7 @@ const LeadsTab = () => {
                 <SelectItem value="Proposta enviada">Proposta enviada</SelectItem>
                 <SelectItem value="Aguardando fechamento">Aguardando fechamento</SelectItem>
                 <SelectItem value="Fechado">Fechado</SelectItem>
+                <SelectItem value="Recusado">Recusado</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -266,6 +272,7 @@ const LeadsTab = () => {
                         lead.status_contato === "Proposta enviada" ? "bg-orange-500 text-white border-orange-500" :
                         lead.status_contato === "Aguardando fechamento" ? "bg-amber-500 text-white border-amber-500" :
                         lead.status_contato === "Fechado" ? "bg-green-500 text-white border-green-500" :
+                        lead.status_contato === "Recusado" ? "bg-red-500 text-white border-red-500" :
                         ""
                       }`}
                     >
