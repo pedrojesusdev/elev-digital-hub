@@ -141,6 +141,21 @@ const LeadsTab = () => {
     }
   };
 
+  const handleNotaChange = async (id: string, newNota: Lead["nota"]) => {
+    const { error } = await supabase
+      .from('leads')
+      .update({ nota: newNota })
+      .eq('id', id);
+
+    if (error) {
+      toast.error("Erro ao atualizar nota");
+      console.error(error);
+    } else {
+      toast.success("Nota atualizada com sucesso!");
+      fetchLeads();
+    }
+  };
+
   const filteredLeads = leads.filter(lead => {
     if (filterStatus !== "all" && lead.status_contato !== filterStatus) return false;
     if (filterData === "month") {
@@ -306,22 +321,20 @@ const LeadsTab = () => {
                     </Select>
                   </TableCell>
                   <TableCell>
-                    {lead.nota && (
-                      <Badge
-                        variant={lead.nota === "quente" ? "default" : lead.nota === "medio" ? "secondary" : "outline"}
-                        className={
-                          lead.nota === "quente"
-                            ? "bg-green-500 text-white"
-                            : lead.nota === "medio"
-                            ? "bg-yellow-500 text-white"
-                            : "bg-blue-400 text-white"
-                        }
-                      >
-                        {lead.nota === "quente" ? "Quente" : 
-                         lead.nota === "medio" ? "Médio" : 
-                         "Frio"}
-                      </Badge>
-                    )}
+                    <Select 
+                      value={lead.nota || "undefined"} 
+                      onValueChange={(value: string) => handleNotaChange(lead.id, value === "undefined" ? null : value as Lead["nota"])}
+                    >
+                      <SelectTrigger className="w-[120px] bg-input border-border">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="undefined">Sem nota</SelectItem>
+                        <SelectItem value="quente">Quente</SelectItem>
+                        <SelectItem value="medio">Médio</SelectItem>
+                        <SelectItem value="frio">Frio</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </TableCell>
                   <TableCell className="text-muted-foreground whitespace-nowrap">
                     {new Date(lead.created_at).toLocaleDateString('pt-BR')}
