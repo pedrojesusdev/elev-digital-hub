@@ -22,7 +22,7 @@ interface ProspeccaoLead {
   observacoes: string | null;
   tem_site: boolean | null;
   status_contato: "Leads" | "Conseguiu contato" | "Marcou reunião" | "Proposta enviada" | "Aguardando fechamento" | "Fechado" | "Recusado";
-  tipo: "prospecto" | "lead" | "cliente";
+  tipo: "prospecto" | "lead" | "cliente" | "nao_qualificado";
   nota: "quente" | "medio" | "frio" | null;
   faturamento_estimado: string | null;
   alcance_estimado: string | null;
@@ -46,6 +46,7 @@ const ProspeccaoTab = () => {
     faturamento_estimado: "",
     alcance_estimado: "",
     status_contato: "Leads" as ProspeccaoLead["status_contato"],
+    tipo: "lead" as ProspeccaoLead["tipo"],
   });
 
   // Fetch leads from database
@@ -72,7 +73,7 @@ const ProspeccaoTab = () => {
   useEffect(() => {
     fetchLeads();
 
-    // Setup realtime subscription for new leads
+    // Setup realtime subscription apenas para novos leads de formulário
     const channel = supabase
       .channel("leads-changes")
       .on(
@@ -123,6 +124,7 @@ const ProspeccaoTab = () => {
             faturamento_estimado: formData.faturamento_estimado || null,
             alcance_estimado: formData.alcance_estimado || null,
             status_contato: formData.status_contato,
+            tipo: formData.tipo,
           })
           .eq("id", editingId);
 
@@ -142,7 +144,7 @@ const ProspeccaoTab = () => {
           email: formData.email || null,
           observacoes: formData.observacoes || null,
           tem_site: formData.tem_site === "true",
-          tipo: "lead",
+          tipo: formData.tipo,
           nota: formData.nota,
           faturamento_estimado: formData.faturamento_estimado || null,
           alcance_estimado: formData.alcance_estimado || null,
@@ -170,6 +172,7 @@ const ProspeccaoTab = () => {
         faturamento_estimado: "",
         alcance_estimado: "",
         status_contato: "Leads",
+        tipo: "lead",
       });
 
       fetchLeads();
@@ -197,6 +200,7 @@ const ProspeccaoTab = () => {
       faturamento_estimado: lead.faturamento_estimado || "",
       alcance_estimado: lead.alcance_estimado || "",
       status_contato: lead.status_contato,
+      tipo: lead.tipo,
     });
   };
 
