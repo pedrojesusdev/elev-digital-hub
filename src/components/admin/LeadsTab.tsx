@@ -239,7 +239,6 @@ const LeadsTab = () => {
                 <TableHead className="text-foreground">Empresa</TableHead>
                 <TableHead className="text-foreground">E-mail / Telefone</TableHead>
                 <TableHead className="text-foreground">Localidade</TableHead>
-                <TableHead className="text-foreground">Tipo</TableHead>
                 <TableHead className="text-foreground">Status do Contato</TableHead>
                 <TableHead className="text-foreground">Nota</TableHead>
                 <TableHead className="text-foreground">Data de Entrada</TableHead>
@@ -258,16 +257,18 @@ const LeadsTab = () => {
                   </TableCell>
                   <TableCell>{lead.localidade}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className={
-                      lead.tipo === "prospecto" ? "bg-blue-500 text-white" :
-                      lead.tipo === "lead" ? "bg-green-500 text-white" :
-                      "bg-purple-500 text-white"
-                    }>
-                      {lead.tipo}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="whitespace-nowrap">
+                    <Badge 
+                      variant="outline" 
+                      className={`whitespace-nowrap ${
+                        lead.status_contato === "Leads" ? "bg-slate-500 text-white border-slate-500" :
+                        lead.status_contato === "Conseguiu contato" ? "bg-blue-500 text-white border-blue-500" :
+                        lead.status_contato === "Marcou reunião" ? "bg-purple-500 text-white border-purple-500" :
+                        lead.status_contato === "Proposta enviada" ? "bg-orange-500 text-white border-orange-500" :
+                        lead.status_contato === "Aguardando fechamento" ? "bg-amber-500 text-white border-amber-500" :
+                        lead.status_contato === "Fechado" ? "bg-green-500 text-white border-green-500" :
+                        ""
+                      }`}
+                    >
                       {lead.status_contato}
                     </Badge>
                   </TableCell>
