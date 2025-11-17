@@ -30,6 +30,12 @@ const AboutSection = () => {
                   independentemente do seu tamanho, merece ter acesso a 
                   tecnologia de ponta e estratégias eficientes de marketing digital.
                 </p>
+                <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+                  Somos especialistas em transformar ideias em resultados concretos. 
+                  Nossa equipe une expertise técnica com criatividade estratégica 
+                  para criar soluções que realmente fazem a diferença no dia a dia 
+                  das empresas.
+                </p>
               </div>
             </AnimatedSection>
           </div>
@@ -37,12 +43,6 @@ const AboutSection = () => {
           {/* Texto restante abaixo */}
           <AnimatedSection animation="fadeIn" delay={300}>
             <div className="space-y-6">
-              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-                Somos especialistas em transformar ideias em resultados concretos. 
-                Nossa equipe une expertise técnica com criatividade estratégica 
-                para criar soluções que realmente fazem a diferença no dia a dia 
-                das empresas.
-              </p>
               <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
                 Acreditamos que crescimento sustentável vem da combinação perfeita 
                 entre automação inteligente, design impactante e estratégia bem 
