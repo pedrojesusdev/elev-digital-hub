@@ -632,6 +632,8 @@ const ProspeccaoTab = () => {
                             <SelectItem value="Proposta enviada">Proposta enviada</SelectItem>
                             <SelectItem value="Aguardando fechamento">Aguardando fechamento</SelectItem>
                             <SelectItem value="Fechado">Fechado</SelectItem>
+                            <SelectItem value="Recusado">Recusado</SelectItem>
+                            <SelectItem value="Não qualificado">Não qualificado</SelectItem>
                           </SelectContent>
                         </Select>
                       </TableCell>
