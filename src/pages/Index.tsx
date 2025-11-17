@@ -4,6 +4,7 @@ import HeroSection from "@/components/home/HeroSection";
 import AboutSection from "@/components/home/AboutSection";
 import DifferentialsSection from "@/components/home/DifferentialsSection";
 import CTASection from "@/components/home/CTASection";
+import { AnimatedSection } from "@/components/home/AnimatedSection";
 
 const Index = () => {
   return (
@@ -12,9 +13,15 @@ const Index = () => {
       <div id="home">
         <HeroSection />
       </div>
-      <AboutSection />
-      <DifferentialsSection />
-      <CTASection />
+      <AnimatedSection animation="fadeIn" delay={100}>
+        <AboutSection />
+      </AnimatedSection>
+      <AnimatedSection animation="slideUp" delay={200}>
+        <DifferentialsSection />
+      </AnimatedSection>
+      <AnimatedSection animation="scale" delay={100}>
+        <CTASection />
+      </AnimatedSection>
       <Footer />
     </div>
   );

@@ -2,23 +2,70 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight } from "lucide-react";
-import { Mockup, MockupFrame } from "@/components/ui/mockup";
-import { Glow } from "@/components/ui/glow";
 import { cn } from "@/lib/utils";
-import heroImage from "@/assets/team-photo.jpg";
 import { Link } from "react-router-dom";
+import { useEffect, useRef } from "react";
 
 const HeroSection = () => {
+  const heroRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const particlesRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Animate title on mount
+    if (titleRef.current) {
+      setTimeout(() => {
+        if (titleRef.current) {
+          titleRef.current.style.opacity = '1';
+          titleRef.current.style.transform = 'translateY(0) scale(1)';
+        }
+      }, 100);
+    }
+
+    // Parallax effect on scroll
+    const handleScroll = () => {
+      if (heroRef.current) {
+        const scrolled = window.scrollY;
+        heroRef.current.style.transform = `translateY(${scrolled * 0.5}px)`;
+        heroRef.current.style.opacity = `${Math.max(0, 1 - scrolled / 800)}`;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <section className={cn(
-      "bg-background text-foreground",
-      "py-12 sm:py-24 md:py-32 px-4",
-      "overflow-hidden pb-0"
+      "relative bg-background text-foreground overflow-hidden",
+      "min-h-screen flex items-center justify-center"
     )}>
-      <div className="mx-auto flex max-w-7xl flex-col gap-12 pt-16 sm:gap-24">
-        <div className="flex flex-col items-center gap-6 text-center sm:gap-12">
-          {/* Badge */}
-          <Badge variant="outline" className="animate-fade-in gap-2 delay-100">
+      {/* Animated background particles */}
+      <div ref={particlesRef} className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-2 h-2 bg-foreground/10 rounded-full animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${2 + Math.random() * 2}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background pointer-events-none" />
+
+      <div ref={heroRef} className="relative z-10 mx-auto max-w-7xl px-4 py-24 md:py-32 transition-all duration-300">
+        <div className="flex flex-col items-center gap-8 text-center">
+          {/* Badge with animation */}
+          <Badge 
+            variant="outline" 
+            className="animate-fade-in gap-2 delay-100 hover:scale-110 transition-transform duration-300"
+          >
             <span className="text-muted-foreground">Novidade</span>
             <a href="/servicos" className="flex items-center gap-1">
               Conheça nossos serviços
@@ -26,61 +73,66 @@ const HeroSection = () => {
             </a>
           </Badge>
 
-          {/* Title */}
-          <h1 className="relative z-10 inline-block animate-fade-in bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-4xl font-semibold leading-tight text-transparent drop-shadow-2xl sm:text-6xl sm:leading-tight md:text-8xl md:leading-tight delay-200">
+          {/* Main title with dynamic animation */}
+          <h1 
+            ref={titleRef}
+            className={cn(
+              "text-5xl sm:text-7xl md:text-9xl font-bold",
+              "bg-gradient-to-r from-foreground via-muted-foreground to-foreground",
+              "bg-clip-text text-transparent",
+              "drop-shadow-2xl",
+              "leading-tight transition-all duration-1000 ease-out"
+            )}
+            style={{ 
+              opacity: 0,
+              transform: 'translateY(50px) scale(0.9)'
+            }}
+          >
             Elev Business
           </h1>
 
-          {/* Description */}
-          <p className="text-md relative z-10 max-w-[550px] animate-fade-in font-medium text-muted-foreground delay-300 sm:text-xl">
-            Elevando sua empresa com tecnologia e automação. Soluções administrativas, marketing digital e automações inteligentes para o seu negócio.
+          {/* Subtitle with stagger animation */}
+          <p className="text-lg sm:text-xl md:text-2xl max-w-3xl text-muted-foreground font-light animate-fade-in delay-300">
+            Elevando sua empresa com tecnologia e automação. 
+            <span className="block mt-2">
+              Soluções administrativas, marketing digital e automações inteligentes.
+            </span>
           </p>
 
-          {/* Actions */}
-          <div className="relative z-[100] pointer-events-auto flex animate-fade-in justify-center gap-4 delay-500">
-            <Button size="lg" className="flex items-center gap-2 group pointer-events-auto" asChild>
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 mt-8 animate-fade-in delay-500">
+            <Button size="lg" className="group" asChild>
               <Link to="/contato-novo">
                 Fale conosco
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
-            <Button size="lg" variant="outline" className="pointer-events-auto" asChild>
+            <Button size="lg" variant="outline" asChild>
               <Link to="/servicos">
                 Ver serviços
               </Link>
             </Button>
           </div>
 
-          {/* Saiba Mais */}
-          <div className="relative z-50 animate-fade-in delay-600">
+          {/* Scroll indicator */}
+          <div className="mt-16 animate-fade-in delay-700">
             <Button 
               variant="ghost"
               onClick={() => {
                 const element = document.getElementById('sobre');
                 element?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="text-muted-foreground hover:text-foreground"
+              className="text-muted-foreground hover:text-foreground group"
             >
               Saiba Mais
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-y-1 transition-transform" />
             </Button>
-          </div>
-
-          {/* Image with Glow */}
-          <div className="relative z-0 pt-12 w-full animate-fade-in delay-700 fade-bottom">
-            <Glow variant="top" className="animate-scale-in delay-1000" />
-            <MockupFrame size="small" className="relative z-10">
-              <Mockup type="responsive">
-                <img 
-                  src={heroImage} 
-                  alt="Equipe Elev Business - Parceiros estratégicos da sua empresa" 
-                  className="w-full h-auto"
-                />
-              </Mockup>
-            </MockupFrame>
           </div>
         </div>
       </div>
+
+      {/* Bottom gradient fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent pointer-events-none" />
     </section>
   );
 };
