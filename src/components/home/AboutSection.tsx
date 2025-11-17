@@ -21,22 +21,22 @@ const AboutSection = () => {
             </AnimatedSection>
 
             <AnimatedSection animation="slideLeft" delay={200}>
-              <div className="flex items-center h-full">
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold">
+              <div className="space-y-6">
+                <h2 className="text-4xl md:text-5xl font-bold">
                   Sobre nós
                 </h2>
+                <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+                  A Elev Business nasceu da visão de que toda empresa, 
+                  independentemente do seu tamanho, merece ter acesso a 
+                  tecnologia de ponta e estratégias eficientes de marketing digital.
+                </p>
               </div>
             </AnimatedSection>
           </div>
 
-          {/* Texto abaixo */}
+          {/* Texto restante abaixo */}
           <AnimatedSection animation="fadeIn" delay={300}>
             <div className="space-y-6">
-              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-                A Elev Business nasceu da visão de que toda empresa, 
-                independentemente do seu tamanho, merece ter acesso a 
-                tecnologia de ponta e estratégias eficientes de marketing digital.
-              </p>
               <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
                 Somos especialistas em transformar ideias em resultados concretos. 
                 Nossa equipe une expertise técnica com criatividade estratégica 
