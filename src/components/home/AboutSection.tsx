@@ -6,24 +6,32 @@ const AboutSection = () => {
   return (
     <section className="py-24 bg-background" id="sobre">
       <div className="container mx-auto px-4 max-w-6xl space-y-24">
-        {/* Sobre nós com imagem da equipe */}
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <AnimatedSection animation="slideRight" delay={100}>
-            <div className="relative">
-              <img 
-                src={teamPhoto} 
-                alt="Equipe Elev Business - Parceiros estratégicos da sua empresa" 
-                className="w-full h-auto rounded-xl shadow-2xl hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent rounded-xl pointer-events-none" />
-            </div>
-          </AnimatedSection>
+        {/* Sobre nós - Imagem e Título no topo */}
+        <div className="space-y-12">
+          <div className="grid md:grid-cols-2 gap-12 items-start">
+            <AnimatedSection animation="slideRight" delay={100}>
+              <div className="relative">
+                <img 
+                  src={teamPhoto} 
+                  alt="Equipe Elev Business - Parceiros estratégicos da sua empresa" 
+                  className="w-full h-auto rounded-xl shadow-2xl hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent rounded-xl pointer-events-none" />
+              </div>
+            </AnimatedSection>
 
-          <AnimatedSection animation="slideLeft" delay={200}>
-            <div className="space-y-8">
-              <h2 className="text-4xl md:text-5xl font-bold">
-                Sobre nós
-              </h2>
+            <AnimatedSection animation="slideLeft" delay={200}>
+              <div className="flex items-center h-full">
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold">
+                  Sobre nós
+                </h2>
+              </div>
+            </AnimatedSection>
+          </div>
+
+          {/* Texto abaixo */}
+          <AnimatedSection animation="fadeIn" delay={300}>
+            <div className="space-y-6">
               <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
                 A Elev Business nasceu da visão de que toda empresa, 
                 independentemente do seu tamanho, merece ter acesso a 
